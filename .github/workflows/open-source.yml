@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   agent:
+    if: github.repository != 'great105/remotai'
     name: Agent (${{ matrix.os }})
     strategy:
       fail-fast: false
@@ -36,6 +37,7 @@ jobs:
           path: build/remotai-self-hosted*
 
   relay:
+    if: github.repository != 'great105/remotai'
     name: Relay
     runs-on: ubuntu-latest
     defaults:
@@ -50,6 +52,7 @@ jobs:
       - run: go vet ./...
 
   deployment:
+    if: github.repository != 'great105/remotai'
     name: Self-hosted Docker build
     runs-on: ubuntu-latest
     steps:
