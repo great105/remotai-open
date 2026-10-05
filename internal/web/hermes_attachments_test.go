@@ -37,14 +37,11 @@ func TestHermesAttachmentHandlerUploadBoundary(t *testing.T) {
 	if err := os.Mkdir(directory, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	cwd, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
-	relative, err := filepath.Rel(cwd, good)
-	if err != nil {
-		t.Fatal(err)
-	}
+	// A relative path to an existing upload must still be rejected. Keep the
+	// current directory beside the fixture, even when CI checks out on D: and
+	// creates temporary files on C:.
+	t.Chdir(root)
+	relative := filepath.Base(good)
 	cases := []struct {
 		name, path string
 		allowed    bool
