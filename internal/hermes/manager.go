@@ -51,6 +51,9 @@ type Status struct {
 	Version             string `json:"version,omitempty"`
 	LatestVersion       string `json:"latest_version,omitempty"`
 	AutoUpdate          bool   `json:"auto_update"`
+	AutoStart           bool   `json:"auto_start"`
+	DeliveryEnabled     bool   `json:"delivery_enabled"`
+	DeliveryReady       bool   `json:"delivery_ready"`
 	UpdateAvailable     bool   `json:"update_available"`
 	UpdatePending       bool   `json:"update_pending"`
 	LastCheckedAt       string `json:"last_checked_at,omitempty"`
@@ -68,6 +71,8 @@ type diskState struct {
 	Schema          int    `json:"schema"`
 	Managed         bool   `json:"managed"`
 	AutoUpdate      bool   `json:"auto_update"`
+	AutoStart       bool   `json:"auto_start"`
+	DeliveryEnabled bool   `json:"delivery_enabled"`
 	Version         string `json:"version,omitempty"`
 	LatestVersion   string `json:"latest_version,omitempty"`
 	UpdatePending   bool   `json:"update_pending,omitempty"`
@@ -80,6 +85,9 @@ type diskState struct {
 }
 
 type Manager struct {
+	control                      *controlJournal
+	notify                       func(context.Context, AttentionRecord) error
+	deliveryReady                func() bool
 	mu                           sync.Mutex
 	opMu                         sync.Mutex
 	opts                         Options
@@ -90,9 +98,12 @@ type Manager struct {
 	ready                        bool
 	bridge                       *rpcBridge
 	events                       []Event
+	eventChanged                 chan struct{}
+	eventReset                   uint64
 	seq                          uint64
 	epoch                        uint64
 	maintenanceOnce              sync.Once
+	observerActive               bool
 	closing                      bool
 	opCancel                     context.CancelFunc
 	operationDetail              string
@@ -140,7 +151,7 @@ func New(opts Options) (*Manager, error) {
 	if err := os.MkdirAll(abs, 0700); err != nil {
 		return nil, err
 	}
-	m := &Manager{opts: opts, root: abs, home: filepath.Join(abs, "home"), checkout: filepath.Join(abs, "runtime"), state: diskState{Schema: 1, AutoUpdate: true}}
+	m := &Manager{opts: opts, root: abs, home: filepath.Join(abs, "home"), checkout: filepath.Join(abs, "runtime"), state: diskState{Schema: 1, AutoUpdate: true, AutoStart: true}}
 	data, err := os.ReadFile(filepath.Join(abs, "manager.json"))
 	if err == nil {
 		if err := json.Unmarshal(data, &m.state); err != nil {
@@ -157,6 +168,9 @@ func New(opts Options) (*Manager, error) {
 		return nil, err
 	}
 	m.detectLocked()
+	if err := m.loadControl(); err != nil {
+		return nil, err
+	}
 	if err := m.saveLocked(); err != nil {
 		return nil, err
 	}
@@ -168,6 +182,9 @@ func (m *Manager) Status() Status {
 	defer m.mu.Unlock()
 	s := Status{Installed: m.binary != "", Ownership: "none", Running: m.process != nil, Ready: m.ready, State: "not_installed", Operation: m.state.Operation, Version: m.state.Version, LatestVersion: m.state.LatestVersion, AutoUpdate: m.state.AutoUpdate, UpdatePending: m.state.UpdatePending, UpdateAvailable: m.state.UpdatePending, LastCheckedAt: m.state.LastCheckedAt, LastError: m.state.LastError, DataDir: m.home, BinaryPath: m.binary, UpdateChannel: "main", BackendGeneration: m.epoch, InstalledCommit: m.state.InstalledCommit, LatestCommit: m.state.LatestCommit}
 	s.OperationDetail = m.operationDetail
+	s.AutoStart = m.state.AutoStart
+	s.DeliveryEnabled = m.state.DeliveryEnabled
+	s.DeliveryReady = m.deliveryReady != nil && m.deliveryReady()
 	s.NextUpdateAttemptAt = m.state.UpdateRetryAt
 	if m.binary != "" {
 		s.Ownership = "external"
@@ -328,11 +345,17 @@ func (m *Manager) progress(detail string) { m.mu.Lock(); m.operationDetail = det
 func (m *Manager) Close(ctx context.Context) error {
 	m.mu.Lock()
 	m.closing = true
+	m.notifyEventsLocked()
 	if m.opCancel != nil {
 		m.opCancel()
 	}
 	m.mu.Unlock()
 	ticker := time.NewTicker(20 * time.Millisecond)
+	if m.control != nil {
+		m.control.mu.Lock()
+		m.control.sealed = true
+		m.control.mu.Unlock()
+	}
 	defer ticker.Stop()
 	for !m.opMu.TryLock() {
 		select {
@@ -362,6 +385,12 @@ func (m *Manager) scrub(text string) string {
 // HTTP request. It never installs Hermes and never updates an external copy.
 func (m *Manager) StartMaintenance(ctx context.Context) {
 	m.maintenanceOnce.Do(func() {
+		m.mu.Lock()
+		m.observerActive = true
+		m.mu.Unlock()
+		go m.observeBackend(ctx)
+		go m.supervise(ctx)
+		go m.deliverAttention(ctx)
 		go func() {
 			timer := time.NewTimer(time.Minute)
 			defer timer.Stop()

@@ -14,6 +14,7 @@ import {
   carryTailAcrossMarker, flowStatsKey, flowTransition, noteHanded, reconnectResume, selectFlushBatch, type HandedMark,
 } from "../ptyTerm/runtime/FlowController";
 import { wordRange } from "../ptyTerm/selection/SelectionController";
+import { attachCopyOnSelect } from "../ptyTerm/selection/copyOnSelect";
 import { terminalClipboard } from "../ptyTerm/input/ClipboardService";
 import { enterIntent, reviewedInput, sameInputTarget, transmitInput } from "../ptyTerm/input/InputController";
 import type { InputTarget } from "../ptyTerm/input/InputController";
@@ -1013,6 +1014,7 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
   });
   const [termSize, setTermSize] = useState({ cols: 80, rows: 24 });
   const [scrollButtonsVisible, setScrollButtonsVisible] = useState(true);
+  const [localScrolledUp, setLocalScrolledUp] = useState(false);
   const scrollButtonsTimer = useRef<number | null>(null);
   // The visible mode belongs to the person and this terminal, not the current
   // foreground process. Auto keeps learning as programs start and stop.
@@ -4880,16 +4882,22 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
     // терминал.
     flushTermWrites();
 
+    // Returning to live must remain reachable while reading local history,
+    // even after the idle toolbar timer expires. This is UI state only.
+    const updateLocalReading = () => {
+      const b = term.buffer.active;
+      setLocalScrolledUp(b.viewportY < b.baseY);
+    };
+    updateLocalReading();
+    const localReadingScroll = term.onScroll(updateLocalReading);
+    const localReadingBuffer = term.buffer.onBufferChange(updateLocalReading);
     // Copy-on-select: выделил мышью → сразу в буфер обмена (привычное поведение
     // терминала на ПК; в терминале Ctrl+C = прерывание, а не копирование). На
     // сенсоре остаётся режим «Выделить» + кнопка «Копировать».
     const selHost = termRef.current;
-    const onMouseUp = () => {
-      const sel = term.getSelection();
-      if (!sel || !sel.trim()) return;
+    const stopCopyOnSelect = attachCopyOnSelect(selHost, () => term.getSelection(), sel => {
       void terminalClipboard.write(sel).then(ok => showToast(t(ok ? "pty.copied" : "pty.copyFailed")));
-    };
-    selHost.addEventListener("mouseup", onMouseUp);
+    }, () => !disposedRef.current && !presentHolding());
     // ST-06: пока удерживается старая картинка (≤ 1 с), клики мышью и
     // совместимые события касания до xterm не доходят: его отчёт о мыши ушёл
     // бы приложению по координатам нового, ещё не показанного буфера.
@@ -5068,6 +5076,8 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
       geometryResizeDisposable.dispose();
       wheelHost.removeEventListener("wheel", onTerminalWheel, { capture: true });
       scrollModeDisposable.dispose();
+      localReadingScroll.dispose();
+      localReadingBuffer.dispose();
       cursorPeekDisposable.dispose();
       occlusionSyncDisposable.dispose();
       if (cursorPeekRaf !== null) cancelAnimationFrame(cursorPeekRaf);
@@ -5082,7 +5092,7 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
       if (blockUiTimer !== null) clearTimeout(blockUiTimer);
       if (blockModelRef.current === blockModel) blockModelRef.current = null;
       refreshBlockUiRef.current();
-      selHost.removeEventListener("mouseup", onMouseUp);
+      stopCopyOnSelect();
       for (const type of holdEvents) selHost.removeEventListener(type, onHoldPointer, { capture: true });
       for (const type of compatEvents) selHost.removeEventListener(type, onCompatMouse, { capture: true });
       glHost.removeEventListener("webglcontextlost", onContextLost, { capture: true });
@@ -5716,6 +5726,9 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
     let alt = false;
     try { alt = term.buffer.active.type === "alternate"; } catch { /* ignore */ }
     const rows = captureTerminalRows(term, "screen");
+    // A restored refusal has no persisted screen text. Baseline it only now:
+    // mode callbacks can restore mid-replay, and toolbar peeks are not intent.
+    if (!peek) evidenceRef.current.anchorRestoredScreen(rows);
     const page = evidenceForRef.current("page", lines, rows);
     const wheel = evidenceForRef.current("wheel", lines, rows);
     const override = scrollOverrideRef.current;
@@ -8300,6 +8313,21 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
     fileInputRef.current?.click();
   };
 
+  // Navigation owns existing header space, not output or keypad pixels.
+  const scrollNavigation = (
+    <div
+      className={`pty-scroll-buttons${scrollButtonsVisible || altScrolledUp || localScrolledUp ? " visible" : ""}`}
+      onPointerDown={revealScrollButtons}
+    >
+      <div className="pty-scroll-navigation">
+        <button className="pty-scroll-btn" onClick={scrollTop} title={t("pty.a11y.scrollTop")} aria-label={t("pty.a11y.scrollTop")}><span aria-hidden>{"\u21C8"}</span></button>
+        <button className="pty-scroll-btn" onClick={scrollUp} title={t("pty.a11y.scrollUp")} aria-label={t("pty.a11y.scrollUp")}><span aria-hidden>{"\u2191"}</span></button>
+        <button className="pty-scroll-btn" onClick={scrollDown} title={t("pty.a11y.scrollDown")} aria-label={t("pty.a11y.scrollDown")}><span aria-hidden>{"\u2193"}</span></button>
+      </div>
+      <button className="pty-scroll-btn" onClick={scrollBottom} title={t("pty.catchUp")} aria-label={t("pty.catchUp").replace(/^↓\s*/, "")}><span aria-hidden>{"\u21CA"}</span></button>
+    </div>
+  );
+
   return (
     <div className="pty-page" data-tools-open={!state.alive || (!keysCollapsedForView && toolsOpen) ? "" : undefined}>
       <div className="pty-header pty-header--clear">
@@ -8410,6 +8438,7 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
               )}
             </div>
           </div>
+          {scrollNavigation}
           <div className="pty-header-state">
             <span
               className={`pty-conn-status ${connected && state.alive ? "online" : "offline"}`}
@@ -8524,12 +8553,11 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
             <span>{t("pty.headerHelp")}</span>
           </button>
         </div>
+        <TerminalWidthNotice
+          narrow={connected && shouldExplainNarrowOutput(termSize.cols, reportSizeRef.current.cols)}
+          onReopen={onReopen}
+        />
       </div>
-
-      <TerminalWidthNotice
-        narrow={connected && shouldExplainNarrowOutput(termSize.cols, reportSizeRef.current.cols)}
-        onReopen={onReopen}
-      />
 
       {/* Bootstrap-баннер для SSH-сессии (?ssh=1&host=…): install.sh сам
           ставит бинарь, автозапуск и печатает QR привязки — всё видно прямо
@@ -8719,18 +8747,6 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
               {"✕"}
             </button>
           </div>
-        )}
-        {/* «Вернуться к новому» — ВНУТРИ обёртки вывода, а не в конце страницы.
-            Живая жалоба владельца 08.09 со скриншотом: «вот эта кнопка зелёная,
-            вернуться к новому, она мешает». `position: absolute; bottom: 8px`
-            считался от .pty-page, то есть плашка садилась на 8 px от низа ЭКРАНА
-            — ровно на строку ввода, закрывая поле «Сообщение для Codex» и с
-            поднятой клавиатурой, и без неё. Теперь низ у неё — низ вывода. */}
-        {altScrolledUp && (
-          <button
-            className="pty-catchup-btn"
-            onClick={() => { haptic(); scrollToEdge(false); }}
-          >{t("pty.catchUp")}</button>
         )}
       </div>
 
@@ -9412,30 +9428,6 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
       )}
       </>
       )}
-
-      {/* Scroll buttons (mobile) — только прокрутка; стрелки-курсор в панели клавиш. */}
-      <div
-        className={`pty-scroll-buttons${scrollButtonsVisible ? " visible" : ""}`}
-        onPointerDown={revealScrollButtons}
-      >
-        <button className="pty-scroll-btn" onClick={scrollTop} title={t("pty.a11y.scrollTop")} aria-label={t("pty.a11y.scrollTop")}><span aria-hidden>{"\u21C8"}</span></button>
-        <button className="pty-scroll-btn" onClick={scrollUp} title={t("pty.a11y.scrollUp")} aria-label={t("pty.a11y.scrollUp")}><span aria-hidden>{"\u2191"}</span></button>
-        <button className="pty-scroll-btn" onClick={scrollDown} title={t("pty.a11y.scrollDown")} aria-label={t("pty.a11y.scrollDown")}><span aria-hidden>{"\u2193"}</span></button>
-        <button className="pty-scroll-btn" onClick={scrollBottom} title={t("pty.a11y.scrollBottom")} aria-label={t("pty.a11y.scrollBottom")}><span aria-hidden>{"\u21CA"}</span></button>
-      </div>
-
-      {/* \u00AB\u0412\u0435\u0440\u043D\u0443\u0442\u044C\u0441\u044F \u043A \u043D\u043E\u0432\u043E\u043C\u0443\u00BB. \u041F\u043E\u043B\u043D\u043E\u044D\u043A\u0440\u0430\u043D\u043D\u043E\u0435 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435, \u0443 \u043A\u043E\u0442\u043E\u0440\u043E\u0433\u043E \u0447\u0435\u043B\u043E\u0432\u0435\u043A
-          \u043F\u0440\u043E\u043A\u0440\u0443\u0442\u0438\u043B \u0432\u0432\u0435\u0440\u0445, \u041F\u0420\u0418\u0414\u0415\u0420\u0416\u0418\u0412\u0410\u0415\u0422 \u043D\u043E\u0432\u044B\u0439 \u0432\u044B\u0432\u043E\u0434 \u2014 Claude Code \u0442\u0430\u043A \u0438 \u043F\u0438\u0448\u0435\u0442:
-          \u00ABN new messages (ctrl+End)\u00BB. \u0421\u043D\u0430\u0440\u0443\u0436\u0438 \u044D\u0442\u043E \u0432\u044B\u0433\u043B\u044F\u0434\u0438\u0442 \u043A\u0430\u043A \u00AB\u0442\u0435\u0440\u043C\u0438\u043D\u0430\u043B \u0437\u0430\u0432\u0438\u0441
-          \u0438 \u043D\u0438\u0447\u0435\u0433\u043E \u043D\u0435 \u0432\u044B\u0432\u043E\u0434\u0438\u0442\u00BB (\u0436\u0438\u0432\u0430\u044F \u0436\u0430\u043B\u043E\u0431\u0430 12.08). \u0421\u0432\u043E\u044F \u043A\u043D\u043E\u043F\u043A\u0430 \u043D\u0443\u0436\u043D\u0430 \u043F\u043E\u0442\u043E\u043C\u0443,
-          \u0447\u0442\u043E \u043F\u043E\u0434\u0441\u043A\u0430\u0437\u043A\u0430 \u0430\u0433\u0435\u043D\u0442\u0430 \u0433\u043E\u0432\u043E\u0440\u0438\u0442 \u043F\u0440\u043E \u043A\u043B\u0430\u0432\u0438\u0430\u0442\u0443\u0440\u0443, \u043A\u043E\u0442\u043E\u0440\u043E\u0439 \u043D\u0430 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0435
-          \u043D\u0435\u0442, \u0430 \u0441\u0442\u043E\u043B\u0431\u0438\u043A \u21C8\u2191\u2193\u21CA \u0447\u0435\u043B\u043E\u0432\u0435\u043A \u0447\u0438\u0442\u0430\u0435\u0442 \u043A\u0430\u043A \u043F\u0440\u043E\u043A\u0440\u0443\u0442\u043A\u0443, \u0430 \u043D\u0435 \u043A\u0430\u043A \u00AB\u0434\u043E\u0433\u043D\u0430\u0442\u044C
-          \u0430\u0433\u0435\u043D\u0442\u0430\u00BB. */}
-      {/* ⚠ Кнопка прячется ТОЛЬКО после того, как переход действительно ушёл
-          (scrollToEdge вернул true). Раньше `setAltScrolledUp(false)` стоял
-          первым — и кнопка исчезала даже при мёртвом сокете, то есть ровно
-          тогда, когда человеку и нужен был выход обратно к новому выводу
-          (повторный аудит 2.57.12, T25712-01). */}
 
       {/* Выбор под скрепкой. Причина, почему он выбор, а не две кнопки в
           строке ввода, — в комментарии у attachMenuOpen (замер места). */}

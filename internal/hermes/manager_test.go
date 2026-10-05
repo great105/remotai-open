@@ -144,6 +144,7 @@ type fixture struct {
 	commands     [][]string
 	connections  int
 	capabilities bool
+	promptTexts  []string
 	replies      chan rpcFrame
 }
 
@@ -252,6 +253,26 @@ func (f *fixture) websocket(w http.ResponseWriter, r *http.Request) {
 			f.capabilities = flags["server_requests"]
 			f.mu.Unlock()
 			response(map[string]bool{"ok": true})
+		case "tools.show":
+			response(map[string]any{"sections": []any{map[string]any{"name": "fixture", "tools": []any{map[string]string{"name": "fixture_tool", "description": "Isolated fixture"}}}}, "total": 1})
+		case "prompt.submit":
+			var request struct {
+				Text   string `json:"text"`
+				Queued bool   `json:"queued"`
+			}
+			_ = json.Unmarshal(frame.Params, &request)
+			f.mu.Lock()
+			f.promptTexts = append(f.promptTexts, request.Text)
+			f.mu.Unlock()
+			status := "streaming"
+			if request.Queued {
+				status = "queued"
+			}
+			response(map[string]string{"status": status})
+		case "session.steer":
+			response(map[string]string{"status": "queued"})
+		case "gateway.capabilities":
+			response(map[string]bool{"per_session_exclusive_submit": true})
 		case "fixture.error":
 			send(map[string]any{"jsonrpc": "2.0", "id": id, "error": map[string]any{"code": -32012, "message": "fixture-error", "data": map[string]string{"reason": "approval"}}})
 		case "fixture.slow": // Request cancellation must leave the process and gateway alive.
@@ -269,10 +290,10 @@ func (f *fixture) websocket(w http.ResponseWriter, r *http.Request) {
 			}()
 		case "session.activate", "session.create", "session.resume":
 			send(map[string]any{"jsonrpc": "2.0", "method": "event", "params": map[string]string{"type": "message.delta", "payload": "before-snapshot"}})
-			response(map[string]any{"session_id": "fixture-session", "messages": []any{}})
+			response(map[string]any{"session_id": "fixture-session", "stored_session_id": "stored-fixture", "info": map[string]any{"cwd": ""}, "messages": []any{}})
 			send(map[string]any{"jsonrpc": "2.0", "method": "event", "params": map[string]string{"type": "message.delta", "payload": "after-snapshot"}})
 		case "fixture.approval":
-			send(map[string]any{"jsonrpc": "2.0", "id": "approval-fixture", "method": "approval.request", "params": map[string]string{"tool": "terminal"}})
+			send(map[string]any{"jsonrpc": "2.0", "id": "approval-fixture", "method": "approval", "params": map[string]any{"session_id": "fixture-session", "request_id": "approval-fixture", "choices": []string{"once", "deny"}, "allow_session": false, "allow_permanent": false}})
 			response(map[string]bool{"ok": true})
 		case "fixture.renderer":
 			send(map[string]any{"jsonrpc": "2.0", "id": "renderer-fixture", "method": "preview.read", "params": map[string]string{"session_id": "fixture-session"}})
@@ -364,11 +385,12 @@ func TestPersistentRPCAndSnapshotCursor(t *testing.T) {
 	f := newFixture(t)
 	m := f.manager(t, true)
 	start, cancel := context.WithCancel(context.Background())
+	initialGeneration := m.Status().BackendGeneration
 	if err := m.Start(start); err != nil {
 		t.Fatal(err)
 	}
 	cancel()
-	if !m.Status().Ready || m.Status().BackendGeneration != 1 {
+	if !m.Status().Ready || m.Status().BackendGeneration != initialGeneration+1 {
 		t.Fatal(m.Status())
 	}
 	ctx, end := context.WithTimeout(context.Background(), 5*time.Second)
@@ -418,7 +440,7 @@ func TestPersistentRPCAndSnapshotCursor(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err = m.Reply(ctx, "approval-fixture", json.RawMessage(`{"approved":true}`)); err != nil {
+	if err = m.Reply(ctx, "approval-fixture", json.RawMessage(`{"choice":"once"}`)); err != nil {
 		t.Fatal(err)
 	}
 	select {
@@ -492,6 +514,7 @@ func TestGatewayReconnectKeepsOwnedProcess(t *testing.T) {
 	m.mu.Lock()
 	process := m.process
 	m.mu.Unlock()
+	connectedGeneration := m.Status().BackendGeneration
 	if _, err := m.RPC(ctx, "fixture.disconnect", nil); err == nil {
 		t.Fatal("disconnected request succeeded")
 	}
@@ -514,7 +537,7 @@ func TestGatewayReconnectKeepsOwnedProcess(t *testing.T) {
 	m.mu.Lock()
 	same := m.process == process
 	m.mu.Unlock()
-	if !same || !m.Status().Ready || m.Status().BackendGeneration != 2 {
+	if !same || !m.Status().Ready || m.Status().BackendGeneration != connectedGeneration+1 {
 		t.Fatal(m.Status())
 	}
 	if !m.Events(0).Reset {
@@ -539,16 +562,17 @@ func TestRetirementFailsClosedAndUpdateRestarts(t *testing.T) {
 			if err := os.WriteFile(filepath.Join(m.home, "state.db"), []byte("durable-state"), 0600); err != nil {
 				t.Fatal(err)
 			}
+			connectedGeneration := m.Status().BackendGeneration
 			err := m.Update(ctx)
 			if mode != "idle" {
-				if !errors.Is(err, ErrDeferred) || !m.Status().Ready || m.Status().BackendGeneration != 1 || !m.Status().UpdatePending {
+				if !errors.Is(err, ErrDeferred) || !m.Status().Ready || m.Status().BackendGeneration != connectedGeneration || !m.Status().UpdatePending {
 					t.Fatalf("err=%v status=%+v", err, m.Status())
 				}
 				if matches, _ := filepath.Glob(filepath.Join(m.root, "backups", "*")); len(matches) > 0 {
 					t.Fatal("busy backend was snapshotted")
 				}
 			} else {
-				if err != nil || !m.Status().Ready || m.Status().BackendGeneration != 2 {
+				if err != nil || !m.Status().Ready || m.Status().BackendGeneration != connectedGeneration+1 {
 					t.Fatalf("err=%v status=%+v", err, m.Status())
 				}
 				matches, _ := filepath.Glob(filepath.Join(m.root, "backups", "*", "home", "state.db"))

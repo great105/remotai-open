@@ -345,6 +345,7 @@ func NewServer(store *sessions.Store, history *sessions.History, botToken string
 	})
 
 	s.registerRoutes()
+	s.restoreEnabledHermesOwners()
 	s.resumeCloudPairing()
 	return s
 }

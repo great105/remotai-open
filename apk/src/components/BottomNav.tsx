@@ -12,13 +12,13 @@ import { useCapabilities } from "../hooks/useCapabilities";
 import { useSupportUnread } from "../hooks/useSupportUnread";
 import {
   IconHome, IconDevices, IconFolder, IconTerminal, IconActivity, IconScreen,
-  IconGear, IconServer, IconMore, IconGauge, IconSliders, IconDoc, IconStar, IconChat } from "./icons";
+  IconGear, IconServer, IconMore, IconGauge, IconSliders, IconDoc, IconStar, IconChat, IconRobot } from "./icons";
 
 /** Какая вкладка подсвечена. Тип экспортируем: его же берёт скелет ожидания
  *  маршрута в App.tsx, который рисует ту же навигацию, пока грузится чанк. */
 export type NavTab =
   | "home" | "sessions" | "devices" | "files" | "terminal" | "system"
-  | "remote" | "panel" | "ssh" | "usage" | "settings" | "guide" | "support" | "plan" | "more";
+  | "remote" | "panel" | "ssh" | "usage" | "hermes" | "settings" | "guide" | "support" | "plan" | "more";
 
 interface Props {
   active: NavTab;
@@ -57,6 +57,7 @@ const HOME_ITEM: NavItem = { id: "home", Icon: IconHome, labelKey: "nav.home", p
 // Терминал сразу после «Главной»: терминалы — основной способ управления
 // (UX-аудит ТОП-10 #9), файлы вторичны.
 const TERMINAL_ITEM: NavItem = { id: "terminal", Icon: IconTerminal, labelKey: "nav.terminal", path: "/pty" };
+const HERMES_ITEM: NavItem = { id: "hermes", Icon: IconRobot, labelKey: "nav.hermes", path: "/hermes" };
 const FILES_ITEM: NavItem = { id: "files", Icon: IconFolder, labelKey: "nav.files", path: "/files" };
 const REMOTE_ITEM: NavItem = { id: "remote", Icon: IconScreen, labelKey: "nav.remote", shortLabelKey: "nav.remote.short", path: "/remote" };
 
@@ -124,7 +125,7 @@ const SUPPORT_ITEM: NavItem = {
  * хотя бы один сервер, вторая только в окне на самом ПК.
  */
 const MORE_ITEMS: NavItem[] = [
-  DEVICES_ITEM, USAGE_ITEM, SYSTEM_ITEM, PLAN_ITEM, SETTINGS_ITEM, GUIDE_ITEM, SUPPORT_ITEM, SSH_ITEM, PANEL_ITEM,
+  DEVICES_ITEM, REMOTE_ITEM, USAGE_ITEM, SYSTEM_ITEM, PLAN_ITEM, SETTINGS_ITEM, GUIDE_ITEM, SUPPORT_ITEM, SSH_ITEM, PANEL_ITEM,
 ];
 
 const MORE_SEARCH_ALIASES: Partial<Record<NavTab, string[]>> = {
@@ -213,7 +214,8 @@ export function BottomNav({ active }: Props) {
   useEscape(moreOpen, () => { setMoreOpen(false); setMoreQuery(""); });
 
   // Порядок в разметке даёт верный порядок на ОБЕИХ ширинах:
-  //   телефон  — Главная · Терминалы · Файлы · Экран ПК · Ещё (ровно пять);
+  //   телефон  — Главная · Терминалы · Hermes · Файлы · Ещё (ровно пять);
+  //   Экран ПК доступен в «Ещё» и отдельно в широком сайдбаре.
   //   сайдбар  — Главная · Мои компьютеры · Терминалы · Файлы · Система ·
   //              Экран ПК · SSH-серверы · Агенты · Личный кабинет · [Панель ПК] ·
   //              Чат с поддержкой · Справка · Настройки.
@@ -223,11 +225,11 @@ export function BottomNav({ active }: Props) {
   // остальные компьютеры и серверы» в навигации не было вовсе.
   slots.push({ item: DEVICES_ITEM, wideOnly: true });
   slots.push({ item: TERMINAL_ITEM });
+  slots.push({ item: HERMES_ITEM });
   slots.push({ item: FILES_ITEM });
   slots.push({ item: SYSTEM_ITEM, wideOnly: true });
-  // Headless-сервер (нет дисплея) не может стримить экран — вкладки нет вовсе,
-  // тогда на телефоне вкладок четыре.
-  if (remoteDesktop) slots.push({ item: REMOTE_ITEM });
+  // Headless-сервер (нет дисплея) не может стримить экран.
+  if (remoteDesktop) slots.push({ item: REMOTE_ITEM, wideOnly: true });
   slots.push({ item: SSH_ITEM, wideOnly: true });
   // «Агенты» и «Настройки» в сайдбаре не стояли вовсе: на телефоне их держала
   // шторка «Ещё», а на ≥768px шторки нет — и оба раздела выпадали из навигации
@@ -249,6 +251,7 @@ export function BottomNav({ active }: Props) {
   // телефона открывать нечего. «SSH-серверы»: только тому, у кого есть хотя бы
   // один, — остальным строка обещала раздел, в котором пусто (волна 3).
   const moreItems = MORE_ITEMS.filter((item) => {
+    if (item.id === "remote") return remoteDesktop;
     if (item.id === "panel") return onPCPanel;
     if (item.id === "ssh") return hasSshHosts === true;
     return true;

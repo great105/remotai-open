@@ -126,6 +126,9 @@ setPlatform({
       const floor = pad ? PAD_CHROME_TOP : tg.isFullscreen ? FULLSCREEN_CHROME_TOP : 0;
       const top = Math.max(reported, floor);
       const bottom = Math.max(tg.safeAreaInset?.bottom ?? 0, tg.contentSafeAreaInset?.bottom ?? 0);
+      // System chrome and Telegram's content margin are separate SDK insets.
+      // Export system top independently; only Hermes opts into composing it.
+      document.documentElement.style.setProperty("--hermes-tg-system-top", `${Math.max(0, tg.safeAreaInset?.top ?? 0)}px`);
       document.documentElement.style.setProperty("--tg-content-safe-area-inset-top", `${top}px`);
       document.documentElement.style.setProperty("--tg-content-safe-area-inset-bottom", `${bottom}px`);
     };

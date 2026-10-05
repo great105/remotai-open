@@ -35,7 +35,46 @@
   cursor: pointer;
 }
 .pty-width-dismiss { width: 44px; padding: 0; border-color: transparent; color: var(--tg-hint); }
-.pty-width-notice button:focus-visible { outline: 2px solid var(--tg-btn); outline-offset: 2px; }
+.pty-width-notice button:focus-visible,
+.pty-width-notice-copy:focus-visible { outline: 2px solid var(--tg-btn); outline-offset: -2px; }
+
+/* The short landscape header already owns a 50px title/status lane. Put
+   the notice beside it, not in a new row consuming the last output. Full
+   explanation remains a keyboard/touch scrollport; no PTY resize. */
+@media (min-width: 600px) and (max-height: 500px) {
+  .pty-header.pty-header--clear:has(> .pty-width-notice) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    column-gap: 8px;
+  }
+  .pty-header:has(> .pty-width-notice) > .pty-header-top { grid-column: 1; grid-row: 1; min-width: 0; }
+  .pty-header:has(> .pty-width-notice) > .pty-header-actions { grid-column: 1 / -1; grid-row: 2; }
+  .pty-header > .pty-width-notice {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    padding: 0;
+    gap: 6px;
+    border: 0;
+    flex-wrap: nowrap;
+  }
+  .pty-header > .pty-width-notice .pty-width-notice-copy {
+    flex: 1 1 0;
+    height: 44px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .pty-header > .pty-width-notice .pty-width-notice-copy > * { flex-shrink: 0; }
+  .pty-header > .pty-width-notice .pty-width-reopen { width: 44px; padding: 0; }
+  .pty-header > .pty-width-notice .pty-width-reopen > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .pty-header > .pty-width-notice .pty-width-dismiss { order: 3; }
+}
 @media (max-width: 760px) {
   .pty-width-notice { flex-wrap: wrap; gap: 6px 12px; }
   .pty-width-notice-copy { flex-basis: calc(100% - 56px); order: 0; }

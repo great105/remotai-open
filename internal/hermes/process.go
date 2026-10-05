@@ -44,7 +44,7 @@ func (m *Manager) environment(install bool, token string) []string {
 	for _, pair := range os.Environ() {
 		key, _, _ := strings.Cut(pair, "=")
 		upper := strings.ToUpper(key)
-		if strings.HasPrefix(upper, "HERMES_") || strings.HasPrefix(upper, "GIT_CONFIG_") || upper == "GIT_ASKPASS" || upper == "GIT_SSH_COMMAND" || upper == "GIT_TERMINAL_PROMPT" || strings.HasSuffix(upper, "_API_KEY") || strings.HasSuffix(upper, "_TOKEN") || upper == "API_KEY" || upper == "GOOGLE_APPLICATION_CREDENTIALS" || upper == "PYTHONPATH" || upper == "PYTHONHOME" || upper == "VIRTUAL_ENV" {
+		if strings.HasPrefix(upper, "HERMES_") || strings.HasPrefix(upper, "GIT_CONFIG_") || upper == "GIT_ASKPASS" || upper == "GIT_SSH_COMMAND" || upper == "GIT_TERMINAL_PROMPT" || strings.HasSuffix(upper, "_API_KEY") || strings.HasSuffix(upper, "_TOKEN") || upper == "API_KEY" || upper == "GOOGLE_APPLICATION_CREDENTIALS" || upper == "PYTHONPATH" || upper == "PYTHONHOME" || upper == "PYTHONUNBUFFERED" || upper == "PYTHONUTF8" || upper == "VIRTUAL_ENV" {
 			continue
 		}
 		out = append(out, pair)
@@ -54,7 +54,9 @@ func (m *Manager) environment(install bool, token string) []string {
 	// This override belongs to the child process, never the user's Git config.
 	out = append(out, "GIT_CONFIG_COUNT=1", "GIT_CONFIG_KEY_0=core.longpaths", "GIT_CONFIG_VALUE_0=true", "GIT_TERMINAL_PROMPT=0", "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL="+filepath.Join(m.root, "toolchain", "gitconfig"))
 	if token != "" {
-		out = append(out, "HERMES_DASHBOARD_SESSION_TOKEN="+token, "HERMES_PARENT_PID="+strconv.Itoa(os.Getpid()))
+		// Upstream starts its owned-backend cron ticker only for this authenticated
+		// desktop identity. Installer and metadata subprocesses never receive it.
+		out = append(out, "HERMES_DESKTOP=1", "HERMES_DASHBOARD_SESSION_TOKEN="+token, "HERMES_PARENT_PID="+strconv.Itoa(os.Getpid()))
 	}
 	if install {
 		out = append(out, "UV_CACHE_DIR="+filepath.Join(m.root, "toolchain", "uv-cache"), "UV_PYTHON_INSTALL_DIR="+filepath.Join(m.root, "toolchain", "python"))
@@ -153,17 +155,29 @@ func (m *Manager) start(ctx context.Context) error {
 		cancel()
 		return err
 	}
+	// Fence the actual spawn, not just the supervisor's earlier policy read.
+	// Disable/Close cannot return between this check and publishing the process.
+	m.mu.Lock()
+	supervised, _ := ctx.Value(supervisedStartKey{}).(bool)
+	if m.closing || ctx.Err() != nil || supervised && !m.state.AutoStart {
+		m.mu.Unlock()
+		stdout.Close()
+		stderr.Close()
+		cancel()
+		return ErrDeferred
+	}
 	if err = cmd.Start(); err != nil {
+		m.mu.Unlock()
 		cancel()
 		return fmt.Errorf("не удалось запустить Hermes: %w", err)
 	}
 	p := &backendProcess{cmd: cmd, cancel: cancel, done: make(chan struct{})}
-	m.mu.Lock()
 	m.process = p
 	m.token = token
 	m.ready = false
 	m.epoch++
 	m.epochStart = m.seq
+	m.resetEventsLocked()
 	closing := m.closing
 	m.mu.Unlock()
 	if closing {
@@ -201,6 +215,7 @@ func (m *Manager) start(ctx context.Context) error {
 			m.process = nil
 			m.ready = false
 			m.baseURL = ""
+			m.resetEventsLocked()
 			if waitErr != nil && life.Err() == nil {
 				m.state.LastError = "Процесс Hermes завершился; запустите его снова"
 				_ = m.saveLocked()
@@ -312,6 +327,10 @@ func readinessPort(line string) (int, bool, error) {
 }
 
 func (m *Manager) Stop(ctx context.Context) (err error) {
+	// An explicit stop is intentional, unlike an internal update/crash stop.
+	if err = m.SetAutoStart(false); err != nil {
+		return err
+	}
 	if err = m.begin("stopping"); err != nil {
 		return err
 	}
@@ -327,6 +346,7 @@ func (m *Manager) stop(ctx context.Context) error {
 	m.bridge = nil
 	m.ready = false
 	m.baseURL = ""
+	m.resetEventsLocked()
 	m.mu.Unlock()
 	if bridge != nil {
 		bridge.close()

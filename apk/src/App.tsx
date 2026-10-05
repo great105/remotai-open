@@ -488,7 +488,8 @@ function navTabForPath(path: string): NavTab | null {
   // Эти четыре экрана рисовали себя без навигации, поэтому и в скелете её не
   // было. Теперь панель есть у них самих — скелет обязан показывать ту же,
   // иначе она мигнёт при загрузке чанка (UX-аудит 2026-08-23, п. 2.1).
-  if (path === "/agents" || path === "/usage" || path === "/agents/sessions" || path === "/hermes") return "usage";
+  if (path === "/hermes") return "hermes";
+  if (path === "/agents" || path === "/usage" || path === "/agents/sessions") return "usage";
   if (path === "/settings") return "settings";
   if (path === "/guide") return "guide";
   if (path === "/support") return "support";

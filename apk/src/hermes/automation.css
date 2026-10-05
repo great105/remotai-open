@@ -1,0 +1,38 @@
+.hermes-automation { margin: 20px 0; }
+.hermes-automation-section { border-top: 1px solid var(--tg-border); }
+.hermes-setting-category { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 64px; padding: 14px 0; border: 0; background: transparent; color: var(--tg-text); font: inherit; text-align: left; cursor: pointer; }
+.hermes-setting-category > span:first-child { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.hermes-setting-category b { font-size: 15px; }
+.hermes-setting-category small { color: var(--tg-hint); font-size: 13px; line-height: 1.5; }
+.hermes-setting-category > span:last-child { font-size: 22px; }
+.hermes-setting-category:hover { color: var(--tg-link); }
+.hermes-setting-body { padding: 0 0 20px; min-width: 0; }
+.hermes-setting-body p { overflow-wrap: anywhere; }
+.hermes-automation-host { color: var(--tg-hint); font-size: 13px; overflow-wrap: anywhere; }
+.hermes-automation-form, .hermes-memory-preference { display: flex; flex-direction: column; gap: 12px; }
+.hermes-automation-form { margin: 14px 0; }
+.hermes-automation-form label, .hermes-memory-preference { color: var(--tg-text); font-size: 14px; line-height: 1.5; }
+.hermes-automation-form label { display: flex; flex-direction: column; gap: 6px; }
+.hermes-automation-field { display: flex; flex-direction: column; gap: 6px; }
+.hermes-automation-form input, .hermes-automation-form select, .hermes-automation-form textarea, .hermes-memory-preference textarea { display: block; width: 100%; min-width: 0; max-width: 100%; min-height: 44px; border: 1px solid var(--tg-border); border-radius: 8px; padding: 10px; background: var(--tg-section-bg); color: var(--tg-text); font: inherit; font-size: 16px; }
+.hermes-automation-form input[type="datetime-local"] { appearance: none; }
+.hermes-automation-form textarea, .hermes-memory-preference textarea { resize: vertical; }
+.hermes-automation-form input:focus, .hermes-automation-form select:focus, .hermes-automation-form textarea:focus, .hermes-memory-preference textarea:focus { outline: 2px solid var(--brand-mint); outline-offset: 2px; }
+.hermes-automation-list { margin: 14px 0 0; padding: 0; list-style: none; }
+.hermes-automation-list > li { padding: 16px 0; border-top: 1px solid var(--tg-border); overflow-wrap: anywhere; }
+.hermes-automation-list > li > b, .hermes-skill-heading b { font-size: 14px; }
+.hermes-automation-list small { display: block; color: var(--tg-hint); font-size: 13px; line-height: 1.5; }
+.hermes-automation-actions, .hermes-automation-confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.hermes-automation-confirm p { width: 100%; }
+.hermes-automation-confirm .btn { min-height: 44px; }
+.hermes-automation-results { margin-top: 12px; }
+.hermes-automation-results h4 { margin: 0; font-size: 14px; }
+.hermes-automation-results article { padding: 12px 0; border-top: 1px solid var(--tg-border); }
+.hermes-automation-content { max-width: 100%; margin: 12px 0; padding: 12px; border-radius: 8px; background: var(--elev-1); color: var(--tg-text); white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; line-height: 1.6; }
+.hermes-skill-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.hermes-skill-heading b { min-width: 0; overflow-wrap: anywhere; }
+.hermes-skill-heading button { flex: none; }
+.hermes-automation-form .hermes-automation-checkbox { flex-direction: row; align-items: center; gap: 10px; min-height: 44px; }
+.hermes-automation-checkbox input[type="checkbox"] { width: 20px; min-height: 20px; height: 20px; flex: none; accent-color: var(--brand-mint); }
+.hermes-style-form { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--tg-border); }
+.hermes-style-form h4 { margin: 0; font-size: 15px; }

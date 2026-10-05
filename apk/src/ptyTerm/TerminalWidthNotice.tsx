@@ -22,12 +22,12 @@ export function TerminalWidthNotice({ narrow, onReopen }: {
   }, [narrow]);
   if (!narrow || !visible || dismissed) return null;
   return <div className="pty-width-notice" role="status">
-    <div className="pty-width-notice-copy">
+    <div className="pty-width-notice-copy" tabIndex={0} aria-label={t("pty.narrowOutputTitle")}>
       <strong>{t("pty.narrowOutputTitle")}</strong>
       <span>{t("pty.narrowOutputHint")}</span>
     </div>
-    <button type="button" className="pty-width-reopen" onClick={onReopen}>
-      <IconRefresh size={16} />{t("pty.reopenView")}
+    <button type="button" className="pty-width-reopen" aria-label={t("pty.reopenView")} title={t("pty.reopenView")} onClick={onReopen}>
+      <IconRefresh size={16} /><span>{t("pty.reopenView")}</span>
     </button>
     <button type="button" className="pty-width-dismiss" aria-label={t("pty.a11y.hideBanner")} onClick={() => setDismissed(true)}>
       <IconClose size={18} />

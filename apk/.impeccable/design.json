@@ -1,0 +1,379 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-01T12:31:44.653Z",
+  "title": "Design System: Remotai — Hermes",
+  "extensions": {
+    "colorMeta": {
+      "tg-btn": {
+        "role": "primary",
+        "displayName": "Тёмное основное действие",
+        "tonalRamp": [
+          "oklch(15.00% 0.0056 285.98)",
+          "oklch(26.43% 0.0056 285.98)",
+          "oklch(37.86% 0.0056 285.98)",
+          "oklch(49.29% 0.0056 285.98)",
+          "oklch(60.71% 0.0056 285.98)",
+          "oklch(72.14% 0.0056 285.98)",
+          "oklch(83.57% 0.0056 285.98)",
+          "oklch(95.00% 0.0056 285.98)"
+        ]
+      },
+      "tg-btn-text": {
+        "role": "neutral",
+        "displayName": "Светлый текст действия",
+        "tonalRamp": [
+          "oklch(15.00% 0.0000 89.88)",
+          "oklch(26.43% 0.0000 89.88)",
+          "oklch(37.86% 0.0000 89.88)",
+          "oklch(49.29% 0.0000 89.88)",
+          "oklch(60.71% 0.0000 89.88)",
+          "oklch(72.14% 0.0000 89.88)",
+          "oklch(83.57% 0.0000 89.88)",
+          "oklch(95.00% 0.0000 89.88)"
+        ]
+      },
+      "tg-link": {
+        "role": "primary",
+        "displayName": "Синее действие",
+        "tonalRamp": [
+          "oklch(15.00% 0.1582 260.53)",
+          "oklch(26.43% 0.1582 260.53)",
+          "oklch(37.86% 0.1582 260.53)",
+          "oklch(49.29% 0.1582 260.53)",
+          "oklch(60.71% 0.1582 260.53)",
+          "oklch(72.14% 0.1582 260.53)",
+          "oklch(83.57% 0.1582 260.53)",
+          "oklch(95.00% 0.1582 260.53)"
+        ]
+      },
+      "brand-mint": {
+        "role": "primary",
+        "displayName": "Зелёный фокус и готовность",
+        "tonalRamp": [
+          "oklch(15.00% 0.0807 170.28)",
+          "oklch(26.43% 0.0807 170.28)",
+          "oklch(37.86% 0.0807 170.28)",
+          "oklch(49.29% 0.0807 170.28)",
+          "oklch(60.71% 0.0807 170.28)",
+          "oklch(72.14% 0.0807 170.28)",
+          "oklch(83.57% 0.0807 170.28)",
+          "oklch(95.00% 0.0807 170.28)"
+        ]
+      },
+      "tg-destructive": {
+        "role": "state",
+        "displayName": "Красное действие и ошибка",
+        "tonalRamp": [
+          "oklch(15.00% 0.1796 22.89)",
+          "oklch(26.43% 0.1796 22.89)",
+          "oklch(37.86% 0.1796 22.89)",
+          "oklch(49.29% 0.1796 22.89)",
+          "oklch(60.71% 0.1796 22.89)",
+          "oklch(72.14% 0.1796 22.89)",
+          "oklch(83.57% 0.1796 22.89)",
+          "oklch(95.00% 0.1796 22.89)"
+        ]
+      },
+      "color-warning": {
+        "role": "state",
+        "displayName": "Янтарное разрешение",
+        "tonalRamp": [
+          "oklch(15.00% 0.1205 60.99)",
+          "oklch(26.43% 0.1205 60.99)",
+          "oklch(37.86% 0.1205 60.99)",
+          "oklch(49.29% 0.1205 60.99)",
+          "oklch(60.71% 0.1205 60.99)",
+          "oklch(72.14% 0.1205 60.99)",
+          "oklch(83.57% 0.1205 60.99)",
+          "oklch(95.00% 0.1205 60.99)"
+        ]
+      },
+      "tg-bg": {
+        "role": "neutral",
+        "displayName": "Почти белая страница",
+        "tonalRamp": [
+          "oklch(15.00% 0.0000 89.88)",
+          "oklch(26.43% 0.0000 89.88)",
+          "oklch(37.86% 0.0000 89.88)",
+          "oklch(49.29% 0.0000 89.88)",
+          "oklch(60.71% 0.0000 89.88)",
+          "oklch(72.14% 0.0000 89.88)",
+          "oklch(83.57% 0.0000 89.88)",
+          "oklch(95.00% 0.0000 89.88)"
+        ]
+      },
+      "tg-section-bg": {
+        "role": "neutral",
+        "displayName": "Белая поверхность",
+        "tonalRamp": [
+          "oklch(15.00% 0.0000 89.88)",
+          "oklch(26.43% 0.0000 89.88)",
+          "oklch(37.86% 0.0000 89.88)",
+          "oklch(49.29% 0.0000 89.88)",
+          "oklch(60.71% 0.0000 89.88)",
+          "oklch(72.14% 0.0000 89.88)",
+          "oklch(83.57% 0.0000 89.88)",
+          "oklch(95.00% 0.0000 89.88)"
+        ]
+      },
+      "tg-text": {
+        "role": "neutral",
+        "displayName": "Тёмный текст",
+        "tonalRamp": [
+          "oklch(15.00% 0.0057 285.93)",
+          "oklch(26.43% 0.0057 285.93)",
+          "oklch(37.86% 0.0057 285.93)",
+          "oklch(49.29% 0.0057 285.93)",
+          "oklch(60.71% 0.0057 285.93)",
+          "oklch(72.14% 0.0057 285.93)",
+          "oklch(83.57% 0.0057 285.93)",
+          "oklch(95.00% 0.0057 285.93)"
+        ]
+      },
+      "tg-hint": {
+        "role": "neutral",
+        "displayName": "Вторичная подпись",
+        "tonalRamp": [
+          "oklch(15.00% 0.0079 286.11)",
+          "oklch(26.43% 0.0079 286.11)",
+          "oklch(37.86% 0.0079 286.11)",
+          "oklch(49.29% 0.0079 286.11)",
+          "oklch(60.71% 0.0079 286.11)",
+          "oklch(72.14% 0.0079 286.11)",
+          "oklch(83.57% 0.0079 286.11)",
+          "oklch(95.00% 0.0079 286.11)"
+        ]
+      },
+      "tg-border": {
+        "role": "neutral",
+        "displayName": "Тихая граница",
+        "tonalRamp": [
+          "oklch(15.00% 0.0054 286.29)",
+          "oklch(26.43% 0.0054 286.29)",
+          "oklch(37.86% 0.0054 286.29)",
+          "oklch(49.29% 0.0054 286.29)",
+          "oklch(60.71% 0.0054 286.29)",
+          "oklch(72.14% 0.0054 286.29)",
+          "oklch(83.57% 0.0054 286.29)",
+          "oklch(95.00% 0.0054 286.29)"
+        ]
+      },
+      "elev-1": {
+        "role": "neutral",
+        "displayName": "Мягкая поверхность",
+        "tonalRamp": [
+          "oklch(15.00% 0.0027 286.35)",
+          "oklch(26.43% 0.0027 286.35)",
+          "oklch(37.86% 0.0027 286.35)",
+          "oklch(49.29% 0.0027 286.35)",
+          "oklch(60.71% 0.0027 286.35)",
+          "oklch(72.14% 0.0027 286.35)",
+          "oklch(83.57% 0.0027 286.35)",
+          "oklch(95.00% 0.0027 286.35)"
+        ]
+      },
+      "elev-2": {
+        "role": "neutral",
+        "displayName": "Выделенная поверхность",
+        "tonalRamp": [
+          "oklch(15.00% 0.0054 286.30)",
+          "oklch(26.43% 0.0054 286.30)",
+          "oklch(37.86% 0.0054 286.30)",
+          "oklch(49.29% 0.0054 286.30)",
+          "oklch(60.71% 0.0054 286.30)",
+          "oklch(72.14% 0.0054 286.30)",
+          "oklch(83.57% 0.0054 286.30)",
+          "oklch(95.00% 0.0054 286.30)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Пустой разговор и заголовок режима работы."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Подготовка, подключение и панели Hermes."
+      },
+      "answer": {
+        "displayName": "Answer",
+        "purpose": "Основное содержимое ответа, до 75ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Пояснения панелей и настроек."
+      },
+      "field": {
+        "displayName": "Field",
+        "purpose": "Редактируемый текст и поиск, не меньше 16px."
+      },
+      "detail": {
+        "displayName": "Detail",
+        "purpose": "Вторичные технические подробности."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "button-opacity",
+        "value": "opacity 0.2s",
+        "purpose": "Унаследованный переход общей кнопки; не анимация содержимого разговора."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact-width-max",
+        "value": "520px"
+      },
+      {
+        "name": "desktop-padding-min",
+        "value": "900px"
+      },
+      {
+        "name": "permanent-history-min",
+        "value": "1100px"
+      },
+      {
+        "name": "short-height-max",
+        "value": "620px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Основная кнопка",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Тёмное действие подготовки или сохранения в Hermes.",
+      "html": "<div class=\"ds-preview\"><button class=\"ds-button ds-primary\" type=\"button\">Подготовить Hermes</button></div>",
+      "css": ".ds-button { display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:44px;min-height:44px;padding:10px 20px;border-radius:8px;border:0;font-size:15px;font-weight:500;cursor:pointer;transition:opacity .2s; } .ds-button:active { opacity:.7; } .ds-button:disabled { opacity:.55;cursor:default; }.ds-primary { background:#202023;color:#fff; } .ds-primary:hover:not(:disabled) { filter:brightness(1.08); } .ds-preview :focus-visible { outline: 2px solid #186550; outline-offset: 3px; }"
+    },
+    {
+      "name": "Вторичная кнопка",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Спокойное вторичное действие подключения или восстановления.",
+      "html": "<div class=\"ds-preview\"><button class=\"ds-button ds-secondary\" type=\"button\">Войти</button></div>",
+      "css": ".ds-button { display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:44px;min-height:44px;padding:10px 20px;border-radius:8px;border:0;font-size:15px;font-weight:500;cursor:pointer;transition:opacity .2s; } .ds-button:active { opacity:.7; } .ds-button:disabled { opacity:.55;cursor:default; }.ds-secondary { background:#e8e8ec;color:#1c1c1f;border:1px solid #dedee2; } .ds-secondary:hover:not(:disabled) { filter:brightness(1.08); } .ds-preview :focus-visible { outline: 2px solid #186550; outline-offset: 3px; }"
+    },
+    {
+      "name": "Подтверждение удаления",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Красная кнопка появляется в явном подтверждении удаления задачи.",
+      "html": "<div class=\"ds-preview\"><button class=\"ds-button ds-danger\" type=\"button\">Да, удалить задачу</button></div>",
+      "css": ".ds-button { display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:44px;min-height:44px;padding:10px 20px;border-radius:8px;border:0;font-size:15px;font-weight:500;cursor:pointer;transition:opacity .2s; } .ds-button:active { opacity:.7; } .ds-button:disabled { opacity:.55;cursor:default; }.ds-danger { background:#b4232f;color:#fff; } .ds-danger:hover:not(:disabled) { filter:brightness(1.08); } .ds-preview :focus-visible { outline: 2px solid #186550; outline-offset: 3px; }"
+    },
+    {
+      "name": "Поиск истории",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "Нейтральный поиск в существующих чатах с настоящим SVG IconSearch.",
+      "html": "<div class=\"ds-preview\"><label class=\"ds-search\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"6.5\"/><path d=\"M15.8 15.8L20.5 20.5\"/></svg><input type=\"search\" placeholder=\"Найти чат\" aria-label=\"Поиск чатов\"/></label></div>",
+      "css": ".ds-search { display:flex;align-items:center;gap:8px;padding:0 12px;border-radius:10px;background:#f0f0f2;color:#606065;font-family:var(--font-sans, 'Golos Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif); } .ds-search svg { flex:none; } .ds-search input { width:100%;min-width:0;min-height:44px;border:0;padding:8px 0;background:transparent;color:#1c1c1f;font-family:inherit;font-size:16px;caret-color:#186550; } .ds-search input::placeholder { color:#606065; } .ds-search:hover { cursor:text; } .ds-preview :focus-visible { outline: 2px solid #186550; outline-offset: 3px; }"
+    },
+    {
+      "name": "Чат / Работа",
+      "kind": "nav",
+      "refersTo": "view-tabs",
+      "description": "Капсульный переключатель двух видов одного разговора.",
+      "html": "<div class=\"ds-preview\"><div class=\"ds-tabs\" role=\"group\" aria-label=\"Режим Hermes\"><button type=\"button\" aria-pressed=\"true\">Чат</button><button type=\"button\" aria-pressed=\"false\">Работа</button></div></div>",
+      "css": ".ds-tabs { display:flex;max-width:232px;padding:4px;gap:4px;border-radius:999px;background:#e8e8ec;font-family:var(--font-sans, 'Golos Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif); } .ds-tabs button { display:inline-flex;align-items:center;justify-content:center;flex:1;min-width:0;min-height:44px;padding:8px 12px;border:0;border-radius:999px;background:transparent;color:#1c1c1f;font:inherit;font-size:15px;cursor:pointer; } .ds-tabs button[aria-pressed=\"true\"] { background:#fff;font-weight:600; } .ds-tabs button:hover { background:#f0f0f2; } .ds-preview :focus-visible { outline: 2px solid #186550; outline-offset: 3px; }"
+    },
+    {
+      "name": "Выбранный чат",
+      "kind": "nav",
+      "refersTo": "history-row",
+      "description": "Строка истории с заголовком, известной папкой и aria-current.",
+      "html": "<div class=\"ds-preview\"><button class=\"ds-history-row\" type=\"button\" aria-current=\"true\"><span class=\"ds-history-title\" title=\"Чат Hermes\">Чат Hermes</span><small class=\"ds-history-folder\" title=\"C:\\Projects\">C:\\Projects</small></button></div>",
+      "css": ".ds-history-row { display:flex;flex-direction:column;gap:4px;width:100%;min-width:0;min-height:48px;padding:10px 12px;border:0;border-radius:10px;background:#e8e8ec;color:#1c1c1f;text-align:left;font-family:var(--font-sans, 'Golos Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);cursor:pointer; } .ds-history-row:hover { background:#f0f0f2; } .ds-history-title { max-width:100%;font-size:14px;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; } .ds-history-folder { max-width:100%;color:#606065;font-size:11px;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; } .ds-preview :focus-visible { outline: 2px solid #186550; outline-offset: 3px; }"
+    },
+    {
+      "name": "Composer",
+      "kind": "custom",
+      "refersTo": "composer",
+      "description": "Нейтральная капсула с отдельными действиями и редактируемым заданием.",
+      "html": "<div class=\"ds-preview\"><div class=\"ds-composer\"><button class=\"ds-composer-more\" type=\"button\" aria-label=\"Действия чата\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg></button><textarea rows=\"1\" placeholder=\"Спросите Hermes\" aria-label=\"Задача для Hermes\"></textarea><button class=\"ds-composer-send\" type=\"button\" aria-label=\"Отправить\"><svg width=\"19\" height=\"19\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M21 3L10.4 13.6\"/><path d=\"M21 3l-6.6 18-4-8-8-4Z\"/></svg></button></div><button type=\"button\" class=\"ds-folder\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z\"/></svg><span>Папка на компьютере</span></button></div>",
+      "css": ".ds-composer { display:flex;align-items:flex-end;gap:6px;min-height:56px;padding:6px;border-radius:28px;background:#f0f0f2;font-family:var(--font-sans, 'Golos Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif); } .ds-composer:focus-within { outline:2px solid #186550;outline-offset:2px; } .ds-composer-more,.ds-composer-send { display:inline-flex;align-items:center;justify-content:center;flex:none;min-width:44px;min-height:44px;width:44px;padding:0;border:0;border-radius:50%;color:#1c1c1f;background:transparent;cursor:pointer; } .ds-composer-more:hover { background:#e8e8ec; } .ds-composer-send { color:#fff;background:#202023; } .ds-composer-send:hover:not(:disabled) { opacity:.85; } .ds-composer-send:disabled { opacity:.55;cursor:default; } .ds-composer textarea { display:block;flex:1;min-width:0;resize:none;min-height:44px;max-height:min(160px,24dvh);width:100%;padding:10px 4px;border:0;background:transparent;color:#1c1c1f;font:inherit;font-size:16px;line-height:24px;caret-color:#186550;overflow-y:auto; } .ds-composer textarea::placeholder { color:#606065; } .ds-composer textarea:focus { outline:none; } .ds-folder { display:inline-flex;align-items:center;justify-content:flex-start;gap:6px;min-width:44px;min-height:44px;padding:6px 4px;border:0;background:transparent;color:#245ab7;font-family:var(--font-sans, 'Golos Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);font-size:12px;cursor:pointer; } .ds-folder:hover { text-decoration:underline;text-underline-offset:3px; } .ds-preview :focus-visible { outline: 2px solid #186550; outline-offset: 3px; }"
+    },
+    {
+      "name": "Категория настроек",
+      "kind": "custom",
+      "refersTo": "settings-disclosure",
+      "description": "Строка категории с пояснением и IconChevron из существующего набора.",
+      "html": "<div class=\"ds-preview\"><button class=\"ds-category\" type=\"button\" aria-expanded=\"false\" aria-controls=\"ds-jobs\"><span><b>Задачи по расписанию</b><small>Выполнить позже или повторять</small></span><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 9l7 7 7-7\"/></svg></button><section id=\"ds-jobs\" hidden aria-label=\"Задачи по расписанию\"></section></div>",
+      "css": ".ds-category { display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:64px;padding:14px 0;border:0;border-top:1px solid #dedee2;background:transparent;color:#1c1c1f;font-family:var(--font-sans, 'Golos Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);text-align:left;cursor:pointer; } .ds-category > span { display:flex;flex-direction:column;gap:5px;min-width:0; } .ds-category b { font-size:15px; } .ds-category small { color:#606065;font-size:13px;line-height:1.5; } .ds-category svg { flex:none; } .ds-category:hover { color:#245ab7; } .ds-preview :focus-visible { outline: 2px solid #186550; outline-offset: 3px; }"
+    },
+    {
+      "name": "Подготовка Hermes",
+      "kind": "card",
+      "refersTo": "setup-card",
+      "description": "Мягкий контейнер для первого запуска; обычные ответы не получают такую карточку.",
+      "html": "<section class=\"ds-setup\"><h2>Помощник на вашем компьютере</h2><p>Hermes выполняет задачи на выбранном компьютере. Remotai подготовит его без команд в терминале.</p></section>",
+      "css": ".ds-setup { padding:18px;background:#f0f0f2;color:#1c1c1f;border-radius:16px;font-family:var(--font-sans, 'Golos Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif); } .ds-setup h2 { margin:0 0 10px;font-size:18px;line-height:1.35;font-weight:650; } .ds-setup p { margin:8px 0 14px;font-size:14px;line-height:1.5;max-width:70ch; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Familiar conversation with an explicit project context",
+    "overview": "Этот документ описывает только реализованный экран Hermes: разговор, режим «Работа», историю, подключение и настройки. Светлые значения применяются внутри Hermes и его шторок. Это не новая глобальная тема Remotai: терминалы, файлы, удалённый экран, остальные страницы и существующая навигация сохраняют свои системы. При расширении другой страницы нельзя применять этот документ как общую палитру приложения.\n\nВизуальная основа — два закреплённых владельцем снимка ChatGPT для Android от 01.10.2026 и их текущая адаптация в коде. Почти белая поверхность, тёмный текст, нейтральные капсулы и свободное место вокруг разговора делают сообщение главным содержимым. Контекст выбранного компьютера и папки остаётся видимым; расширенные действия открываются из истории, режима работы и настроек.",
+    "keyCharacteristics": [
+      "Светлая локальная палитра Hermes с тёмными основными действиями.",
+      "Разговор без карточки вокруг каждого ответа; сообщения пользователя выделены мягкой нейтральной плашкой.",
+      "Постоянная история на широком экране и левая шторка на телефоне.",
+      "Компактные раскрываемые настройки и реальные состояния вместо декоративных показателей."
+    ],
+    "rules": [
+      {
+        "name": "The Local Palette Rule",
+        "body": "Светлые переменные принадлежат Hermes и его оверлеям; не переносите их на остальные страницы Remotai.",
+        "section": "colors"
+      },
+      {
+        "name": "The State Has Words Rule",
+        "body": "Готовность, ошибка, пауза и необходимость разрешения выражаются текстом или доступным состоянием элемента вместе с цветом.",
+        "section": "colors"
+      },
+      {
+        "name": "The Editable Text Rule",
+        "body": "Редактируемый текст остаётся не меньше 16px; компактность достигается композицией, а не уменьшением полей.",
+        "section": "typography"
+      },
+      {
+        "name": "The Reachable Controls Rule",
+        "body": "Действия имеют цель нажатия не меньше 44×44px; composer, остановка и ответ на разрешение остаются достижимыми при прокрутке и в низком окне.",
+        "section": "layout"
+      },
+      {
+        "name": "The Quiet Surface Rule",
+        "body": "Разделяйте разговор и настройки нейтральной подложкой, отступом или тонкой границей; сохраните затемнение для настоящих оверлеев.",
+        "section": "elevation & depth"
+      },
+      {
+        "name": "The Draft Is Deliberate Rule",
+        "body": "Подключение, переключение вида и подготовка текста сохраняют черновик; отправка сообщения остаётся отдельным действием пользователя.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do применяйте светлую систему только к экрану Hermes и его панелям.",
+      "Do сохраняйте поля от 16px и цели нажатия от 44×44px.",
+      "Do показывайте выбранный компьютер, известную папку и реальные состояния.",
+      "Do оставляйте разговор главным содержимым, а подробности — раскрываемыми.",
+      "Do сохраняйте черновики и явно подтверждайте удаление задачи.",
+      "Do используйте линейные SVG из существующего набора и видимый фокус.",
+      "Don't переносите палитру Hermes на остальные страницы Remotai.",
+      "Don't превращайте обычные ответы в сетку одинаковых карточек.",
+      "Don't изображайте неизвестные проекты, закреплённые чаты или результаты как реальные данные.",
+      "Don't отправляйте подготовленный текст при настройке или переключении панели.",
+      "Don't скрывайте ошибку загрузки под сообщением о пустом списке."
+    ],
+    "donts": [
+      "Don't переносите палитру Hermes на остальные страницы Remotai.",
+      "Don't превращайте обычные ответы в сетку одинаковых карточек.",
+      "Don't изображайте неизвестные проекты, закреплённые чаты или результаты как реальные данные.",
+      "Don't отправляйте подготовленный текст при настройке или переключении панели.",
+      "Don't скрывайте ошибку загрузки под сообщением о пустом списке."
+    ]
+  }
+}

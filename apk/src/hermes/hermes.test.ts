@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   createHermesClient, draftKey, emptyRunState, providerConnected, readDraft, runtimeBusy, acceptDraft,
-  safeVerificationUrl, unseenEvents, writeDraft, type HermesEvent, type HermesStatus, type RequestTransport,
+  safeVerificationUrl, scheduledTaskTime, unseenEvents, writeDraft, type HermesEvent, type HermesStatus, type RequestTransport,
 } from "./client";
 import { applyHermesEvent, durableSessionId, gatewayRestarted, modelSelection, stateFromSession } from "./state";
 
@@ -15,6 +15,17 @@ function memory() {
 }
 
 describe("Hermes onboarding and transport", () => {
+  it("rejects missing, invalid and elapsed one-off task times before scheduling", () => {
+    const now = Date.parse("2026-10-01T07:00:00Z");
+    for (const value of ["", "not a date", "2026-10-01T06:59:59Z", "2026-10-01T07:00:00Z"]) {
+      expect(() => scheduledTaskTime("once", value, now)).toThrow("Выберите время в будущем.");
+    }
+  });
+  it("keeps an offset time as an exact instant and repeating intervals independent of the date field", () => {
+    const now = Date.parse("2026-10-01T07:00:00Z");
+    expect(scheduledTaskTime("once", "2026-10-02T10:30:00+03:00", now)).toBe("2026-10-02T07:30:00.000Z");
+    expect(scheduledTaskTime("every 24h", "", now)).toBe("every 24h");
+  });
   it("keeps asynchronous installation acceptance separate from readiness", async () => {
     const request = vi.fn(async (_path: string, _init?: RequestInit) => ({ accepted: true, operation: "install", status }));
     const client = createHermesClient(() => ({ request } as unknown as RequestTransport));
@@ -35,17 +46,17 @@ describe("Hermes onboarding and transport", () => {
     expect(request.mock.calls[0][0]).toBe("/api/hermes/backend/providers/oauth/openai-codex/poll/a%2Fb");
     expect(request.mock.calls[1]).toEqual(["/api/hermes/reply", { method: "POST", body: '{"id":"approval:3","result":{"choice":"once"}}' }]);
   });
-  it("rejects a stale screen before it can mutate another selected computer", async () => {
+  it.each(["runtime", "backend"])("rejects a stale %s screen before it can mutate another selected computer", async kind => {
     const request = vi.fn();
     const client = createHermesClient(() => ({ request }), () => { throw new Error("device changed"); });
-    await expect(client.start()).rejects.toThrow("device changed");
+    await expect(kind === "runtime" ? client.start() : client.backendRequest("/profiles/default/soul", "PUT", { content: "Instruction" })).rejects.toThrow("device changed");
     expect(request).not.toHaveBeenCalled();
   });
-  it("rejects a response that arrives after the selected computer changes", async () => {
+  it.each(["runtime", "backend"])("rejects a %s response that arrives after the selected computer changes", async kind => {
     let changed = false;
     const request = vi.fn(async () => { changed = true; return status; });
     const client = createHermesClient(() => ({ request } as unknown as RequestTransport), () => { if (changed) throw new Error("device changed"); });
-    await expect(client.status()).rejects.toThrow("device changed");
+    await expect(kind === "runtime" ? client.status() : client.backendRequest("/memory?profile=default")).rejects.toThrow("device changed");
   });
   it("only opens an HTTPS verification URL without embedded credentials", () => {
     expect(safeVerificationUrl("https://auth.openai.com/codex/device")).toBe("https://auth.openai.com/codex/device");

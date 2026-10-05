@@ -5,6 +5,7 @@ import { openExternalLink } from "../openExternal";
 import { isNativeApp } from "../config";
 import type { InstallOS } from "../installFlow";
 import { desktopDownloadFor, detectDesktopOS, type LinuxArch } from "../downloads";
+import { t } from "../i18n";
 import "../onboarding.css";
 
 export function isInstallHandheld() {
@@ -75,6 +76,7 @@ export function InstallTarget({ server = false, os: selectedOS, onOSChange }: {
         </label>}
         <button className="btn btn-secondary" onClick={() => void openExternalLink(download.url)}>{download.label}</button>
         {download.altUrl && <button className="btn btn-secondary" onClick={() => void openExternalLink(download.altUrl!)}>{download.altLabel}</button>}
+        <p className="onb-hint">{t("install.previousNativePackage")}</p>
         {os === "macos" ? <>
           <p>Для macOS 12 и новее, Intel и Apple Silicon. Откройте скачанный DMG, перетащите Remotai в Applications («Программы»), затем откройте Remotai оттуда.</p>
           <details>

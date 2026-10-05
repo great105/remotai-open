@@ -9,7 +9,7 @@ import {
   storedEvidence,
   type ScrollProbeVerdict,
 } from "./scrollProbeMemory";
-import { DIR_UP, evaluateObservation, observeOutcome } from "./navigationEvidence";
+import { DIR_UP, NavigationEvidence, evaluateObservation, observeOutcome } from "./navigationEvidence";
 
 function memoryStorage() {
   const entries = new Map<string, string>();
@@ -35,6 +35,44 @@ const SCOPE = '["term-a","codex:4242@1700","normal","none","transcript"]';
 // первый жест ушёл PgUp в Codex. Наблюдение обязано переживать закрытие
 // экрана, пока область действия (процесс, режимы, адаптер) та же.
 describe("сериализация свидетельств навигации", () => {
+  it("якорь восстановленного отказа снимается только на намерение после полного replay", () => {
+    const ev = new NavigationEvidence();
+    ev.restore("page", { state: "unconfirmed", deadDirections: DIR_UP, silentProbes: 1,
+      answers: 0, at: 1000, volatileRows: [1] });
+    // The restore can happen mid-parser before the final replay screen exists.
+    const replay = ["full replay", "spinner-1"];
+    ev.anchorRestoredScreen(replay);
+    expect(ev.evaluate("page", { now: 5000, direction: DIR_UP, rows: replay })).toBe("local");
+    ev.anchorRestoredScreen(["full replay", "spinner-2"]);
+    expect(ev.evaluate("page", { now: 6100, direction: DIR_UP, rows: ["full replay", "spinner-2"] })).toBe("local");
+    ev.anchorRestoredScreen(["new answer", "spinner-2"]);
+    expect(ev.evaluate("page", { now: 6200, direction: DIR_UP, rows: ["new answer", "spinner-2"] })).toBe("probe");
+  });
+  it("восстановленное молчание получает живой якорь и оживает после нового текста без потери памяти на replay", () => {
+    const replay = ["reopened screen", "unchanged"];
+    const ev = new NavigationEvidence();
+    ev.restore("page", restoredObservation(dead.page!));
+    ev.anchorRestoredScreen(replay);
+    const obs = ev.get("page")!;
+    expect(evaluateObservation(obs, { now: T0 + 4000, direction: DIR_UP, rows: replay })).toBe("local");
+    expect(evaluateObservation(obs, { now: T0 + 5100, direction: DIR_UP, rows: ["reopened screen", "new answer"] })).toBe("probe");
+    expect(storedEvidence(obs)).toEqual(dead.page);
+    expect(JSON.stringify(storedEvidence(obs))).not.toContain("reopened screen");
+  });
+  it("шумящие строки остаются шумом после восстановления, без сохранения текста", () => {
+    const storage = memoryStorage();
+    const live = observeOutcome(null, { kind: "none", edge: false, direction: DIR_UP,
+      before: ["answer", "spinner-0"], after: ["answer", "spinner-1"] }, T0)!;
+    saveScrollProbeVerdict("pc-a", "term-a", SCOPE, { page: storedEvidence(live), wheel: null }, T0, storage);
+    const saved = readScrollProbeVerdict("pc-a", "term-a", SCOPE, T0 + 4000, storage)!;
+    const ev = new NavigationEvidence();
+    ev.restore("page", restoredObservation(saved.page!));
+    ev.anchorRestoredScreen(["replay", "spinner-2"]);
+    const reopened = ev.get("page")!;
+    expect(evaluateObservation(reopened, { now: T0 + 5100, direction: DIR_UP, rows: ["replay", "spinner-3"] })).toBe("local");
+    expect(evaluateObservation(reopened, { now: T0 + 5100, direction: DIR_UP, rows: ["new answer", "spinner-3"] })).toBe("probe");
+    expect(storage.getItem(V2)).not.toMatch(/answer|spinner|replay/);
+  });
   it("наблюдение возвращается той же области того же терминала", () => {
     const storage = memoryStorage();
     saveScrollProbeVerdict("pc-a", "term-a", SCOPE, dead, T0, storage);

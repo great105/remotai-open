@@ -625,6 +625,7 @@ export function CloudLoginView() {
                   >
                     {desktopDownload.os === "linux" ? "Выбрать установщик для Linux" : `↓ ${desktopDownload.label}`}
                   </a>
+                  {(desktopDownload.os === "macos" || desktopDownload.os === "linux") && <small className="login-hint" style={{ display: "block", marginTop: 8 }}>{t("install.previousNativePackage")}</small>}
                   {desktopDownload.guideUrl && <a className="login-advanced-toggle" href={desktopDownload.guideUrl}>Открыть пошаговую установку и получить код</a>}
                   {desktopDownload.os === "windows" && desktopDownload.altUrl && (
                     <a

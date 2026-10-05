@@ -36,6 +36,8 @@ export interface StoredChannelEvidence {
   readonly silentProbes: number;
   /** Когда наблюдение сделано (Date.now()). */
   readonly at: number;
+  /** Only row indexes, never screen text; keep known spinner rows quiet after reopen. */
+  readonly volatileRows?: readonly number[];
 }
 
 export interface ScrollProbeVerdict {
@@ -73,7 +75,11 @@ function parseChannel(raw: unknown): StoredChannelEvidence | null | undefined {
   const r = raw as Record<string, unknown>;
   if (r.state !== "confirmed" && r.state !== "unconfirmed") return undefined;
   if (!isMask(r.dead) || !isCount(r.silentProbes) || !isTime(r.at)) return undefined;
-  return { state: r.state, dead: r.state === "confirmed" ? 0 : r.dead, silentProbes: r.silentProbes, at: r.at };
+  const indexes = r.volatileRows;
+  if (indexes !== undefined && (!Array.isArray(indexes) || indexes.length > 1000
+    || !indexes.every(v => typeof v === "number" && Number.isInteger(v) && v >= 0 && v < 1000))) return undefined;
+  return { state: r.state, dead: r.state === "confirmed" ? 0 : r.dead, silentProbes: r.silentProbes, at: r.at,
+    ...(r.state === "unconfirmed" && indexes?.length ? { volatileRows: [...new Set(indexes)] } : {}) };
 }
 
 function parseRecord(raw: string | null): StoredEntry[] | null {
@@ -173,10 +179,11 @@ export function storedEvidence(obs: Observation | null): StoredChannelEvidence |
   if (!obs || obs.state === "weak") return null;
   return obs.state === "confirmed"
     ? { state: "confirmed", dead: 0, silentProbes: 0, at: obs.at }
-    : { state: "unconfirmed", dead: obs.deadDirections, silentProbes: obs.silentProbes, at: obs.at };
+    : { state: "unconfirmed", dead: obs.deadDirections, silentProbes: obs.silentProbes, at: obs.at,
+      ...(obs.volatileRows?.length ? { volatileRows: [...obs.volatileRows] } : {}) };
 }
 
-/** Запись хранилища → наблюдение без якоря экрана (текст не хранится). */
+/** Restore metadata only; the first real navigation intent supplies the live anchor. */
 export function restoredObservation(stored: StoredChannelEvidence): Observation {
   return {
     state: stored.state,
@@ -184,6 +191,7 @@ export function restoredObservation(stored: StoredChannelEvidence): Observation 
     at: stored.at,
     silentProbes: stored.silentProbes,
     answers: stored.state === "confirmed" ? 1 : 0,
+    ...(stored.state === "unconfirmed" && stored.volatileRows?.length ? { volatileRows: [...stored.volatileRows] } : {}),
   };
 }
 

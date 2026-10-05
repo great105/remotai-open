@@ -71,6 +71,7 @@ const GUIDE_DESC = "Что умеет Remotai и как этим пользов�
 const ru: Record<string, string> = {
   "generic.hide": "Скрыть",
   "generic.actions": "Действия",
+  "install.previousNativePackage": "Установщик содержит Remotai 2.74.2. Для Hermes после подключения компьютера обновите Remotai до 2.75.1: «Настройки» → «Подключение и обновления» → «Обновить сейчас».",
   "devices.connectedComputer": "Подключённый компьютер",
   "pty.lost.summary": "Прерваны перезагрузкой: {n}",
   "pty.lost.showRecovery": "Восстановить",
@@ -111,6 +112,7 @@ const ru: Record<string, string> = {
   // звалась «Терминал» — человек читал их как два разных места (аудит ИА
   // 02.09.2026, P1-4/A4).
   "nav.terminal": "Терминалы",
+  "nav.hermes": "Hermes",
   "nav.system": SYSTEM,
   // Нижняя навигация: то же имя, что и заголовок раздела.
   "nav.remote": REMOTE,

@@ -1,4 +1,5 @@
 import { emptyRunState, textContent, type HermesEvent, type HermesRunState, type HermesPrompt, type RpcFrame } from "./client";
+import { isTerminalHermesSubagentStatus, normalizeHermesSubagentStatus } from "./subagents";
 
 function object(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
@@ -13,9 +14,9 @@ export function promptFromFrame(frame: RpcFrame): HermesPrompt | null {
   }).filter(Boolean) : [];
   return {
     id: frame.id,
-    kind: frame.method === "approval" ? "approval" : frame.method === "clarify" ? "question" : "request",
+    kind: ["approval", "approval.request"].includes(frame.method) ? "approval" : frame.method === "clarify" ? "question" : "request",
     method: frame.method,
-    title: String(params.title || params.question || (frame.method === "approval" ? "Разрешить действие?" : "Hermes ждет ответа")),
+    title: String(params.title || params.question || (["approval", "approval.request"].includes(frame.method) ? "Разрешить действие?" : "Hermes ждет ответа")),
     description: String(params.description || params.command || params.message || params.reason || ""),
     choices,
     params,
@@ -42,14 +43,32 @@ export function applyHermesEvent(state: HermesRunState, event: HermesEvent, sess
     const ids = Array.isArray(payload.request_ids) ? payload.request_ids.map(String) : [];
     return { ...state, prompts: state.prompts.filter(row => !ids.includes(String(row.id))) };
   }
-  if (type === "message.start") return { ...state, busy: true, error: "", streamId: null };
+  if (type === "message.start") return { ...state, busy: true, error: "", streamId: null, progressText: "" };
   if (type === "session.info" && typeof payload.running === "boolean") return { ...state, busy: payload.running };
+  if (type === "thinking.delta") {
+    // Hermes also uses this callback for provider waits and spinner rewrites.
+    // Only the dedicated reasoning events carry published model reasoning.
+    return typeof payload.text === "string" ? { ...state, progressText: payload.text } : state;
+  }
+  if (type === "reasoning.delta" || type === "reasoning.available") {
+    if (typeof payload.text !== "string" || !payload.text) return state;
+    const id = state.streamId || `stream-${event.seq}`;
+    const existing = state.messages.find(row => row.id === id);
+    // `available` is a complete block, like the official Desktop's replacement
+    // path; deltas remain exact fragments and never enter the answer body.
+    const reasoning = type === "reasoning.available" ? payload.text : (existing?.reasoning || "") + payload.text;
+    return {
+      ...state, busy: true, streamId: id, progressText: "",
+      messages: existing ? state.messages.map(row => row.id === id ? { ...row, reasoning } : row)
+        : [...state.messages, { id, role: "assistant", content: "", reasoning }],
+    };
+  }
   if (type === "message.delta") {
     const id = state.streamId || `stream-${event.seq}`;
     const existing = state.messages.find(row => row.id === id);
     const content = (existing?.content || "") + textContent(payload.text);
     return {
-      ...state, busy: true, streamId: id,
+      ...state, busy: true, streamId: id, progressText: "",
       messages: existing ? state.messages.map(row => row.id === id ? { ...row, content } : row)
         : [...state.messages, { id, role: "assistant", content }],
     };
@@ -57,16 +76,24 @@ export function applyHermesEvent(state: HermesRunState, event: HermesEvent, sess
   if (type === "message.complete" || type === "message.interim") {
     const id = state.streamId || `assistant-${event.seq}`;
     const content = textContent(payload.text);
+    const reasoning = type === "message.complete" && typeof payload.reasoning === "string" ? payload.reasoning : undefined;
     const existing = state.messages.some(row => row.id === id);
-    const messages = existing ? state.messages.map(row => row.id === id ? { ...row, content } : row)
-      : content ? [...state.messages, { id, role: "assistant", content }] : state.messages;
+    const messages = existing ? state.messages.map(row => row.id === id ? { ...row, content,
+      ...(reasoning === undefined ? {} : { reasoning }) } : row)
+      : content || reasoning ? [...state.messages, { id, role: "assistant", content,
+        ...(reasoning ? { reasoning } : {}) }] : state.messages;
     return {
       ...state, messages, streamId: null,
       busy: type === "message.interim",
+      progressText: type === "message.complete" ? "" : state.progressText,
       error: type === "message.complete" && payload.status === "error" ? String(payload.error || payload.failure_reason || "Hermes не смог закончить задачу. Проверьте подключение модели и попробуйте снова.") : state.error,
     };
   }
-  if (type === "error") return { ...state, busy: false, error: String(payload.message || "Hermes сообщил об ошибке") };
+  if (type === "error") return { ...state, busy: false, progressText: "", error: String(payload.message || "Hermes сообщил об ошибке") };
+  if (type === "tool.generating") {
+    return typeof payload.name === "string" && payload.name
+      ? { ...state, progressText: `Готовит действие: ${payload.name}` } : state;
+  }
   if (type === "tool.start" || type === "tool.complete") {
     const id = String(payload.tool_id || event.seq);
     const entry = {
@@ -78,9 +105,31 @@ export function applyHermesEvent(state: HermesRunState, event: HermesEvent, sess
     return { ...state, activities: state.activities.some(row => row.id === id)
       ? state.activities.map(row => row.id === id ? entry : row) : [...state.activities, entry] };
   }
-  if (type === "status.update" || type === "notice" || type.startsWith("subagent.")) {
+  if (type === "subagent.thinking") return state;
+  if (type.startsWith("subagent.")) {
+    const subagentId = typeof payload.subagent_id === "string" && payload.subagent_id ? payload.subagent_id : undefined;
+    const id = subagentId ? `subagent:${subagentId}` : `subagent-event:${event.seq}`;
+    const previous = state.activities.find(row => row.id === id);
+    // Progress callbacks may arrive after the terminal callback; never revive an ended child.
+    if (previous?.complete && type !== "subagent.complete") return state;
+    const reported = normalizeHermesSubagentStatus(payload.status);
+    const status = reported !== "unknown" ? reported : type === "subagent.complete" ? "unknown"
+      : previous?.status || (["subagent.start", "subagent.spawn_requested"].includes(type) ? "running" : "unknown");
+    const text = typeof payload.goal === "string" ? payload.goal : previous?.text || "Помощник";
+    const entry = {
+      id, kind: type, text, status,
+      ...(subagentId ? { subagentId } : {}),
+      complete: type === "subagent.complete" || isTerminalHermesSubagentStatus(status),
+    };
+    // A child lifecycle is independent of the parent's main turn and answer body.
+    return { ...state, activities: previous ? state.activities.map(row => row.id === id ? entry : row)
+      : [...state.activities, entry].slice(-100) };
+  }
+  if (type === "status.update" || type === "notice") {
     const text = String(payload.text || payload.message || payload.goal || payload.task || payload.status || "");
-    return text ? { ...state, activities: [...state.activities, { id: String(event.seq), kind: type, text }].slice(-100) } : state;
+    return text ? { ...state,
+      ...(type === "status.update" ? { progressText: text } : {}),
+      activities: [...state.activities, { id: String(event.seq), kind: type, text }].slice(-100) } : state;
   }
   return state;
 }
@@ -90,7 +139,10 @@ export interface SessionSnapshot {
   stored_session_id?: string;
   session_key?: string;
   resumed?: string;
-  messages?: Array<{ role?: string; content?: unknown; text?: string; row_id?: number }>;
+  messages?: Array<{
+    role?: string; content?: unknown; text?: string; row_id?: number; reasoning?: string;
+    tool_call_id?: string; name?: string; args?: Record<string, unknown>;
+  }>;
   info?: { running?: boolean; cwd?: string; model?: string; provider?: string; title?: string; stored_session_id?: string };
   inflight?: { assistant?: string; streaming?: boolean; user?: string; error?: string } | null;
   open_requests?: RpcFrame[];
@@ -121,9 +173,22 @@ export function modelSelection(
 
 export function stateFromSession(session: SessionSnapshot): HermesRunState {
   const state = emptyRunState();
+  const tools = new Map<string, HermesRunState["activities"][number]>();
+  (session.messages || []).forEach((row, index) => {
+    if (row.role !== "tool") return;
+    const id = row.tool_call_id || `stored-tool-${row.row_id ?? index}`;
+    const result = row.text ?? row.content;
+    const details = textContent(result) || (result && typeof result === "object" && !Array.isArray(result)
+      ? JSON.stringify(result, null, 2) : "");
+    // A persisted role:tool row is a completed result, not evidence of an active tool.
+    tools.set(id, { id, kind: "tool", text: row.name || "Действие Hermes", complete: true,
+      ...(details ? { details } : {}) });
+  });
+  state.activities = [...tools.values()];
   state.messages = (session.messages || []).map((row, index) => ({
     id: `stored-${row.row_id ?? index}`, role: row.role || "assistant", content: textContent(row.text ?? row.content),
-  })).filter(row => row.content && ["user", "assistant", "agent", "system"].includes(row.role));
+    ...(row.role === "assistant" && typeof row.reasoning === "string" && row.reasoning ? { reasoning: row.reasoning } : {}),
+  })).filter(row => (row.content || row.reasoning) && ["user", "assistant", "agent", "system"].includes(row.role));
   state.busy = session.running === true || session.info?.running === true || session.inflight?.streaming === true;
   state.error = session.inflight?.error || "";
   if (session.inflight?.user && !state.messages.some(row => row.role === "user" && row.content === session.inflight?.user)) {

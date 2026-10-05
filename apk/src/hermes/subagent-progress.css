@@ -1,0 +1,24 @@
+.hermes-subagent-progress { min-width: 0; margin-block: 18px; color: var(--tg-text); scroll-margin-top: 8px; }
+.hermes-subagent-progress h3, .hermes-subagent-progress h4 { font-size: 1rem; line-height: 1.5; margin: 12px 0 8px; }
+.hermes-subagent-progress article { border-bottom: 1px solid var(--tg-border); min-width: 0; }
+.hermes-subagent-progress p, .hermes-subagent-progress dt, .hermes-subagent-progress dd { font-size: 1rem; line-height: 1.5; overflow-wrap: anywhere; }
+.hermes-subagent-progress button { min-height: 44px; min-width: 44px; padding: 10px; border: 0; border-radius: 8px; color: var(--tg-link); background: var(--tg-section-bg); font: inherit; line-height: 1.5; cursor: pointer; }
+.hermes-subagent-progress button:focus-visible { outline: 2px solid var(--tg-link); outline-offset: -2px; }
+.hermes-subagent-progress .hermes-subagent-toggle { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; text-align: left; }
+.hermes-subagent-toggle > span:first-child { display: grid; gap: 4px; min-width: 0; }
+.hermes-subagent-toggle b, .hermes-subagent-toggle span, .hermes-subagent-toggle small { overflow-wrap: anywhere; }
+.hermes-subagent-progress small { display: block; color: var(--tg-hint); font-size: .875rem; line-height: 1.5; }
+.hermes-subagent-details { padding: 8px 10px; min-width: 0; }
+.hermes-subagent-progress dl { display: grid; gap: 8px; }
+.hermes-subagent-progress dd { margin: 0; }
+.hermes-subagent-progress dt { color: var(--tg-hint); }
+.hermes-subagent-journal { padding-inline-start: 22px; margin: 0; }
+.hermes-subagent-journal li { padding-block: 8px; overflow-wrap: anywhere; font-size: 1rem; line-height: 1.5; }
+/* Keep the expansion control reachable under IME; full goal/action stay in the scrollable details. */
+.hermes-subagent-toggle > span:first-child > span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.hermes-page[data-keyboard="true"] .hermes-subagent-toggle { padding-block: 8px; }
+.hermes-page[data-keyboard="true"] .hermes-subagent-toggle > span:first-child > span,
+.hermes-page[data-keyboard="true"] .hermes-subagent-toggle > span:first-child > small { display: none; }
+.hermes-page[data-keyboard="true"] .hermes-subagent-toggle b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Work already owns the expanded child status. Do not duplicate a background-only footer there. */
+.hermes-page[data-view="work"] .hermes-content > .hermes-execution-status[data-phase="background"] { display: none; }

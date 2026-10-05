@@ -341,6 +341,15 @@ export class NavigationEvidence {
   }
   get(channel: NavChannel): Observation | null { return this.byChannel.get(channel) ?? null; }
 
+  /** Bind restored silence on the first real intent, not mid-replay or a UI peek. */
+  anchorRestoredScreen(rows: readonly string[]): void {
+    for (const [channel, obs] of this.byChannel) {
+      if (obs.state === "unconfirmed" && !obs.anchor) {
+        this.byChannel.set(channel, { ...obs, anchor: [...rows] });
+      }
+    }
+  }
+
   evaluate(channel: NavChannel, input: EvaluateInput): EvidenceDecision {
     return evaluateObservation(this.get(channel), input);
   }
