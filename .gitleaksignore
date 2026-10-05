@@ -18,3 +18,11 @@ f8704af3ee91b7ef70b09c6134350917a0635c58:internal/web/api_openrouter_test.go:gen
 f8704af3ee91b7ef70b09c6134350917a0635c58:internal/web/api_openrouter_test.go:generic-api-key:180
 f8704af3ee91b7ef70b09c6134350917a0635c58:internal/web/api_openrouter_test.go:generic-api-key:204
 f8704af3ee91b7ef70b09c6134350917a0635c58:internal/web/api_openrouter_test.go:generic-api-key:80
+# Reviewed English UI catalog entries: hashed message identifiers and plain
+# labels about passwords, keys and token statistics; no credential values.
+f3f6a8e6b7280afa9dd2cda2c18f433d3f0ff08b:packages/shared/src/i18n.en.ts:generic-api-key:3236
+f3f6a8e6b7280afa9dd2cda2c18f433d3f0ff08b:packages/shared/src/i18n.en.ts:generic-api-key:3271
+f3f6a8e6b7280afa9dd2cda2c18f433d3f0ff08b:packages/shared/src/i18n.en.ts:generic-api-key:3272
+f3f6a8e6b7280afa9dd2cda2c18f433d3f0ff08b:packages/shared/src/i18n.en.ts:generic-api-key:3279
+f3f6a8e6b7280afa9dd2cda2c18f433d3f0ff08b:packages/shared/src/i18n.en.ts:generic-api-key:3280
+f3f6a8e6b7280afa9dd2cda2c18f433d3f0ff08b:packages/shared/src/i18n.en.ts:generic-api-key:3292

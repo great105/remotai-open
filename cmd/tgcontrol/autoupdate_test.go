@@ -47,18 +47,28 @@ func TestDeferredRestartReason(t *testing.T) {
 // Причина рестарта уезжает в лог — она должна называть, кого именно он задел.
 func TestWaitCause(t *testing.T) {
 	cases := []struct {
-		windowOpen bool
-		live       int
-		want       string
+		windowOpen  bool
+		live        int
+		want        string
+		wantEnglish string
 	}{
-		{true, 0, "окно панели открыто"},
-		{false, 2, "живых сеансов: 2"},
-		{true, 1, "окно панели открыто, живых сеансов: 1"},
+		{true, 0, "окно панели открыто", "panel window is open"},
+		{false, 2, "живых сеансов: 2", "live sessions: 2"},
+		{true, 1, "окно панели открыто, живых сеансов: 1", "panel window open, live sessions: 1"},
 	}
-	for _, c := range cases {
-		if got := waitCause(c.windowOpen, c.live); got != c.want {
-			t.Errorf("waitCause(%v, %d) = %q, хотели %q", c.windowOpen, c.live, got, c.want)
-		}
+	for _, language := range []string{"ru", "en"} {
+		t.Run(language, func(t *testing.T) {
+			t.Setenv("REMOTAI_LANGUAGE", language)
+			for _, c := range cases {
+				want := c.want
+				if language == "en" {
+					want = c.wantEnglish
+				}
+				if got := waitCause(c.windowOpen, c.live); got != want {
+					t.Errorf("waitCause(%v, %d) = %q, хотели %q", c.windowOpen, c.live, got, want)
+				}
+			}
+		})
 	}
 }
 
