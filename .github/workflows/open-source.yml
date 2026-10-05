@@ -9,10 +9,15 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: open-source-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   agent:
     if: github.repository != 'great105/remotai'
     name: Agent (${{ matrix.os }})
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -35,10 +40,12 @@ jobs:
         with:
           name: self-hosted-agent-${{ matrix.os }}
           path: build/remotai-self-hosted*
+          retention-days: 7
 
   relay:
     if: github.repository != 'great105/remotai'
     name: Relay
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -54,6 +61,7 @@ jobs:
   deployment:
     if: github.repository != 'great105/remotai'
     name: Self-hosted Docker build
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
