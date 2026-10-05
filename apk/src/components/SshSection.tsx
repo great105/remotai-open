@@ -190,7 +190,7 @@ export async function connectSshHost(
     remember: false,
   };
   if (!credentials.password && h.auth_ready === false) {
-    const entered = await deps.askCredentials(`Доступ к ${sshTargetLabel(h)}`);
+    const entered = await deps.askCredentials(t("ui.sshsection.m4c7c738fc0", { p0: (sshTargetLabel(h)) }));
     if (!entered) return;
     credentials = entered;
   }
@@ -200,8 +200,8 @@ export async function connectSshHost(
     if (e?.code === "auth_failed" || e?.code === "key_encrypted") {
       const entered = await deps.askCredentials(
         e?.code === "key_encrypted"
-          ? `Пароль ключа для ${sshTargetLabel(h)}`
-          : `Доступ к ${sshTargetLabel(h)}`,
+          ? t("ui.sshsection.m53aa6242fd", { p0: (sshTargetLabel(h)) })
+          : t("ui.sshsection.m4c7c738fc0", { p0: (sshTargetLabel(h)) }),
         e?.code === "key_encrypted",
       );
       if (entered) {
@@ -417,14 +417,14 @@ export function SshSection({ expanded, onToggle, sectionRef, pageMode = false, f
   const isConnecting = (target: SshTarget) => busyKey === sshTargetLabel(target);
 
   const handleDelete = async (h: SshHost) => {
-    if (!(await tgConfirm(`Удалить сервер «${h.name || sshTargetLabel(h)}»?`, { danger: true, confirmText: t("confirm.btn.delete") }))) return;
+    if (!(await tgConfirm(t("ui.sshsection.m6d0abf67a1", { p0: (h.name || sshTargetLabel(h)) }), { danger: true, confirmText: t("confirm.btn.delete") }))) return;
     try {
       await deleteSshHost(h.id);
       // Общий список машин держит серверы в кэше на минуту: без сброса
       // удалённый сервер остался бы там стоять как живой.
       invalidateSshHostsCache();
       haptic("medium");
-      toastSuccess("Сервер удалён");
+      toastSuccess(t("ui.sshsection.mfeaecd05db"));
       void refresh();
     } catch (e: any) {
       toastError(mapApiError(e));
@@ -899,7 +899,7 @@ export function SshSection({ expanded, onToggle, sectionRef, pageMode = false, f
               className="modal-input"
               type="password"
               aria-label={t("ssh.form.password")}
-              placeholder="Пароль"
+              placeholder={t("ui.sshsection.m14f7c63cc1")}
               value={pwDraft}
               onChange={(e) => setPwDraft(e.target.value)}
               onKeyDown={(e) => {
@@ -938,11 +938,11 @@ export function SshSection({ expanded, onToggle, sectionRef, pageMode = false, f
             </label>
             <div className="ssh-sheet-hint">{t("ssh.form.secretsHint")}</div>
             <div className="modal-actions">
-              <button className="btn btn-secondary" onClick={() => resolveCredentials(null)}>Отмена</button>
+              <button className="btn btn-secondary" onClick={() => resolveCredentials(null)}>{t("agentSessions.cancel")}</button>
               <button className="btn btn-primary" onClick={() => resolveCredentials({
                 password: pwDraft, keyPassphrase: keyPassDraft,
                 proxyPassword: proxyPwDraft, remember: rememberSecret,
-              })}>Подключить</button>
+              })}>{t("openrouter.connect")}</button>
             </div>
         </SheetShell>
       )}
@@ -950,15 +950,14 @@ export function SshSection({ expanded, onToggle, sectionRef, pageMode = false, f
       {overrideHost && (
         <SheetShell open={!!overrideHost} onClose={() => setOverrideHost(null)}
           overlayClassName="modal-overlay" className="modal-sheet" labelledBy="ssh-override-title">
-            <div className="modal-title" id="ssh-override-title">Пользователь для {overrideHost.name}</div>
+            <div className="modal-title" id="ssh-override-title">{t("ui.sshsection.ma8b7ef80ec")}{overrideHost.name}</div>
             <input className="modal-input" value={overrideUser} aria-label={t("ssh.form.user")}
               onChange={(e) => setOverrideUser(e.target.value)}
               autoCapitalize="off" autoCorrect="off" />
             <div className="ssh-sheet-hint">
-              Хост из ~/.ssh/config останется только для чтения; приложение сохранит отдельный override.
-            </div>
+              {t("ui.sshsection.mfc1463faa3")}</div>
             <div className="modal-actions">
-              <button className="btn btn-secondary" onClick={() => setOverrideHost(null)}>Отмена</button>
+              <button className="btn btn-secondary" onClick={() => setOverrideHost(null)}>{t("agentSessions.cancel")}</button>
               <button className="btn btn-primary" disabled={!overrideUser.trim()} onClick={async () => {
                 try {
                   await createSshHost({
@@ -973,11 +972,11 @@ export function SshSection({ expanded, onToggle, sectionRef, pageMode = false, f
                   invalidateSshHostsCache();
                   setOverrideHost(null);
                   await refresh();
-                  toastSuccess("Пользователь сохранён");
+                  toastSuccess(t("ui.sshsection.m2e05c5c36d"));
                 } catch (e: any) {
                   toastError(mapApiError(e));
                 }
-              }}>Сохранить override</button>
+              }}>{t("ui.sshsection.m085fc757fc")}</button>
             </div>
         </SheetShell>
       )}

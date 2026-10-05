@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"tgcontrol/internal/localize"
 
 	"tgcontrol/internal/version"
 )
@@ -40,29 +41,29 @@ type cliCommand struct {
 // commandHelp — единственный список подкоманд для справки. Порядок — путь
 // человека: поставить → привязать → посмотреть → починить → остальное.
 var commandHelp = []cliCommand{
-	{"install", "install [--user|--system] [--no-pair]", "Автозапуск и привязка этого компьютера к аккаунту"},
-	{"uninstall", "uninstall [--purge]", "Убрать автозапуск; --purge — вместе с настройками"},
-	{"pair", "pair", "Показать код и QR для привязки к аккаунту"},
-	{"unpair", "unpair", "Отвязать этот компьютер от аккаунта"},
-	{"status", "status", "Служба, связь с облаком, версия"},
-	{"doctor", "doctor [--json]", "Проверить настройку и подсказать, что починить"},
-	{"config", "config get|set|list …", "Настройки этого компьютера — то же видит ИИ-агент"},
-	{"attach", "attach [терминал]", "Открыть терминал Remotai в этой консоли"},
-	{"send", "send <текст> | --file <путь>", "Сообщение или файл владельцу в Telegram"},
-	{"update", "update", "Обновить агент до последней версии"},
-	{"vpn", "vpn [status|off|on]", "VPN этого компьютера"},
-	{"remote", "remote <команда>", "Выполнить команду на другом компьютере аккаунта"},
-	{"--version", "--version", "Версия и сборка"},
-	{"--background", "--background", "Тихий запуск без окна (для автозапуска)"},
+	{"install", "install [--user|--system] [--no-pair]", localize.Text("Автозапуск и привязка этого компьютера к аккаунту")},
+	{"uninstall", "uninstall [--purge]", localize.Text("Убрать автозапуск; --purge — вместе с настройками")},
+	{"pair", "pair", localize.Text("Показать код и QR для привязки к аккаунту")},
+	{"unpair", "unpair", localize.Text("Отвязать этот компьютер от аккаунта")},
+	{"status", "status", localize.Text("Служба, связь с облаком, версия")},
+	{"doctor", "doctor [--json]", localize.Text("Проверить настройку и подсказать, что починить")},
+	{"config", "config get|set|list …", localize.Text("Настройки этого компьютера — то же видит ИИ-агент")},
+	{"attach", localize.Text("attach [терминал]"), localize.Text("Открыть терминал Remotai в этой консоли")},
+	{"send", localize.Text("send <текст> | --file <путь>"), localize.Text("Сообщение или файл владельцу в Telegram")},
+	{"update", "update", localize.Text("Обновить агент до последней версии")},
+	{"vpn", "vpn [status|off|on]", localize.Text("VPN этого компьютера")},
+	{"remote", localize.Text("remote <команда>"), localize.Text("Выполнить команду на другом компьютере аккаунта")},
+	{"--version", "--version", localize.Text("Версия и сборка")},
+	{"--background", "--background", localize.Text("Тихий запуск без окна (для автозапуска)")},
 }
 
 // usageText — общая справка `remotai help`.
 func usageText() string {
 	var b strings.Builder
-	fmt.Fprintf(&b, "%s — удалённый доступ к ИИ-агентам на этом компьютере.\n\n", version.String())
-	b.WriteString("Использование: remotai [команда] [флаги]\n")
-	b.WriteString("Без команды запускает приложение: окно на Windows, фон и браузер на Linux и macOS.\n\n")
-	b.WriteString("Команды:\n")
+	fmt.Fprintf(&b, localize.Text("%s — удалённый доступ к ИИ-агентам на этом компьютере.\n\n"), version.String())
+	b.WriteString(localize.Text("Использование: remotai [команда] [флаги]\n"))
+	b.WriteString(localize.Text("Без команды запускает приложение: окно на Windows, фон и браузер на Linux и macOS.\n\n"))
+	b.WriteString(localize.Text("Команды:\n"))
 	width := 0
 	for _, c := range commandHelp {
 		if n := len([]rune(c.usage)); n > width {
@@ -72,8 +73,8 @@ func usageText() string {
 	for _, c := range commandHelp {
 		fmt.Fprintf(&b, "  %-*s  %s\n", width, c.usage, c.what)
 	}
-	b.WriteString("\nСправка по команде: remotai <команда> --help\n")
-	b.WriteString("Сайт и инструкции: https://remotai.ru\n")
+	b.WriteString(localize.Text("\nСправка по команде: remotai <команда> --help\n"))
+	b.WriteString(localize.Text("Сайт и инструкции: https://remotai.ru\n"))
 	return b.String()
 }
 
@@ -87,7 +88,7 @@ func commandUsage(name string) (string, bool) {
 	}
 	for _, c := range commandHelp {
 		if c.name == name {
-			return fmt.Sprintf("Использование: remotai %s\n  %s\n", c.usage, c.what), true
+			return fmt.Sprintf(localize.Text("Использование: remotai %s\n  %s\n"), c.usage, c.what), true
 		}
 	}
 	return "", false

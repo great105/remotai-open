@@ -20,12 +20,12 @@ You pay for your own infrastructure and AI providers separately.
 | Your own server | Build the agent and start Docker Compose | Your infrastructure and chosen AI services |
 | Managed Remotai | [Open the service](https://remotai.ru) | The Remotai cloud subscription; AI services are billed separately |
 
-The application interface is currently in Russian. This repository's overview
-and deployment guide are available in English and Russian. Self-hosting does
-not require a payment provider; the managed service currently uses Russian
-payment methods.
+The application, website and deployment guide support English and Russian.
+Choose your language on the sign-in screen or in Settings → Help and privacy.
+The choice is saved on your device. Self-hosting does not require a payment
+provider; the managed service currently uses Russian payment methods.
 
-<img src="docs/images/remotai-agents.png" alt="AI agent terminals in the Remotai mobile client, with Russian interface labels" width="460">
+<img src="docs/images/remotai-agents.en.png" alt="AI agent terminals in the English Remotai mobile client" width="460">
 
 ## Run your own server
 

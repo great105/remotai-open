@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
         rel="stylesheet" media="print" onload="this.media='all'" />
-</head>
+<script>(function(){var u=new URL(location.href),q=u.searchParams.get('lang'),s;try{s=localStorage.getItem('remotai.language')}catch(e){};var l=q==='ru'||q==='en'?q:s==='ru'||s==='en'?s:navigator.language.toLowerCase().startsWith('ru')?'ru':'en';try{localStorage.setItem('remotai.language',l)}catch(e){};if(q!==l){u.searchParams.set('lang',l);location.replace(u)}})();</script></head>
 <body>
   <div class="wizard">
     <!-- Brand header -->
@@ -32,7 +32,7 @@
         <span class="ver-badge" id="ver-badge" title="Версия приложения">…</span>
       </div>
       <span class="brand-tag">ваши ИИ-агенты — под рукой</span>
-    </header>
+    <a class="link" style="margin-left:auto;padding:8px;white-space:nowrap" href="?lang=en" onclick="var u=new URL(location.href);u.searchParams.set('lang','en');this.href=u;" lang="en">English</a></header>
 
     <!-- Точек ПЯТЬ, но человек видит столько, сколько в его маршруте: шаг
          «Доступ из интернета» есть только в легаси-ветке «свой бот», и в

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:yandex="http://news.yandex.ru" xmlns:media="http://search.yahoo.com/mrss/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Блог Remotai</title>
+    <link>https://remotai.ru/blog/</link>
+    <description>Как держать ИИ-агентов на своей машине или своём сервере и работать с ними откуда угодно</description>
+    <language>ru</language>
+    <item>
+      <title>Удалённый рабочий стол с телефона: когда он нужен, а когда мешает</title>
+      <link>https://remotai.ru/blog/udalennyy-rabochiy-stol-s-telefona.html</link>
+      <guid>https://remotai.ru/blog/udalennyy-rabochiy-stol-s-telefona.html</guid>
+      <pubDate>Sat, 12 Sep 2026 10:00:00 +0300</pubDate>
+      <author>Евгений Ваулин</author>
+      <description>Стоит ли смотреть экран компьютера с телефона, сколько это ест трафика, что делать с управлением пальцем и чем заменить рабочий стол, когда нужна работа, а не картинка.</description>
+    </item>
+    <item>
+      <title>Управление компьютером с телефона: что реально можно сделать</title>
+      <link>https://remotai.ru/blog/upravlenie-kompyuterom-s-telefona.html</link>
+      <guid>https://remotai.ru/blog/upravlenie-kompyuterom-s-telefona.html</guid>
+      <pubDate>Fri, 11 Sep 2026 10:00:00 +0300</pubDate>
+      <author>Евгений Ваулин</author>
+      <description>Что можно и чего нельзя сделать с компьютером через телефон: запуск программ, файлы, экран, выключение и включение. Разбираем по задачам, без белого IP и проброса портов.</description>
+    </item>
+    <item>
+      <title>Терминал с телефона: как открыть консоль своего компьютера</title>
+      <link>https://remotai.ru/blog/terminal-s-telefona.html</link>
+      <guid>https://remotai.ru/blog/terminal-s-telefona.html</guid>
+      <pubDate>Thu, 10 Sep 2026 10:00:00 +0300</pubDate>
+      <author>Евгений Ваулин</author>
+      <description>Как получить полноценный терминал компьютера или сервера на телефоне: что не так с обычными SSH-клиентами, как пережить обрыв связи, что делать с Esc и стрелками и почему ломается прокрутка.</description>
+    </item>
+    <item>
+      <title>Codex CLI на своём сервере: установка и работа из России</title>
+      <link>https://remotai.ru/blog/codex-cli-na-servere.html</link>
+      <guid>https://remotai.ru/blog/codex-cli-na-servere.html</guid>
+      <pubDate>Wed, 09 Sep 2026 10:00:00 +0300</pubDate>
+      <author>Евгений Ваулин</author>
+      <description>Как поставить Codex CLI от OpenAI на арендованный сервер, работать с ним из России без VPN на своём устройстве и управлять с телефона. Установка, стоимость, отличия от Claude Code.</description>
+    </item>
+    <item>
+      <title>Доступ к компьютеру с телефона: способы и что выбрать</title>
+      <link>https://remotai.ru/blog/dostup-k-kompyuteru-s-telefona.html</link>
+      <guid>https://remotai.ru/blog/dostup-k-kompyuteru-s-telefona.html</guid>
+      <pubDate>Wed, 09 Sep 2026 10:00:00 +0300</pubDate>
+      <author>Евгений Ваулин</author>
+      <description>Разбираем способы дотянуться до своего компьютера с телефона: удалённый рабочий стол, SSH, облачные сервисы. Что работает без белого IP, что делать с обрывами связи и во что это обходится.</description>
+    </item>
+    <item>
+      <title>Claude Code и Codex на своём сервере: без VPN и без риска для аккаунта</title>
+      <link>https://remotai.ru/blog/claude-code-iz-rossii.html</link>
+      <guid>https://remotai.ru/blog/claude-code-iz-rossii.html</guid>
+      <pubDate>Tue, 08 Sep 2026 10:00:00 +0300</pubDate>
+      <author>Евгений Ваулин</author>
+      <description>Оба сервиса недоступны в России, а маскировка на своей машине часто кончается потерей аккаунта. Разбираем схему, при которой ваше устройство ничего не обходит: агент работает на вашем сервере, вы управляете им с телефона.</description>
+    </item>
+  </channel>
+</rss>

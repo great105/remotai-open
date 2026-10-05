@@ -1,0 +1,70 @@
+:root{
+  --bg:#06080b; --bg2:#0a0e13; --panel:#0d1218; --panel2:#10161e;
+  --line:#1c2530; --line2:#28333f;
+  --fg:#e8eef4; --muted:#91a0ae; --faint:#72818f;
+  --accent:#2ee6b0; --accent-deep:#0c8f6c; --accent-dim:rgba(46,230,176,.12);
+  --font-display:"Unbounded","Arial Black",sans-serif;
+  --font-body:"Golos Text","Segoe UI",sans-serif;
+  --font-mono:"JetBrains Mono","Cascadia Code",Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+header.top{border-bottom:1px solid var(--line);background:rgba(6,8,11,.9);position:sticky;top:0;z-index:10;backdrop-filter:blur(8px)}
+header.top .wrap{max-width:960px;display:flex;align-items:center;justify-content:space-between;height:60px;gap:12px}
+.logo{font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--fg);white-space:nowrap}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:18px;flex-wrap:wrap;justify-content:flex-end}
+.nav a{color:var(--muted);font-size:15px;white-space:nowrap}
+.hero{padding:52px 0 26px}
+h1{font-family:var(--font-display);font-weight:700;font-size:clamp(28px,5vw,42px);line-height:1.15;margin:0 0 16px}
+.lead{font-size:19px;color:var(--muted);margin:0}
+.posts{list-style:none;padding:0;margin:0 0 40px;border-top:1px solid var(--line)}
+.posts li{border-bottom:1px solid var(--line)}
+.posts a{display:block;padding:24px 0;color:inherit}
+.posts a:hover{text-decoration:none}
+.posts a:hover h2{color:var(--accent)}
+.date{font-family:var(--font-mono);font-size:13px;color:var(--faint)}
+.posts h2{font-family:var(--font-display);font-weight:500;font-size:21px;margin:8px 0;line-height:1.3}
+.posts p{margin:0;color:var(--muted);font-size:16px}
+.soon{border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:44px;background:var(--panel)}
+.soon h2{font-family:var(--font-display);font-weight:500;font-size:18px;margin:0 0 8px}
+.soon p{margin:0;color:var(--muted);font-size:16px}
+
+/* Страница статьи */
+article{padding:44px 0 20px}
+article h1{margin-bottom:12px}
+.meta{font-family:var(--font-mono);font-size:13px;color:var(--faint);margin-bottom:28px}
+article h2{font-family:var(--font-display);font-weight:500;font-size:clamp(20px,3.2vw,26px);margin:36px 0 12px;line-height:1.25}
+article h3{font-size:19px;margin:26px 0 10px}
+article p{margin:0 0 16px}
+article ul,article ol{margin:0 0 16px;padding-left:22px}
+article li{margin-bottom:8px}
+article strong{font-weight:600}
+blockquote{margin:0 0 16px;padding:14px 18px;border-left:3px solid var(--accent);background:var(--panel);border-radius:0 10px 10px 0;color:var(--muted)}
+code{font-family:var(--font-mono);font-size:14px;background:var(--panel2);padding:2px 6px;border-radius:5px}
+pre{background:#05070a;border:1px solid var(--line);border-radius:12px;padding:16px;overflow-x:auto;margin:0 0 16px;max-width:100%}
+pre code{background:none;padding:0;color:var(--accent)}
+.cta-box{border:1px solid var(--line2);border-radius:14px;padding:22px;margin:32px 0;background:var(--panel)}
+.cta-box h3{margin:0 0 8px;font-size:18px}
+.cta-box p{margin:0 0 14px;color:var(--muted);font-size:16px}
+.btn{display:inline-block;padding:12px 22px;border-radius:11px;font-weight:600;font-size:16px;background:var(--accent);color:#06251c}
+.btn:hover{background:#3ff0bd;text-decoration:none}
+footer{border-top:1px solid var(--line);padding:26px 0 44px;color:var(--faint);font-size:14px;margin-top:20px}
+footer a{color:var(--muted)}
+footer p{margin:4px 0}
+
+/* На узком экране шапка не должна переноситься в две строки: прячем
+   пункты, до которых можно дойти со страницы, оставляем главное. */
+@media (max-width: 520px){
+  .nav a[href="/#pricing"], .nav a[href="/server.html"],
+  .nav a[href="/en/#pricing"], .nav a[href="/en/server.html"],
+  .nav a[href="/blog/"], .nav a[href="/en/blog/"]{display:none}
+  .nav{gap:8px;min-width:0}
+  header.top .wrap{gap:8px}
+  header.top .logo{font-size:18px}
+  header.top .language-link{padding:4px!important}
+}

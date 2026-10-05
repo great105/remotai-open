@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 /** Cloud relay API for APK. Authorization via Bearer JWT (no Telegram WebApp wrapper here).
  *  Note: релей принимает и Bearer JWT, и Telegram `tma initData` на account-эндпоинтах
  *  (см. tgcontrol-relay requireUserAuth), поэтому те же функции переиспользуемы и в
@@ -170,7 +171,7 @@ async function cloudFetch(url: string, init?: RequestInit): Promise<Response> {
   try {
     return await fetchOrNetworkError(url, init, "cloud");
   } catch (e) {
-    if (isNetworkFailure(e)) throw new CloudError(0, "Нет связи с сервисом", ERR_NETWORK_CLOUD);
+    if (isNetworkFailure(e)) throw new CloudError(0, t("ui.api.m0133aa7d59"), ERR_NETWORK_CLOUD);
     throw e;
   }
 }
@@ -460,7 +461,7 @@ export async function requestDevice<T>(
 ): Promise<T> {
   const base = getRelayBase().replace(/\/+$/, "");
   const auth = accountAuthHeader(getCloudJWT());
-  if (!auth) throw new CloudError(401, "Требуется вход");
+  if (!auth) throw new CloudError(401, t("ui.api.m926eefca4d"));
   const [rawPath, rawQuery = ""] = path.split("?");
   const query: Record<string, string> = {};
   new URLSearchParams(rawQuery).forEach((value, key) => { query[key] = value; });
@@ -498,7 +499,7 @@ export async function requestDevice<T>(
     return payload as T;
   } catch (error: any) {
     if (error?.name === "AbortError") {
-      throw new CloudError(0, external?.aborted ? "Запрос отменён" : "Компьютер не ответил", "timeout");
+      throw new CloudError(0, external?.aborted ? t("ui.api.m542bd26f07") : t("ui.api.m7ff4e933d5"), "timeout");
     }
     throw error;
   } finally {

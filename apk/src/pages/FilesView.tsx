@@ -57,6 +57,11 @@ function formatDate(ts: number | null): string {
   if (!ts) return "";
   const d = new Date(ts * 1000);
   const now = new Date();
+  if (getLanguage() === "en") {
+    if (d.getFullYear() !== now.getFullYear()) return d.toLocaleDateString(getLocale(), { month: "short", day: "numeric", year: "numeric" });
+    if (d.getMonth() === now.getMonth() && d.getDate() === now.getDate()) return `${t("files.dateToday")} ${d.toLocaleTimeString(getLocale(), { hour: "2-digit", minute: "2-digit", hour12: false })}`;
+    return d.toLocaleString(getLocale(), { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false });
+  }
   const day = d.getDate().toString().padStart(2, "0");
   const mon = (d.getMonth() + 1).toString().padStart(2, "0");
   const h = d.getHours().toString().padStart(2, "0");
@@ -1962,7 +1967,7 @@ export function FilesView() {
                       className={`fm-item${contextItem?.path === item.path ? " fm-item-active" : ""}${isSel ? " fm-item-selected" : ""}${highlightPath === item.path ? " fm-item-highlight" : ""}`}
                       role="button"
                       tabIndex={0}
-                      aria-label={`${selectMode ? (isSel ? "Снять выбор" : "Выбрать") : item.is_dir ? "Открыть папку" : "Действия файла"}: ${item.name}`}
+                      aria-label={`${selectMode ? (isSel ? t("ui.filesview.mbe6772e952") : t("openrouter.change")) : item.is_dir ? t("ui.filesview.m54724fec4f") : t("ui.filesview.m546b202138")}: ${item.name}`}
                       aria-pressed={selectMode ? isSel : undefined}
                       aria-haspopup={!selectMode && !item.is_dir ? "dialog" : undefined}
                       aria-expanded={!selectMode && !item.is_dir ? contextItem?.path === item.path : undefined}
@@ -2251,7 +2256,7 @@ export function FilesView() {
             <div className="agent-grid">
               {agents.map((a) => (
                 <button key={a.id} className={`agent-chip ${sessionAgent === a.id ? "active" : ""}`}
-                  onClick={() => setSessionAgent(a.id)} title={a.description}>
+                  onClick={() => setSessionAgent(a.id)} title={ownedText(a.description)}>
                   <span className="agent-chip-icon">{a.icon}</span>
                   <span className="agent-chip-name">{a.name}</span>
                 </button>
@@ -2469,3 +2474,4 @@ export function FilesView() {
     </div>
   );
 }
+import { ownedText, getLanguage, getLocale } from "@tgcontrol/shared";

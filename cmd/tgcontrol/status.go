@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"tgcontrol/internal/localize"
 	"time"
 
 	"tgcontrol/internal/config"
@@ -34,7 +35,7 @@ type localCLIStatus struct {
 
 func runStatus(args []string) int {
 	if len(args) != 0 {
-		fmt.Fprintln(os.Stderr, "Использование: remotai status")
+		fmt.Fprintln(os.Stderr, localize.Text("Использование: remotai status"))
 		return 2
 	}
 	cfg := config.GetNoSetup()
@@ -42,29 +43,29 @@ func runStatus(args []string) int {
 	live, ok := readLocalCLIStatus(port)
 
 	fmt.Println(version.String())
-	fmt.Printf("Привязка: %s\n", yesNo(relay.Available(), "есть", "нет"))
+	fmt.Printf(localize.Text("Привязка: %s\n"), yesNo(relay.Available(), localize.Text("есть"), localize.Text("нет")))
 	if ok {
-		fmt.Printf("Процесс:   работает, 0.0.0.0:%d\n", live.Port)
-		fmt.Printf("Облако:    %s\n", yesNo(live.RelayConnected, "в сети", "не в сети"))
+		fmt.Printf(localize.Text("Процесс:   работает, 0.0.0.0:%d\n"), live.Port)
+		fmt.Printf(localize.Text("Облако:    %s\n"), yesNo(live.RelayConnected, localize.Text("в сети"), localize.Text("не в сети")))
 		if !live.RelayConnected && live.RelayError.Kind != "" {
 			reason := relayReasonText(live.RelayError.Kind, live.RelayError.HTTPStatus)
-			fmt.Printf("Причина:   %s\n", reason)
+			fmt.Printf(localize.Text("Причина:   %s\n"), reason)
 		}
-		fmt.Printf("Автозапуск: %s (%s)\n", yesNo(live.Autostart.Enabled, "включён", "выключен"), live.Autostart.Method)
+		fmt.Printf(localize.Text("Автозапуск: %s (%s)\n"), yesNo(live.Autostart.Enabled, localize.Text("включён"), localize.Text("выключен")), live.Autostart.Method)
 	} else {
-		fmt.Printf("Процесс:   не отвечает на 127.0.0.1:%d\n", port)
+		fmt.Printf(localize.Text("Процесс:   не отвечает на 127.0.0.1:%d\n"), port)
 		enabled, method := cliAutostartState()
-		fmt.Printf("Автозапуск: %s (%s)\n", yesNo(enabled, "включён", "выключен"), method)
+		fmt.Printf(localize.Text("Автозапуск: %s (%s)\n"), yesNo(enabled, localize.Text("включён"), localize.Text("выключен")), method)
 	}
-	fmt.Printf("Лог:       %s\n", filepath.Join(paths.Base(), "remotai.log"))
+	fmt.Printf(localize.Text("Лог:       %s\n"), filepath.Join(paths.Base(), "remotai.log"))
 	if info, err := version.CheckForUpdate(""); err == nil && info != nil {
 		if info.Available {
-			fmt.Printf("Обновление: доступна v%s\n", info.Version)
+			fmt.Printf(localize.Text("Обновление: доступна v%s\n"), info.Version)
 		} else {
-			fmt.Println("Обновление: актуальная версия")
+			fmt.Println(localize.Text("Обновление: актуальная версия"))
 		}
 	} else if err != nil {
-		fmt.Printf("Обновление: проверить не удалось (%v)\n", err)
+		fmt.Printf(localize.Text("Обновление: проверить не удалось (%v)\n"), err)
 	}
 	return 0
 }
@@ -89,20 +90,20 @@ func readLocalCLIStatus(port int) (localCLIStatus, bool) {
 func relayReasonText(kind string, status int) string {
 	switch kind {
 	case "revoked":
-		return "привязка отозвана — выполните remotai pair"
+		return localize.Text("привязка отозвана — выполните remotai pair")
 	case "dns":
-		return "не удаётся найти адрес сервиса (DNS)"
+		return localize.Text("не удаётся найти адрес сервиса (DNS)")
 	case "tls":
-		return "ошибка защищённого соединения TLS"
+		return localize.Text("ошибка защищённого соединения TLS")
 	case "timeout":
-		return "тайм-аут сети; проверьте VPN или прокси"
+		return localize.Text("тайм-аут сети; проверьте VPN или прокси")
 	case "service":
-		return fmt.Sprintf("облачный сервис временно недоступен (HTTP %d)", status)
+		return fmt.Sprintf(localize.Text("облачный сервис временно недоступен (HTTP %d)"), status)
 	default:
 		if status > 0 {
-			return fmt.Sprintf("сетевая ошибка (HTTP %d)", status)
+			return fmt.Sprintf(localize.Text("сетевая ошибка (HTTP %d)"), status)
 		}
-		return "сетевая ошибка"
+		return localize.Text("сетевая ошибка")
 	}
 }
 
@@ -115,7 +116,7 @@ func yesNo(v bool, yes, no string) string {
 
 func runUnpair(args []string) int {
 	if len(args) != 0 {
-		fmt.Fprintln(os.Stderr, "Использование: remotai unpair")
+		fmt.Fprintln(os.Stderr, localize.Text("Использование: remotai unpair"))
 		return 2
 	}
 	cfg := config.GetNoSetup()
@@ -132,27 +133,27 @@ func runUnpair(args []string) int {
 		err := relay.RevokeSelf(ctx, base, jwt)
 		cancel()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Предупреждение: релей недоступен, локальная привязка всё равно будет удалена: %v\n", err)
+			fmt.Fprintf(os.Stderr, localize.Text("Предупреждение: релей недоступен, локальная привязка всё равно будет удалена: %v\n"), err)
 		}
 	}
 	if err := config.Update(func(c *config.Config) {
 		c.RelayJWT = ""
 		c.RelayJWTExpiry = 0
 	}); err != nil {
-		fmt.Fprintf(os.Stderr, "remotai unpair: не удалось сохранить конфигурацию: %v\n", err)
+		fmt.Fprintf(os.Stderr, localize.Text("remotai unpair: не удалось сохранить конфигурацию: %v\n"), err)
 		return 1
 	}
 	if err := relay.ClearJWT(); err != nil {
-		fmt.Fprintf(os.Stderr, "remotai unpair: не удалось очистить защищённое хранилище: %v\n", err)
+		fmt.Fprintf(os.Stderr, localize.Text("remotai unpair: не удалось очистить защищённое хранилище: %v\n"), err)
 		return 1
 	}
-	fmt.Println("✅ Компьютер удалён из аккаунта. Сессии входа не затронуты; повторное подключение: remotai pair")
+	fmt.Println(localize.Text("✅ Компьютер удалён из аккаунта. Сессии входа не затронуты; повторное подключение: remotai pair"))
 	return 0
 }
 
 func runUninstallCleanup(args []string) int {
 	if len(args) != 0 {
-		fmt.Fprintln(os.Stderr, "Использование: remotai --uninstall-cleanup")
+		fmt.Fprintln(os.Stderr, localize.Text("Использование: remotai --uninstall-cleanup"))
 		return 2
 	}
 	unpairCode := runUnpair(nil)

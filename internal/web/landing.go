@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"tgcontrol/internal/config"
 	"tgcontrol/internal/version"
@@ -23,12 +24,20 @@ func (s *Server) serveLandingPage(w http.ResponseWriter, r *http.Request) {
 
 	// Embedded landing page
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Write(buildLandingHTML())
+	language := r.URL.Query().Get("lang")
+	if language != "en" && language != "ru" {
+		language = "ru"
+		if header := r.Header.Get("Accept-Language"); header != "" && !strings.HasPrefix(strings.ToLower(header), "ru") {
+			language = "en"
+		}
+	}
+	w.Write(buildLandingHTMLInLanguage(language))
 }
 
 // landingTmpl is parsed once at startup; html/template auto-escapes the data
 // fields (Version etc.) so no manual escaping is needed.
 var landingTmpl = template.Must(template.New("landing").Parse(landingTemplate))
+var landingTmplEN = template.Must(template.New("landing-en").Parse(landingTemplateEN))
 
 type landingData struct {
 	AppName string
@@ -38,6 +47,10 @@ type landingData struct {
 }
 
 func buildLandingHTML() []byte {
+	return buildLandingHTMLInLanguage("ru")
+}
+
+func buildLandingHTMLInLanguage(language string) []byte {
 	cfg := config.GetNoSetup()
 	data := landingData{
 		AppName: "Remotai",
@@ -50,7 +63,11 @@ func buildLandingHTML() []byte {
 		data.CtaText = "Open App"
 	}
 	var buf bytes.Buffer
-	if err := landingTmpl.Execute(&buf, data); err != nil {
+	tmpl := landingTmpl
+	if language == "en" {
+		tmpl = landingTmplEN
+	}
+	if err := tmpl.Execute(&buf, data); err != nil {
 		return []byte(`<!DOCTYPE html><html lang="ru"><body style="background:#0d1117;color:#c9d1d9;font-family:sans-serif;text-align:center;padding:40px">Remotai</body></html>`)
 	}
 	return buf.Bytes()

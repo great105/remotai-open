@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 import { emptyRunState, textContent, type HermesEvent, type HermesRunState, type HermesPrompt, type RpcFrame } from "./client";
 import { isTerminalHermesSubagentStatus, normalizeHermesSubagentStatus } from "./subagents";
 
@@ -16,7 +17,7 @@ export function promptFromFrame(frame: RpcFrame): HermesPrompt | null {
     id: frame.id,
     kind: ["approval", "approval.request"].includes(frame.method) ? "approval" : frame.method === "clarify" ? "question" : "request",
     method: frame.method,
-    title: String(params.title || params.question || (["approval", "approval.request"].includes(frame.method) ? "Разрешить действие?" : "Hermes ждет ответа")),
+    title: String(params.title || params.question || (["approval", "approval.request"].includes(frame.method) ? t("ui.state.m588755e02e") : t("ui.state.m2c461cc430"))),
     description: String(params.description || params.command || params.message || params.reason || ""),
     choices,
     params,
@@ -86,18 +87,18 @@ export function applyHermesEvent(state: HermesRunState, event: HermesEvent, sess
       ...state, messages, streamId: null,
       busy: type === "message.interim",
       progressText: type === "message.complete" ? "" : state.progressText,
-      error: type === "message.complete" && payload.status === "error" ? String(payload.error || payload.failure_reason || "Hermes не смог закончить задачу. Проверьте подключение модели и попробуйте снова.") : state.error,
+      error: type === "message.complete" && payload.status === "error" ? String(payload.error || payload.failure_reason || t("ui.state.mf6718dc78d")) : state.error,
     };
   }
-  if (type === "error") return { ...state, busy: false, progressText: "", error: String(payload.message || "Hermes сообщил об ошибке") };
+  if (type === "error") return { ...state, busy: false, progressText: "", error: String(payload.message || t("ui.state.m31ec01afb2")) };
   if (type === "tool.generating") {
     return typeof payload.name === "string" && payload.name
-      ? { ...state, progressText: `Готовит действие: ${payload.name}` } : state;
+      ? { ...state, progressText: t("ui.state.m49f2072067", { p0: (payload.name) }) } : state;
   }
   if (type === "tool.start" || type === "tool.complete") {
     const id = String(payload.tool_id || event.seq);
     const entry = {
-      id, kind: "tool", text: String(payload.summary || payload.preview || payload.name || "Действие Hermes"),
+      id, kind: "tool", text: String(payload.summary || payload.preview || payload.name || t("ui.state.m590d118f9a")),
       details: type === "tool.start" ? String(payload.args_text || JSON.stringify(payload.args || {}, null, 2))
         : String(payload.result_text || payload.inline_diff || (payload.result ? JSON.stringify(payload.result, null, 2) : "")),
       complete: type === "tool.complete",
@@ -115,7 +116,7 @@ export function applyHermesEvent(state: HermesRunState, event: HermesEvent, sess
     const reported = normalizeHermesSubagentStatus(payload.status);
     const status = reported !== "unknown" ? reported : type === "subagent.complete" ? "unknown"
       : previous?.status || (["subagent.start", "subagent.spawn_requested"].includes(type) ? "running" : "unknown");
-    const text = typeof payload.goal === "string" ? payload.goal : previous?.text || "Помощник";
+    const text = typeof payload.goal === "string" ? payload.goal : previous?.text || t("ui.state.mffcd1996d1");
     const entry = {
       id, kind: type, text, status,
       ...(subagentId ? { subagentId } : {}),
@@ -181,7 +182,7 @@ export function stateFromSession(session: SessionSnapshot): HermesRunState {
     const details = textContent(result) || (result && typeof result === "object" && !Array.isArray(result)
       ? JSON.stringify(result, null, 2) : "");
     // A persisted role:tool row is a completed result, not evidence of an active tool.
-    tools.set(id, { id, kind: "tool", text: row.name || "Действие Hermes", complete: true,
+    tools.set(id, { id, kind: "tool", text: row.name || t("ui.state.m590d118f9a"), complete: true,
       ...(details ? { details } : {}) });
   });
   state.activities = [...tools.values()];

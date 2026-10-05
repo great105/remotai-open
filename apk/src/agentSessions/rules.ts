@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 // Правила экрана «Беседы» (pages/AgentSessionsView.tsx) — без React, чтобы
 // проверяться тестом в node: куда ведёт нажатие, какой командой продолжать
 // беседу, как делить список по дням и что писать в строке.
@@ -71,8 +72,8 @@ export function folderName(cwd: string): string {
 }
 
 const MONTHS = [
-  "января", "февраля", "марта", "апреля", "мая", "июня",
-  "июля", "августа", "сентября", "октября", "ноября", "декабря",
+  t("ui.rules.m6046ce3ec2"), t("ui.rules.mf6f761beaf"), t("ui.rules.mcd806e79f9"), t("ui.rules.m2dc648c01f"), t("ui.rules.m7bbf852b85"), t("ui.rules.m1e3af2c3c7"),
+  t("ui.rules.m8510c0d40f"), t("ui.rules.mfc6b336901"), t("ui.rules.m8b6b0083ed"), t("ui.rules.meab57a88e3"), t("ui.rules.m5390fcc74d"), t("ui.rules.mb91044479f"),
 ];
 
 function dayStart(ms: number): number {

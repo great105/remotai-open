@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='utf-8'?>
+<rss version="2.0">
+  <channel>
+    <title>Remotai — AI agents from your phone</title>
+    <link>https://remotai.ru/en/blog/</link>
+    <description>Guides to Claude Code, Codex, remote terminals and self-hosting Remotai.</description>
+    <language>en</language>
+    <item>
+      <title>Remote desktop from your phone: when you need it and when it gets in the way</title>
+      <link>https://remotai.ru/en/blog/udalennyy-rabochiy-stol-s-telefona.html</link>
+      <guid>https://remotai.ru/en/blog/udalennyy-rabochiy-stol-s-telefona.html</guid>
+      <pubDate>Sat, 12 Sep 2026 10:00:00 +0300</pubDate>
+      <author>Евгений Ваулин</author>
+      <description>Is it worth viewing the computer screen from your phone, how much traffic does it consume, what to do with finger controls, and what to replace the desktop with when you need work, not a picture.</description>
+    </item>
+    <item>
+      <title>Controlling your computer from your phone: what you can really do</title>
+      <link>https://remotai.ru/en/blog/upravlenie-kompyuterom-s-telefona.html</link>
+      <guid>https://remotai.ru/en/blog/upravlenie-kompyuterom-s-telefona.html</guid>
+      <pubDate>Fri, 11 Sep 2026 10:00:00 +0300</pubDate>
+      <author>Евгений Ваулин</author>
+      <description>What you can and cannot do with your computer via your phone: launching programs, files, screen, turning off and on. We analyze it by task, without public IP address and port forwarding.</description>
+    </item>
+    <item>
+      <title>Terminal from your phone: how to open the console of your computer</title>
+      <link>https://remotai.ru/en/blog/terminal-s-telefona.html</link>
+      <guid>https://remotai.ru/en/blog/terminal-s-telefona.html</guid>
+      <pubDate>Thu, 10 Sep 2026 10:00:00 +0300</pubDate>
+      <author>Евгений Ваулин</author>
+      <description>How to get a full-fledged computer or server terminal on your phone: what’s wrong with regular SSH clients, how to survive a connection loss, what to do with Esc and arrows, and why scrolling breaks.</description>
+    </item>
+    <item>
+      <title>Codex CLI on your server: installation and operation from Russia</title>
+      <link>https://remotai.ru/en/blog/codex-cli-na-servere.html</link>
+      <guid>https://remotai.ru/en/blog/codex-cli-na-servere.html</guid>
+      <pubDate>Wed, 09 Sep 2026 10:00:00 +0300</pubDate>
+      <author>Евгений Ваулин</author>
+      <description>How to install Codex CLI from OpenAI on a rented server, work with it from Russia without VPN on your device and manage it from your phone. Installation, cost, differences from Claude Code.</description>
+    </item>
+    <item>
+      <title>Accessing a computer from a phone: methods and what to choose</title>
+      <link>https://remotai.ru/en/blog/dostup-k-kompyuteru-s-telefona.html</link>
+      <guid>https://remotai.ru/en/blog/dostup-k-kompyuteru-s-telefona.html</guid>
+      <pubDate>Wed, 09 Sep 2026 10:00:00 +0300</pubDate>
+      <author>Евгений Ваулин</author>
+      <description>We look at ways to reach your computer from your phone: remote desktop, SSH, cloud services. What works without a public IP address, what to do with connection interruptions and what it costs.</description>
+    </item>
+    <item>
+      <title>Claude Code and Codex on your server: work from Russia without VPN and without risk to your account</title>
+      <link>https://remotai.ru/en/blog/claude-code-iz-rossii.html</link>
+      <guid>https://remotai.ru/en/blog/claude-code-iz-rossii.html</guid>
+      <pubDate>Tue, 08 Sep 2026 10:00:00 +0300</pubDate>
+      <author>Евгений Ваулин</author>
+      <description>How to run Claude Code or Codex CLI on your server, work from Russia without a VPN on your device and not get your account blocked. Installation, cost, control from your phone.</description>
+    </item>
+  </channel>
+</rss>

@@ -1,3 +1,4 @@
+import { getLocale } from "@tgcontrol/shared";
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { APP_NAME, canCheckConnection, mapApiError, setAgentRegistry, t } from "@tgcontrol/shared";
@@ -149,7 +150,7 @@ function toneNote(tone: ProviderTone, provider: AIProviderUsage): string {
 
 /** Часы:минуты снимка — в подписи статуса и в заголовке секции один формат. */
 function hhmm(date: Date): string {
-  return date.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+  return date.toLocaleTimeString(getLocale(), { hour: "2-digit", minute: "2-digit" });
 }
 
 function requestValueLabel(value: string): string {
@@ -224,7 +225,7 @@ function resetLabel(timestamp?: number): string {
     return t("usage.resetInMinutes", { minutes });
   }
   return t("usage.resetAt", {
-    date: new Intl.DateTimeFormat("ru-RU", {
+    date: new Intl.DateTimeFormat(getLocale(), {
       day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
     }).format(date),
   });
@@ -247,7 +248,7 @@ function percentClass(percent: number): string {
 function money(value: number, currency = "USD", decimalPlaces = 2): string {
   const divisor = 10 ** Math.max(0, decimalPlaces);
   try {
-    return new Intl.NumberFormat("ru-RU", {
+    return new Intl.NumberFormat(getLocale(), {
       style: "currency",
       currency,
       maximumFractionDigits: decimalPlaces,
@@ -730,7 +731,7 @@ export function AgentsView() {
         <section className="agents-work" aria-label={t("agents.workTitle")}>
           {agents.filter(agent => agent.native_route).map(agent => (
             <button type="button" className="agents-start-entry" key={agent.id} onClick={() => { haptic(); navigate(agent.native_route!); }}>
-              <span><b>{agent.name}</b><small>Задачи, подключение модели и настройки в Remotai</small></span>
+              <span><b>{agent.name}</b><small>{t("ui.agentsview.m67949b41cc")}</small></span>
               <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 6 6 6-6 6" /></svg>
             </button>
           ))}
@@ -815,12 +816,12 @@ export function AgentsView() {
                   {sub.card ? (
                     <>
                       <div className="plan-card-line">
-                        {t("billing.cardBound", { type: sub.card.type || "Карта", last4: sub.card.last4 })}
+                        {t("billing.cardBound", { type: sub.card.type || t("ui.accountview.m5736d0caff"), last4: sub.card.last4 })}
                       </div>
                       <p className="plan-note">{t("billing.autoRenew")}</p>
                       {sub.paid_until && (
                         <p className="plan-note">
-                          {t("billing.paidUntil", { date: new Date(sub.paid_until).toLocaleDateString("ru-RU") })}
+                          {t("billing.paidUntil", { date: new Date(sub.paid_until).toLocaleDateString(getLocale()) })}
                         </p>
                       )}
                       <button
@@ -1096,7 +1097,7 @@ export function AgentsView() {
                 <span className="agent-row-icon">{a.icon}</span>
                 <div className="agent-row-info">
                   <div className="agent-row-name">{a.name}</div>
-                  <div className="agent-row-desc">{a.description}</div>
+                  <div className="agent-row-desc">{ownedText(a.description)}</div>
                   {a.path && a.path !== "built-in" && <div className="agent-row-path">{a.path}</div>}
                   {canCheckConnection(a) && (
                     <button className="btn btn-secondary btn-sm ac-open ac-open-row" onClick={() => openCheck(a.id)}>
@@ -1106,7 +1107,7 @@ export function AgentsView() {
                 </div>
                 <AgentQuotaChips quota={a.quota} agentName={a.name} agentID={a.id} />
                 {a.native_route ? (
-                  <button className="btn btn-secondary btn-sm" onClick={() => { haptic(); navigate(a.native_route!); }}>Открыть</button>
+                  <button className="btn btn-secondary btn-sm" onClick={() => { haptic(); navigate(a.native_route!); }}>{t("remote.browserOpen")}</button>
                 ) : a.detected ? (
                   <span className="agent-row-status" style={{ color: "var(--color-success)" }}>✓</span>
                 ) : a.install ? (
@@ -1240,3 +1241,4 @@ export function AgentsView() {
     </div>
   );
 }
+import { ownedText } from "@tgcontrol/shared";

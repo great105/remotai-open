@@ -17,6 +17,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"tgcontrol/internal/localize"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -40,7 +41,7 @@ type ptySession struct {
 func runAttach(args []string) int {
 	cfg := config.GetNoSetup()
 	if cfg.APIToken == "" {
-		fmt.Fprintln(os.Stderr, "remotai: api_token не найден — запустите Remotai хотя бы один раз")
+		fmt.Fprintln(os.Stderr, localize.Text("remotai: api_token не найден — запустите Remotai хотя бы один раз"))
 		return 1
 	}
 	port := cfg.Port()
@@ -64,16 +65,16 @@ func runAttach(args []string) int {
 		var err error
 		id, err = ptyCreate(client, base, cfg.APIToken)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "remotai: не удалось создать сессию: %v\n", err)
+			fmt.Fprintf(os.Stderr, localize.Text("remotai: не удалось создать сессию: %v\n"), err)
 			return 1
 		}
-		fmt.Printf("remotai: новая сессия %s\n", id)
+		fmt.Printf(localize.Text("remotai: новая сессия %s\n"), id)
 		return attachTo(port, cfg.APIToken, id)
 	}
 
 	sessions, err := ptyList(client, base, cfg.APIToken)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "remotai: сервер на %s не отвечает — Remotai запущен? (%v)\n", base, err)
+		fmt.Fprintf(os.Stderr, localize.Text("remotai: сервер на %s не отвечает — Remotai запущен? (%v)\n"), base, err)
 		return 1
 	}
 
@@ -88,14 +89,14 @@ func runAttach(args []string) int {
 		case 0:
 			id, err = ptyCreate(client, base, cfg.APIToken)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "remotai: не удалось создать сессию: %v\n", err)
+				fmt.Fprintf(os.Stderr, localize.Text("remotai: не удалось создать сессию: %v\n"), err)
 				return 1
 			}
-			fmt.Printf("remotai: новая сессия %s\n", id)
+			fmt.Printf(localize.Text("remotai: новая сессия %s\n"), id)
 		case 1:
 			id = alive[0].ID
 		default:
-			fmt.Println("Несколько живых сессий — укажите id (remotai attach <id>) или remotai attach --new:")
+			fmt.Println(localize.Text("Несколько живых сессий — укажите id (remotai attach <id>) или remotai attach --new:"))
 			for _, s := range alive {
 				label := s.Name
 				if label == "" {
@@ -167,12 +168,12 @@ func attachTo(port int, token, id string) int {
 		port, id, url.QueryEscape("token:"+token))
 	conn, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "remotai: подключение к сессии %s: %v\n", id, err)
+		fmt.Fprintf(os.Stderr, localize.Text("remotai: подключение к сессии %s: %v\n"), id, err)
 		return 1
 	}
 	defer conn.Close()
 
-	fmt.Printf("remotai: attach %s — Ctrl+] чтобы отцепиться (сессия останется жить)\n", id)
+	fmt.Printf(localize.Text("remotai: attach %s — Ctrl+] чтобы отцепиться (сессия останется жить)\n"), id)
 
 	stdinFd := int(os.Stdin.Fd())
 	oldState, err := term.MakeRaw(stdinFd)
@@ -271,9 +272,9 @@ loop:
 	conn.Close()
 	term.Restore(stdinFd, oldState)
 	if exited {
-		fmt.Printf("\r\nremotai: сессия %s завершена\r\n", id)
+		fmt.Printf(localize.Text("\r\nremotai: сессия %s завершена\r\n"), id)
 	} else {
-		fmt.Printf("\r\nremotai: отцепился — сессия %s продолжает работать (remotai attach %s чтобы вернуться)\r\n", id, id)
+		fmt.Printf(localize.Text("\r\nremotai: отцепился — сессия %s продолжает работать (remotai attach %s чтобы вернуться)\r\n"), id, id)
 	}
 	return 0
 }

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { applySetting, getSettingsCatalog, setAutostart } from "../api";
 import { t } from "../i18n";
 import { haptic, tgConfirm } from "../telegram";
-import { mapApiError, useToast } from "@tgcontrol/shared";
+import { mapApiError, useToast, ownedText } from "@tgcontrol/shared";
 import {
   placeCatalog,
   settingValueText,
@@ -102,7 +102,10 @@ export function ComputerSettings({ onPickFolder, refreshToken = 0 }: {
   // Search the server's descriptions as well as titles, so newly added
   // settings remain findable without a separate client-side list of keys.
   const wordsToFind = query.trim().toLocaleLowerCase().replace(/ё/g, "е").split(/\s+/).filter(Boolean);
-  const visibleItems = items.filter(({ spec }) => {
+  const visibleItems = items.map(item => ({ ...item, spec: {
+    ...item.spec, title: ownedText(item.spec.title), hint: ownedText(item.spec.hint),
+    details: item.spec.details?.map(ownedText),
+  } })).filter(({ spec }) => {
     const text = [spec.title, spec.hint, ...(spec.details || [])].join(" ").toLocaleLowerCase().replace(/ё/g, "е");
     return wordsToFind.every(word => text.includes(word));
   });

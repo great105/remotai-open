@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Claude Code с телефона: агент на своём компьютере, пульт в кармане | Remotai</title>
+<meta name="description" content="Claude Code и Codex CLI работают на вашем компьютере, а терминал открывается с телефона: видно, кто ждёт ответа, задачу можно продолжить откуда угодно. Дома бесплатно, через интернет 7 дней без карты." />
+<link rel="canonical" href="https://remotai.ru/claude-code.html" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Claude Code с телефона: агент на своём компьютере" />
+<meta property="og:description" content="Агент живёт на вашей машине с вашими файлами и ключами. Терминал — в телефоне." />
+<meta property="og:url" content="https://remotai.ru/claude-code.html" />
+<link rel="icon" href="/favicon.ico" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#06080b; --bg2:#0a0e13; --panel:#0d1218; --panel2:#10161e;
+  --line:#1c2530; --line2:#28333f;
+  --fg:#e8eef4; --muted:#91a0ae; --faint:#72818f;
+  --accent:#2ee6b0; --accent-deep:#0c8f6c; --accent-dim:rgba(46,230,176,.12);
+  --amber:#ffb454;
+  --font-display:"Unbounded","Arial Black",sans-serif;
+  --font-body:"Golos Text","Segoe UI",sans-serif;
+  --font-mono:"JetBrains Mono","Cascadia Code",Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:940px;margin:0 auto;padding:0 20px}
+header.top{border-bottom:1px solid var(--line);background:rgba(6,8,11,.9);position:sticky;top:0;z-index:10;backdrop-filter:blur(8px)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--fg)}
+.logo span{color:var(--accent)}
+.nav a{color:var(--muted);font-size:15px;margin-left:22px}
+.hero{padding:64px 0 40px}
+.eyebrow{font-family:var(--font-mono);font-size:13px;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
+h1{font-family:var(--font-display);font-weight:700;font-size:clamp(30px,5vw,46px);line-height:1.15;margin:0 0 18px}
+.lead{font-size:20px;color:var(--muted);max-width:720px;margin:0 0 28px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.btn{display:inline-block;padding:14px 24px;border-radius:12px;font-weight:600;font-size:16px}
+.btn-main{background:var(--accent);color:#06251c}
+.btn-main:hover{background:#3ff0bd;text-decoration:none}
+.btn-ghost{border:1px solid var(--line2);color:var(--fg)}
+.btn-ghost:hover{border-color:var(--accent);text-decoration:none}
+.note{font-size:14px;color:var(--faint)}
+section{padding:44px 0;border-top:1px solid var(--line)}
+h2{font-family:var(--font-display);font-weight:500;font-size:clamp(22px,3.4vw,30px);margin:0 0 10px}
+.sub{color:var(--muted);margin:0 0 26px;max-width:760px}
+.grid{display:grid;gap:16px}
+.grid>*{min-width:0}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:760px){.g3,.g2{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;min-width:0}
+.card h3{font-size:17px;margin:0 0 8px;font-weight:600}
+.card p{margin:0;color:var(--muted);font-size:15px}
+/* minmax(0,1fr) и min-width:0 обязательны: иначе длинная команда в <pre>
+   распирает колонку grid и на телефоне появляется горизонтальная прокрутка. */
+.steps{counter-reset:s;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.step{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:18px 20px 18px 62px;position:relative;min-width:0}
+.step:before{counter-increment:s;content:counter(s);position:absolute;left:20px;top:18px;width:28px;height:28px;border-radius:9px;background:var(--accent-dim);color:var(--accent);font-family:var(--font-mono);font-weight:500;display:flex;align-items:center;justify-content:center;font-size:15px}
+.step h3{margin:0 0 6px;font-size:17px}
+.step p{margin:0;color:var(--muted);font-size:15px}
+code,.mono{font-family:var(--font-mono);font-size:14px}
+pre{background:#05070a;border:1px solid var(--line);border-radius:12px;padding:16px;overflow-x:auto;margin:12px 0 0;max-width:100%}
+pre code{color:var(--accent)}
+.price{display:flex;gap:14px;flex-wrap:wrap;align-items:stretch}
+.price .card{flex:1 1 240px}
+.price .sum{font-family:var(--font-display);font-size:26px;margin:6px 0}
+.faq{display:grid;gap:12px}
+.faq details{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+.faq summary{cursor:pointer;font-weight:600;font-size:16px}
+.faq p{color:var(--muted);margin:10px 0 0;font-size:15px}
+footer{border-top:1px solid var(--line);padding:28px 0 44px;color:var(--faint);font-size:14px}
+footer a{color:var(--muted)}
+.tag{display:inline-block;font-family:var(--font-mono);font-size:12px;color:var(--accent);background:var(--accent-dim);border-radius:999px;padding:3px 10px;margin-bottom:10px}
+</style>
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Remotai — это доступ к Claude Code?", "acceptedAnswer": {"@type": "Answer", "text": "Нет. Claude Code вы ставите и оплачиваете сами, у Anthropic. Remotai — пульт к нему: он показывает терминал вашей машины и передаёт туда то, что вы набрали."}}, {"@type": "Question", "name": "Мои файлы и ключи попадают к вам?", "acceptedAnswer": {"@type": "Answer", "text": "Нет. Агент работает на вашей машине, файлы и ключи остаются там. Через облако идёт то, что вы видите на экране терминала, и то, что вы набираете. Содержимое терминалов, команды, имена файлов и кадры экрана в аналитике не хранятся."}}, {"@type": "Question", "name": "А если у меня нет своего сервера?", "acceptedAnswer": {"@type": "Answer", "text": "Он не нужен: агент может работать на обычном компьютере, пока тот включён. Если хочется круглосуточно и без вашей машины — есть сценарий с сервером."}}, {"@type": "Question", "name": "Работает ли это из России?", "acceptedAnswer": {"@type": "Answer", "text": "Remotai — да: он не имеет отношения ни к вашей машине, ни к сети агента. Доступность самого Claude Code зависит от сети той машины, где он запущен; разбор — в статье «Claude Code и Codex из России»."}}, {"@type": "Question", "name": "Какие ещё агенты поддерживаются?", "acceptedAnswer": {"@type": "Answer", "text": "Любые консольные: Codex CLI, Kimi, Gemini CLI, Aider, opencode, Grok. Приложение знает их команды установки и умеет держать несколько аккаунтов для каждого."}}, {"@type": "Question", "name": "Что будет, если компьютер выключится?", "acceptedAnswer": {"@type": "Answer", "text": "Агент остановится вместе с ним — он работает на этой машине. После включения Remotai поднимается сам, терминалы с историей возвращаются."}}]}
+</script>
+
+<link rel="alternate" hreflang="ru" href="https://remotai.ru/claude-code.html" />
+<link rel="alternate" hreflang="en" href="https://remotai.ru/en/claude-code.html" />
+<link rel="alternate" hreflang="x-default" href="https://remotai.ru/claude-code.html" />
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="/">Remot<span>ai</span></a><a class="language-link" href="/en/claude-code.html" hreflang="en" lang="en" style="margin-left:auto;padding:8px;white-space:nowrap;font-size:13px">English</a>
+    <nav class="nav">
+      <a href="/#pricing">Цены</a>
+      <a href="/#download">Скачать</a>
+      <a href="/blog/">Блог</a>
+      <a href="/app/">Веб-версия</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="eyebrow">Claude Code и Codex CLI</div>
+    <h1>Claude Code работает на вашем компьютере. А вы — где угодно.</h1>
+    <p class="lead">Claude Code — консольный ИИ-агент от Anthropic: он живёт на вашей машине и видит ваши файлы, ключи и окружение. Отсюда его главное ограничение — закрыли ноутбук, работа встала. Remotai даёт к нему пульт: терминал агента в телефоне или браузере, с историей и ответами на его вопросы.</p>
+    <div class="cta">
+      <a class="btn btn-main" href="/app/#/start">Начать</a>
+      <a class="btn btn-ghost" href="#what">Что это и что нужно</a>
+    </div>
+    <p class="note">На своём компьютере в домашней сети — бесплатно навсегда. Доступ через интернет — 7 дней без карты, дальше 900 ₽ за 30 дней. Подписка Claude или OpenAI покупается у них и в эту цену не входит.</p>
+  </div>
+
+  <section id="what">
+    <h2>Что это и что нужно</h2>
+    <p class="sub">Честно и сразу: Remotai не заменяет Claude Code и не даёт к нему доступ. Агент ваш, аккаунт ваш, машина ваша — мы про то, как дотянуться до них не с рабочего места.</p>
+    <div class="grid g3">
+      <div class="card"><h3>Компьютер или сервер</h3><p>Windows, macOS или Linux, где стоит агент и лежат проекты. Машина должна оставаться включённой: агент работает на ней, а не у нас.</p></div>
+      <div class="card"><h3>Свой аккаунт агента</h3><p>Anthropic, OpenAI, Moonshot, Google — чей угодно. Remotai не включает их подписки и не хранит ваши ключи: они остаются на вашей машине.</p></div>
+      <div class="card"><h3>Телефон или браузер</h3><p>Android, iPhone, iPad, любой браузер, Telegram. В роутере настраивать нечего: компьютер сам выходит на связь.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Зачем это тому, у кого агент уже стоит</h2>
+    <p class="sub">Claude Code не умеет ждать вас у монитора. Четыре ситуации, из которых вырос продукт.</p>
+    <div class="grid g2">
+      <div class="card"><h3>Он спрашивает — а вас нет</h3><p>Агент останавливается на вопросе «применить правку?» и стоит так часами. С телефона видно, кто ждёт ответа, и ответить можно одной кнопкой.</p></div>
+      <div class="card"><h3>Задача на час, а вам пора</h3><p>Поставили задачу и ушли. Терминал живёт на компьютере: вернулись — история на месте, ничего не оборвалось.</p></div>
+      <div class="card"><h3>Проекты на машине, а не в облаке</h3><p>Облачный агент работает в чужой песочнице без ваших файлов, ключей и запущенных сервисов. Ваш работает у вас.</p></div>
+      <div class="card"><h3>Несколько агентов сразу</h3><p>Claude Code, Codex, Kimi, Gemini, Aider, opencode — каждый в своей папке. Видно, кто работает, кто ждёт, кто закончил.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Как это выглядит</h2>
+    <p class="sub">Четыре шага, дальше вы просто пишете агенту в терминал.</p>
+    <div class="steps">
+      <div class="step"><h3>Поставить Remotai на машину с агентом</h3><p>Один установщик для Windows, macOS и Linux. Ставится в пользовательский профиль, права администратора не нужны.</p></div>
+      <div class="step"><h3>Привязать её к своему аккаунту</h3><p>Кодом или QR прямо с этой машины. Белый IP, VPN и настройка роутера не нужны — соединение исходящее.</p></div>
+      <div class="step"><h3>Открыть терминал с телефона</h3><p>Выбираете папку проекта и агента. Если CLI ещё не установлен, приложение покажет команду установки и поможет выбрать аккаунт.</p></div>
+      <div class="step"><h3>Дать задачу и уйти</h3><p>Ответ придёт в тот же терминал. Уведомление скажет, когда агент закончил или спросил.</p></div>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <h2>Сколько это стоит</h2>
+    <p class="sub">Граница простая: дома — бесплатно, через интернет — по подписке.</p>
+    <div class="price">
+      <div class="card"><h3>Локально</h3><p class="sum">0 ₽</p><p>Свой компьютер в домашней сети: терминалы, агенты, файлы, экран. Навсегда и без лимитов.</p></div>
+      <div class="card"><h3>Про</h3><p class="sum">900 ₽ / 30 дней</p><p>Доступ через интернет, серверы, SSH и SFTP, до 5 облачных устройств. Первые 7 дней бесплатно, карта не нужна.</p></div>
+      <div class="card"><h3>Флит</h3><p class="sum">1 990 ₽ / 30 дней</p><p>То же, но до 25 облачных устройств — когда машин и серверов много.</p></div>
+    </div>
+    <p class="note">Продление вручную, автоматических списаний нет. <a href="/#pricing">Все тарифы</a></p>
+  </section>
+
+  <section>
+    <h2>Вопросы, которые задают до установки</h2>
+    <div class="faq">
+      <details><summary>Remotai — это доступ к Claude Code?</summary><p>Нет. Claude Code вы ставите и оплачиваете сами, у Anthropic. Remotai — пульт к нему: он показывает терминал вашей машины и передаёт туда то, что вы набрали.</p></details>
+      <details><summary>Мои файлы и ключи попадают к вам?</summary><p>Нет. Агент работает на вашей машине, файлы и ключи остаются там. Через облако идёт то, что вы видите на экране терминала, и то, что вы набираете. Содержимое терминалов, команды, имена файлов и кадры экрана в аналитике не хранятся.</p></details>
+      <details><summary>А если у меня нет своего сервера?</summary><p>Он не нужен: агент может работать на обычном компьютере, пока тот включён. Если хочется круглосуточно и без вашей машины — есть <a href="/server.html">сценарий с сервером</a>.</p></details>
+      <details><summary>Работает ли это из России?</summary><p>Remotai — да: он не имеет отношения ни к вашей машине, ни к сети агента. Доступность самого Claude Code зависит от сети той машины, где он запущен; разбор — в статье <a href="/blog/claude-code-iz-rossii.html">«Claude Code и Codex из России»</a>.</p></details>
+      <details><summary>Какие ещё агенты поддерживаются?</summary><p>Любые консольные: Codex CLI, Kimi, Gemini CLI, Aider, opencode, Grok. Приложение знает их команды установки и умеет держать несколько аккаунтов для каждого.</p></details>
+      <details><summary>Что будет, если компьютер выключится?</summary><p>Агент остановится вместе с ним — он работает на этой машине. После включения Remotai поднимается сам, терминалы с историей возвращаются.</p></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Дальше</h2>
+    <p class="sub">Можно поставить сразу, а можно сначала почитать.</p>
+    <div class="cta">
+      <a class="btn btn-main" href="/app/#/start">Начать</a>
+      <a class="btn btn-ghost" href="/blog/">Читать блог</a>
+      <a class="btn btn-ghost" href="/">О продукте целиком</a>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <p>ИП Ваулин Евгений Николаевич · ИНН 773461030140 · ОГРНИП 325774600620214</p>
+    <p><a href="/">Главная</a> · <a href="/offer.html">Оферта</a> · <a href="/privacy">Конфиденциальность</a></p>
+  </div>
+</footer>
+
+<script>
+// Метрика: тот же счётчик, что на лендинге и в приложении, — путь человека не рвётся.
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym(111692890,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+
+// UTM с рекламы кладём туда же, откуда их читает веб-приложение (тот же origin).
+(function(){
+  try{
+    var q=new URLSearchParams(location.search),utm={};
+    ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","yclid"].forEach(function(k){var v=q.get(k);if(v)utm[k]=v.slice(0,200);});
+    if(Object.keys(utm).length&&!localStorage.getItem("utm"))localStorage.setItem("utm",JSON.stringify(utm));
+  }catch(e){}
+  document.querySelectorAll('a[href="/app/"]').forEach(function(a){
+    a.addEventListener("click",function(){try{ym(111692890,"reachGoal","open_web")}catch(e){}});
+  });
+})();
+</script>
+</body>
+</html>

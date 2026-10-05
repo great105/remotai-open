@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Remotai</title>
+<!-- Бренд-шрифты подключаются НЕ блокирующим способом: media="print" не
+       задерживает первую отрисовку, а onload переводит стиль в "all". Если
+       fonts.googleapis.com недоступен (офлайн, корпоративный фильтр, DPI),
+       окно рисуется сразу на системном стеке из setup.css, а не остаётся
+       пустым до сетевого таймаута. -->
+<link href="/setup/assets/setup.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Golos+Text:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'" rel="stylesheet"/>
+</link><script>(function(){var u=new URL(location.href),q=u.searchParams.get('lang'),s;try{s=localStorage.getItem('remotai.language')}catch(e){};var l=q==='ru'||q==='en'?q:s==='ru'||s==='en'?s:navigator.language.toLowerCase().startsWith('ru')?'ru':'en';try{localStorage.setItem('remotai.language',l)}catch(e){};if(q!==l){u.searchParams.set('lang',l);location.replace(u)}})();</script></head>
+<body>
+<div class="wizard">
+<!-- Brand header -->
+<header class="brand-row">
+<div class="brand-left">
+<svg aria-hidden="true" class="brand-mark" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<path d="m12 3 8.5 5L12 13 3.5 8 12 3Z"></path>
+<path d="m4 12.5 8 4.7 8-4.7"></path>
+<path d="m4 17 8 4.7 8-4.7"></path>
+</svg>
+<!-- H1 страницы — имя продукта. Раньше заголовка первого уровня на
+             странице не было вовсе: у мастера были только h2 шагов, и
+             вспомогательные технологии начинали чтение со второго уровня
+             (аудит онбординга 30.08.2026). -->
+<h1 class="brand-name">Remotai</h1>
+<span class="ver-badge" id="ver-badge" title="Application version">…</span>
+</div>
+<span class="brand-tag">your AI agents are at your fingertips</span>
+<a class="link" style="margin-left:auto;padding:8px;white-space:nowrap" href="?lang=ru" onclick="var u=new URL(location.href);u.searchParams.set('lang','ru');this.href=u;" lang="ru">Русский</a></header>
+<!-- Точек ПЯТЬ, но человек видит столько, сколько в его маршруте: шаг
+         «Доступ из интернета» есть только в легаси-ветке «свой бот», и в
+         рекомендованных маршрутах его точка скрыта (updateSteps). Проверено
+         замером: в облачном и локальном пути видно четыре точки из пяти —
+         обещания пятого шага человеку нет. -->
+<div class="steps hidden">
+<div class="step-dot active"></div>
+<div class="step-dot"></div>
+<div class="step-dot"></div>
+<div class="step-dot"></div>
+<div class="step-dot"></div>
+</div>
+<!-- ══ Boot: пока /api/setup/status не ответил ══════════════
+         Показывать мастер настроенному компьютеру нельзя: выбор режима
+         перезаписал бы рабочую конфигурацию. Поэтому до ответа статуса —
+         нейтральный экран, а при сбое — «Повторить», а не сырая ошибка. -->
+<div class="card boot" id="boot">
+<span class="spinner big" id="boot-spinner"></span>
+<div class="boot-text">
+<div class="status-title" id="boot-title">Launching Remotai...</div>
+<p class="hint" id="boot-sub">We check the status of the program on this computer.</p>
+</div>
+<div class="btn-line hidden" id="boot-actions">
+<button class="btn btn-primary" id="btn-boot-retry" type="button">Repeat</button>
+</div>
+</div>
+<!-- ══ Control panel (configured) ══════════════════════════ -->
+<div class="panel hidden" id="panel">
+<div class="panel-top">
+<!-- Статус: одна понятная фраза о состоянии -->
+<div class="card status-hero">
+<span class="status-dot" id="p-dot"></span>
+<div class="status-text">
+<div class="status-title" id="p-state">…</div>
+<div class="status-sub" id="p-host"></div>
+</div>
+</div>
+<!-- Порт: программа уже работает на свободном порту — состояние
+             нейтральное, основное действие — вернуться на привычный порт. -->
+<div class="card hidden" id="p-bind-error">
+<div class="status-title" id="p-bind-title">Remotai works on a different port</div>
+<p class="hint" id="p-bind-error-text"></p>
+<div class="btn-line">
+<button class="btn btn-primary btn-inline hidden" id="btn-restore-port" type="button">Return to original port</button>
+</div>
+<p class="hint" id="p-bind-warn">Changing the port changes the computer's Wi-Fi address: phones connected via a local network will need a new QR code.</p>
+<button class="link-btn" id="btn-change-port" type="button">select another free port</button>
+</div>
+</div>
+<div class="panel-cols">
+<div class="panel-col">
+<!-- Облачный аккаунт: статус этого управляемого компьютера + пейринг -->
+<div class="card account-card">
+<div class="card-head">
+<svg class="card-ico" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+<h3>Remotai account</h3>
+<span class="cloud-pill" id="p-phone-pill">…</span>
+</div>
+<p class="hint" id="p-phone-hint">…</p>
+<!-- Номер аккаунта человеку сверять не с чем: в приложении он нигде
+                 не показан. Поэтому он уехал в «технические детали», а рядом —
+                 сворачиваемое объяснение «компьютера нет в приложении?», которое
+                 больше не висит постоянной строкой с деструктивным советом. -->
+<details class="tech-details hidden" id="p-account-mismatch">
+<summary>Computer not in the application?</summary>
+<p class="hint">Most likely, you are logged into another Remotai account on your phone. Check: in the application section “My Computers” - this computer should be in the list. If it is not there, log out on your phone and log in the same way you connected your computer. And only if you need another account, delete the computer here and add it again using the QR code.</p>
+</details>
+<details class="tech-details hidden" id="p-account-tech">
+<summary>Technical details</summary>
+<div class="access-rows" style="margin-top:8px">
+<div class="access-row">
+<span class="access-k">Account</span>
+<span class="access-v" id="p-account-id">…</span>
+</div>
+</div>
+</details>
+<div class="btn-line">
+<button class="btn btn-primary" id="btn-add-device" type="button">Connect this computer to your account</button>
+<!-- «Показать QR-код» переживает опрос статуса: без него после
+                   «Скрыть QR-код» в состоянии «привязка отозвана» окно оставалось
+                   с инструкцией «получите новый QR» и без единой кнопки. -->
+<button class="btn btn-secondary hidden" id="pp-show" type="button">Show QR code</button>
+<button class="btn btn-secondary hidden" id="pp-hide" type="button">Hide QR code</button>
+</div>
+<!-- Выход из режима локальной сети: доступ через интернет должен
+                 быть достижим из окна, а не только при первой настройке. -->
+<div class="hidden" id="p-cloud-enable">
+<button class="btn btn-primary" id="btn-cloud-enable" type="button">Connect via the Internet</button>
+<p class="hint" id="p-cloud-enable-hint">The computer will appear in your Remotai account - control will be available from any network, not just from your home Wi-Fi.</p>
+</div>
+<div class="pairing-block hidden" id="p-pair">
+<a class="btn btn-primary btn-wide hidden" id="pp-account" rel="noopener noreferrer" target="_blank">Connect to your account in the browser</a>
+<p class="hint pair-scan-hint" id="pp-account-hint">You can do it on the same computer: log into your account and confirm the connection. The code will be entered automatically.</p>
+<ol class="pair-steps">
+<li id="pp-step-app">On your phone or another PC, open <a class="link" href="https://remotai.ru/app/" rel="noopener" target="_blank">Remotai in the browser</a> or application. Login to the same account</li>
+<li id="pp-step-code">In My Computers, click Connect a Computer and enter the code below. You can scan QR on your phone</li>
+<li>To scan, point your phone camera at this code:</li>
+</ol>
+<p class="hint" id="pp-install-hint" style="margin-top:-2px">Don't have an app? Download - at <a class="link" href="https://remotai.ru" rel="noopener" target="_blank">remotai.ru</a></p>
+<button class="link-btn" id="pp-install-toggle" type="button">I don't have the app yet - show installation QR</button>
+<div class="hidden" id="pp-install-block" style="margin-top:10px">
+<img alt="QR for installing Remotai" class="qr" height="220" src="/api/setup/qr?data=https%3A%2F%2Fremotai.ru%2Fdownload&amp;size=220" width="220"/>
+<!-- Совет про remotai.ru/app виден только в облачном режиме:
+                     https-страница физически не может обратиться к
+                     http://192.168.x.x, и в LAN-режиме он вёл в тупик. -->
+<p class="hint">Scan with the system camera. Once installed, return to the connection QR above. <span id="pp-install-web">You can open without installation <a class="link" href="https://remotai.ru/app" rel="noopener" target="_blank">remotai.ru/app</a>.</span></p>
+</div>
+<img alt="QR for connection" class="qr" height="220" id="pp-qr" width="220"/>
+<p class="hint" id="pp-manual-hint">Doesn't scan? Enter this connection code manually in the application:</p>
+<div class="pair-code-row" id="pp-code-row">
+<div class="pair-code-big" id="pp-code">────────</div>
+<button class="btn btn-secondary btn-icon" id="pp-copy" title="Copy code" type="button">⧉</button>
+</div>
+<p class="hint hidden" id="pp-lan-addr"></p>
+<p class="hint hidden" id="pp-tg-row">Or via Telegram: open <a class="link" id="pp-tg" rel="noopener" target="_blank">bot</a> and send him this code</p>
+<div class="cloud-status" id="pp-status">We are asking for a code...</div>
+<p class="hint" id="pp-expiry"></p>
+<button class="btn btn-secondary" id="pp-refresh" style="margin-top:8px" type="button">Get new code</button>
+</div>
+<button class="link-danger hidden" id="btn-disconnect" type="button">Remove this computer from your account...</button>
+<div class="confirm-line hidden" id="p-disconnect-confirm">
+<span>The computer will disappear from the My Computers list, and the installed agent will exit the cloud. Phones and browsers will remain authorized. Are you sure to delete the computer?</span>
+<div class="btn-line">
+<button class="btn btn-danger" id="btn-disconnect-yes" type="button">Yes, delete the computer</button>
+<button class="btn btn-secondary" id="btn-disconnect-no" type="button">Cancel</button>
+</div>
+</div>
+</div>
+<!-- Второй телефон. Раньше единственным выполнимым советом в окне было
+               «удалите компьютер и добавьте заново»: гостевому (анонимному)
+               аккаунту войти со второго устройства было нечем, а QR локальной
+               сети в облачном режиме окно не показывало вовсе. -->
+<div class="card hidden" id="p-more-devices">
+<div class="card-head">
+<svg class="card-ico" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><rect height="19" rx="3" width="12" x="6" y="2.5"></rect><path d="M10.5 18.5h3"></path></svg>
+<h3>Connect another device</h3>
+</div>
+<p class="hint" id="p-more-devices-hint">…</p>
+<button class="link-btn" id="btn-lan-qr-toggle" type="button">Show QR for this Wi-Fi network</button>
+<div class="hidden" id="p-lan-qr">
+<img alt="QR for connecting via local network" class="qr" height="220" id="p-lan-qr-img" width="220"/>
+<p class="hint">In the Remotai app: “Scan QR”. Cannot be scanned - click “Copy code” and paste it in the application. This is the code <b>local network</b> - it is longer than the account short code and only works on this Wi-Fi.</p>
+<div class="pair-code-long" id="p-lan-code">────────</div>
+<button class="btn btn-secondary btn-inline" id="btn-lan-code-copy" style="margin-top:8px" type="button">Copy code</button>
+<p class="hint" id="p-lan-qr-addr"></p>
+<p class="hint">It only works while the phone is on the same Wi-Fi network. The web version of remotai.ru/app cannot connect like that - you need an application.</p>
+</div>
+</div>
+<!-- Свой Telegram-бот: облачного аккаунта у этого режима нет, поэтому
+               и статус, и действия у него свои (раньше панель показывала ему
+               «Компьютер не добавлен в аккаунт» и сама просила код у облака). -->
+<div class="card hidden" id="p-own-bot">
+<div class="card-head">
+<svg class="card-ico" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M21 4 3 11l6 2 2 6 3-5 5 4Z"></path></svg>
+<h3>Your own Telegram bot</h3>
+</div>
+<div class="access-rows">
+<div class="access-row">
+<span class="access-k">Bot</span>
+<span class="access-v" id="p-own-bot-state">…</span>
+</div>
+<div class="access-row">
+<span class="access-k">Tunnel</span>
+<span class="access-v" id="p-own-tunnel">…</span>
+</div>
+</div>
+<p class="hint">Mode for experienced: communication goes through your bot and your tunnel, the Remotai cloud is not involved. Bot token - in file <code>.env</code> next to settings.</p>
+<button class="link-btn" id="btn-own-bot-cloud" type="button">Switch to the Remotai cloud...</button>
+</div>
+</div>
+<div class="panel-col">
+<!-- Действия на этом компьютере -->
+<div class="card" id="p-pc-actions">
+<div class="card-head">
+<svg class="card-ico" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><rect height="14" rx="2" width="19" x="2.5" y="4"></rect><path d="M8 21h8"></path></svg>
+<h3>On this computer</h3>
+</div>
+<div class="action-tiles">
+<button class="action-tile" id="btn-open-app" type="button">
+<span class="t-title">Open computer management
+                  <svg class="t-ico" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M7 17 17 7"></path><path d="M9 7h8v8"></path></svg>
+</span>
+<span class="t-desc">Terminals, files and screen in this window are the same as seen from the phone</span>
+</button>
+<button class="action-tile" id="btn-host-terminal" type="button">
+<span class="t-title">Open terminal
+                  <svg class="t-ico" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="m6.5 8.5 3 2.5-3 2.5"></path><path d="M12 15h5"></path></svg>
+</span>
+<span class="t-desc">Command line window. It's immediately visible from your phone - start here, continue on the road</span>
+</button>
+</div>
+</div>
+<!-- AI-помощники: ради Claude Code/Codex продукт и ставят, а раньше
+               экран с их поиском и установкой видел только тот, кто выбрал
+               «по локальной сети» — в панели раздела не было вовсе. -->
+<div class="card" id="p-agents">
+<div class="card-head">
+<svg class="card-ico" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><rect height="12" rx="3" width="16" x="4" y="7"></rect><path d="M12 3v4"></path><path d="M9 12.5h.01"></path><path d="M15 12.5h.01"></path></svg>
+<h3>AI assistants</h3>
+</div>
+<div class="agent-list" id="p-agent-list"></div>
+<div class="agent-install hidden" id="p-agent-install">
+<button class="link-btn" id="btn-p-agent-install-toggle" type="button">Install assistant...</button>
+<div class="hidden" id="p-agent-install-body">
+<p class="hint">Click “Install” and a terminal window will open on your computer and execute the command. If he answers that <code>npm</code> not found, first install Node.js: in the Remotai terminal there is a ready-made “Node.js LTS” command.</p>
+<div class="agent-install-list" id="p-agent-install-list"></div>
+</div>
+</div>
+<button class="link-btn" id="btn-p-agent-recheck" style="margin-top:8px" type="button">Check again</button>
+</div>
+<!-- Состояние запуска и локального доступа -->
+<div class="card">
+<div class="card-head">
+<svg class="card-ico" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M12 2v4"></path><path d="M5 5l3 3"></path><path d="M2 12h4"></path><circle cx="12" cy="12" r="6"></circle></svg>
+<h3>Launch and local network</h3>
+</div>
+<div class="access-rows">
+<div class="access-row">
+<span class="access-k">Port</span>
+<span class="access-v"><code id="p-port">…</code></span>
+</div>
+<label class="access-row toggle-row">
+<span class="access-k">Autostart</span>
+<span class="access-v toggle-line">
+<input class="switch-input" id="p-autostart-toggle" type="checkbox"/>
+<span aria-hidden="true" class="switch"></span>
+<span>Run on login</span>
+</span>
+</label>
+<div class="access-row">
+<span class="access-k">Access from the network</span>
+<span class="access-v" id="p-lan-check">checking...</span>
+</div>
+</div>
+<p class="hint">Remotai runs in the background, without additional windows. If you close the window with a cross, access to the computer will remain. You can open Remotai again through the icon next to the clock or a shortcut.</p>
+<p class="hint hidden" id="p-autostart-warning">Autorun is disabled. After logging in, open Remotai manually to make your computer accessible from other devices.</p>
+<button class="btn btn-secondary hidden" id="btn-allow-firewall" type="button">Allow in Windows Firewall</button>
+<!-- «Уезжаю, пусть никто не подключается» человек искал в окне и
+                 находил только красное «Удалить компьютер из аккаунта». Выход
+                 из программы стоит там, где его ищут, — рядом с автозапуском. -->
+<div id="p-quit-line">
+<button class="link-danger" id="btn-quit" type="button">Quit Remotai on this computer...</button>
+<div class="confirm-line hidden" id="p-quit-confirm">
+<span>Remotai will close: the clock icon will disappear, access from the phone will cease until the next time you start the computer or program. The link to your account will remain; you don’t need to unlink anything.</span>
+<div class="btn-line">
+<button class="btn btn-danger" id="btn-quit-yes" type="button">Yes, complete</button>
+<button class="btn btn-secondary" id="btn-quit-no" type="button">Cancel</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Другие устройства (свёрнуто по умолчанию) -->
+<div class="card">
+<button class="card-toggle" id="p-access-toggle" type="button">
+<svg class="card-ico" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3a13.5 13.5 0 0 1 0 18 13.5 13.5 0 0 1 0-18Z"></path></svg>
+<h3>Login from another computer</h3>
+<span class="chev" id="p-access-chev">▾</span>
+</button>
+<div class="hidden" id="p-access-body">
+<div class="access-rows" style="margin-top:10px">
+<div class="access-row">
+<span class="access-k">From the Internet</span>
+<!-- Заполняется по состоянию облака: обещать «работает из
+                       любого места» компьютеру вне аккаунта нельзя. -->
+<span class="access-v" id="p-inet-access"><span class="hint">…</span></span>
+</div>
+<div class="access-row">
+<span class="access-k">At home, via Wi-Fi</span>
+<span class="access-v" id="p-lan-urls"><span class="hint">…</span></span>
+</div>
+</div>
+<p class="hint">Click on the address - the link will be copied, open it in a browser on another computer. The link contains the access key: do not forward it to anyone.</p>
+</div>
+</div>
+<!-- Версия и обновления: одна строка -->
+<div class="card slim">
+<div class="ver-line">
+<span>Version <code id="p-version">…</code></span>
+<span class="sep">·</span>
+<span id="p-autoupdate">updates automatically</span>
+<span class="sep">·</span>
+<button class="link-btn" id="btn-check-update" type="button">check</button>
+</div>
+<div class="btn-line hidden" id="p-update-row" style="margin-top:10px">
+<button class="btn btn-primary" id="btn-apply-update" type="button">Update</button>
+</div>
+<div class="update-note hidden" id="p-update-note"></div>
+<!-- Обновление скачано, рестарт ждёт закрытия этого окна: раньше об этом
+                 знал только лог, и агент мог сутками работать на старой версии. -->
+<div class="pending-update hidden" id="p-pending-update">
+<div class="pending-update-text" id="p-pending-update-text"></div>
+<button class="btn btn-primary" id="btn-restart-update" type="button">Restart now</button>
+</div>
+</div>
+</div>
+</div>
+<p class="hint center" id="p-close-hint">This window can be closed - Remotai runs in the background (icon near the clock).</p>
+</div>
+<!-- Updating overlay -->
+<div class="overlay hidden" id="update-overlay">
+<div class="overlay-card">
+<span class="spinner big"></span>
+<p id="update-overlay-text">We are updating... The application will restart itself.</p>
+</div>
+</div>
+<!-- ══ Wizard steps (first run) ════════════════════════════ -->
+<!-- Step 0: Welcome -->
+<div class="step hidden" id="step-0">
+<div class="card">
+<h2>Where do your AI agents work?</h2>
+<p class="subtitle">Connect agents on this machine or open them on another</p>
+<div id="welcome-info"></div>
+<button class="btn btn-secondary btn-wide" id="btn-control-other" style="margin-top:16px" type="button">Open agents on another machine</button>
+<p class="hint">Let's log in to your account in the application. You do not need to connect this computer to your account for this.</p>
+</div>
+</div>
+<!-- Step 1: Mode -->
+<div class="step hidden" id="step-1">
+<div class="card">
+<h2>Connection method</h2>
+<p class="subtitle">How can I connect to this computer from other devices?</p>
+<!-- ⚠ ДЕНЬГИ НАЗВАНЫ ЗДЕСЬ, в точке выбора. До этой строки мастер про
+             них молчал вовсе: денежное слово встречалось один раз, в тексте
+             ошибки, а «дома» на локальной карточке читалось как «вариант
+             поменьше» — хотя это единственная вечно бесплатная полка
+             (аудит онбординга 30.08.2026). Цены — по витрине и канону. -->
+<p class="hint" id="p-mode-money">Local work on your computer is free forever. Servers, SSH/SFTP and cloud access - 30 days free, then 900 ₽/month. VPS rental is paid separately.</p>
+<!-- Карточки — кнопки: в окне на компьютере Tab/Enter это законный
+             способ выбора, а <div> с обработчиком клика фокус просто пропускал. -->
+<div class="mode-options">
+<button class="mode-option selected" data-mode="central_bot" type="button">
+<span class="mode-title">
+              Via the Internet
+              <span class="mode-badge">30 days free</span>
+</span>
+<span class="mode-desc">Control your computer from anywhere – even from the mobile Internet. Scan the QR code in the Remotai app. There is no need to configure anything. After a trial month - 900 ₽/month.</span>
+</button>
+<button class="mode-option" data-mode="standalone" type="button">
+<span class="mode-title">
+              Over local network
+              <span class="mode-badge alt">free forever</span>
+</span>
+<span class="mode-desc">When the phone and computer are on the same Wi-Fi network. Fast and without the Internet - the data does not leave your network. Terminals, agents, files and screen without restrictions.</span>
+</button>
+</div>
+<!-- Central bot (cloud) fields -->
+<div id="central-fields">
+<div class="pairing-block">
+<p class="pairing-block-title">Add this computer to your account</p>
+<a class="btn btn-primary btn-wide hidden" id="pair-account" rel="noopener noreferrer" target="_blank">Connect to your account in the browser</a>
+<p class="hint pair-scan-hint">You can do it on the same computer: log into your account and confirm the connection. The code will be entered automatically.</p>
+<p class="hint pair-scan-hint">On your phone or another computer, open <a class="link" href="https://remotai.ru/app/" rel="noopener" target="_blank">Remotai in the browser</a> or application. Log in to your account → “My computers” → “Connect a computer.” Enter the code below or scan the QR with your phone:</p>
+<img alt="QR for connection" class="qr" height="220" id="pair-qr" width="220"/>
+<!-- Под кодом человек ищет ответ на один вопрос: «мне что-то нажать
+                 или оно само?». «Далее» на этом шаге скрыта намеренно, поэтому
+                 ответ написан прямо под QR, а не спрятан в живом статусе. -->
+<p class="hint qr-caption">Scan the QR or enter the code - then everything will happen automatically</p>
+<button class="link-btn" id="pair-install-toggle" type="button">I don't have the app yet - QR installations</button>
+<div class="hidden" id="pair-install-block" style="margin-top:10px">
+<img alt="QR for installing Remotai" class="qr" height="220" src="/api/setup/qr?data=https%3A%2F%2Fremotai.ru%2Fdownload&amp;size=220" width="220"/>
+<p class="hint">Scan with the system camera, install the application and return to QR connections. Or open <a class="link" href="https://remotai.ru/app" rel="noopener" target="_blank">remotai.ru/app</a>.</p>
+</div>
+<p class="hint pair-scan-hint">No app or can't scan? Enter the connection code manually:</p>
+<div class="pair-code-row">
+<div class="pair-code-big" id="pair-code">────────</div>
+<button class="btn btn-secondary btn-icon" id="btn-copy-code" title="Copy" type="button">⧉</button>
+</div>
+<p class="hint" id="pair-expiry">The code is valid for an hour</p>
+<!-- Виден только при .pair-offline (см. setup.css): кода нет —
+                 сканировать нечего, зато есть способ, которому интернет не
+                 нужен вовсе. -->
+<p class="pair-offline-note">There is no code because there is no connection to the Internet. You can connect <b>via local network</b> — select this method above: phone and computer are on the same Wi-Fi network, no internet required.</p>
+<p class="hint hidden" id="pair-tg-row">Or via Telegram: open <a class="link" id="pair-tg" rel="noopener" target="_blank">bot</a> and send him this code</p>
+<button class="btn btn-secondary" id="btn-pair-refresh" style="margin-top:10px" type="button">Get new code</button>
+<!-- Полоса прибита к низу карточки (.pair-dock): окно программы —
+                 520×820, а шаг с QR выше, и живой статус вместе с единственным
+                 осознанным выходом уезжали под нижний край. Вперёд мастер уходит
+                 сам после скана, «Далее» здесь скрыта — значит, «ждём» и «выход»
+                 обязаны быть на экране всегда, а не после прокрутки.
+                 Выход — кнопка во всю ширину, а не подчёркнутая ссылка 12,5 px. -->
+<div class="pair-dock">
+<div class="cloud-status" id="pair-status">Waiting for confirmation...</div>
+<button class="btn btn-secondary btn-wide" id="btn-pair-later" type="button">I'll connect another device later</button>
+</div>
+</div>
+</div>
+<!-- «Свой Telegram-бот» — легаси-ветка с BotFather и cloudflared на
+             30 МБ. Рядом с двумя рабочими вариантами её читали как «лучше, для
+             опытных» и застревали на «Bot Token обязателен». -->
+<button class="link-btn" id="btn-more-modes" style="margin-top:10px" type="button">Other methods (for experienced ones)</button>
+<div class="mode-options hidden" id="more-modes" style="margin-top:10px">
+<button class="mode-option" data-mode="own_bot" type="button">
+<span class="mode-title">
+              Your own Telegram bot
+              <span class="mode-badge alt">legacy</span>
+</span>
+<span class="mode-desc">Your own bot instead of the Remotai cloud: token from @BotFather, cloudflared tunnel (~30 MB), manual setup. The mode does not develop - choose only if you know exactly why.</span>
+</button>
+</div>
+<!-- Own bot fields -->
+<div id="own-bot-fields" style="margin-top:16px">
+<div class="form-group">
+<label for="input-bot-token">Bot Token</label>
+<input id="input-bot-token" placeholder="1234567890:ABCdefGHIjklMNOpqrSTUvwxYZ" type="text"/>
+<p class="hint">Get from <a class="link" href="https://t.me/BotFather" target="_blank">@BotFather</a></p>
+</div>
+<div class="form-group">
+<label for="input-allowed-users">Allowed User IDs (separated by commas)</label>
+<input id="input-allowed-users" placeholder="optional - empty = all" type="text"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Step 2: Agents -->
+<div class="step hidden" id="step-2">
+<div class="card">
+<h2>AI agents</h2>
+<p class="subtitle">Assistants like Claude and Codex - you can work with them from your phone. We show those found on this computer; the rest can be delivered now or later</p>
+<div class="agent-list" id="agent-list"></div>
+<!-- Установка: раньше шаг перечислял «не найден» и не предлагал ничего.
+             Кнопка открывает на этом компьютере терминал с командой из реестра. -->
+<div class="agent-install hidden" id="agent-install">
+<button class="link-btn" id="btn-agent-install-toggle" type="button">Install assistant...</button>
+<div class="hidden" id="agent-install-body">
+<p class="hint">Click “Install” and a terminal window will open on your computer and execute the command. If he answers that <code>npm</code> not found, first install Node.js: in the Remotai terminal there is a ready-made “Node.js LTS” command.</p>
+<div class="agent-install-list" id="agent-install-list"></div>
+<button class="link-btn" id="btn-agent-recheck" type="button">Check again</button>
+</div>
+</div>
+<div class="hidden" id="claude-settings" style="margin-top:16px">
+<div class="form-group">
+<label for="select-claude-model">Model Claude</label>
+<select id="select-claude-model">
+<option selected="" value="sonnet">Sonnet 4.5 - fast and smart</option>
+<option value="opus">Opus 4.6 - the smartest</option>
+<option value="haiku">Haiku 4.5 is the fastest</option>
+</select>
+</div>
+<div class="form-group">
+<label for="select-claude-perm">Permission Mode</label>
+<select id="select-claude-perm">
+<option selected="" value="bypassPermissions">Full automatic</option>
+<option value="default">Standard - asks</option>
+<option value="plan">Planning only</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<!-- Step 3: Internet Access (Tunnel) -->
+<div class="step hidden" id="step-3">
+<div class="card">
+<h2>Access from the Internet</h2>
+<p class="subtitle">Control your computer from your phone from anywhere in the world</p>
+<div class="mode-options" id="tunnel-modes">
+<button class="mode-option selected" data-tunnel="quick" type="button">
+<span class="mode-title">
+              Fast tunnel
+              <span class="mode-badge">recommended</span>
+</span>
+<span class="mode-desc">Works instantly, without registration. The address is updated upon restart.</span>
+</button>
+<button class="mode-option" data-tunnel="named" type="button">
+<span class="mode-title">Your own domain</span>
+<span class="mode-desc">Permanent address (for example bot.mysite.xyz). You need a Cloudflare account and a configured tunnel.</span>
+</button>
+<button class="mode-option" data-tunnel="disabled" type="button">
+<span class="mode-title">LAN only</span>
+<span class="mode-desc">Without internet. The phone and PC must be on the same Wi-Fi network.</span>
+</button>
+</div>
+<!-- Install cloudflared -->
+<div class="hidden" id="tunnel-install" style="margin-top:16px">
+<div class="tunnel-notice">
+<span class="warn">cloudflared not found</span>
+</div>
+<button class="btn btn-primary" id="btn-install-cf" style="width:100%;margin-top:8px">
+            Install automatically (~30 MB)
+          </button>
+<div class="hidden" id="install-progress" style="margin-top:12px">
+<div class="progress-bar"><div class="progress-fill" id="install-fill"></div></div>
+<p class="hint" id="install-status" style="margin-top:6px;text-align:center">Loading...</p>
+</div>
+</div>
+<!-- Named tunnel fields -->
+<div class="hidden" id="named-fields" style="margin-top:16px">
+<div class="form-group">
+<label for="input-tunnel-name">Tunnel name</label>
+<input id="input-tunnel-name" placeholder="for example: tgcontrol" type="text"/>
+<p class="hint">Name from <code>cloudflared tunnel list</code></p>
+</div>
+<div class="form-group">
+<label for="input-tunnel-url">Public URL</label>
+<input id="input-tunnel-url" placeholder="https://bot.mysite.xyz" type="text"/>
+<p class="hint">Domain bound to tunnel in Cloudflare Dashboard</p>
+</div>
+</div>
+<!-- Tunnel starting -->
+<div class="hidden" id="tunnel-starting" style="margin-top:16px;text-align:center;padding:16px 0">
+<span class="spinner big"></span>
+<p class="hint" style="margin-top:8px">Launching the tunnel...</p>
+</div>
+<!-- Tunnel result -->
+<div class="hidden" id="tunnel-result" style="margin-top:16px">
+<div class="tunnel-url-box" id="tunnel-url-display"></div>
+<p class="hint ok" style="text-align:center;margin-top:8px">
+            The tunnel is working! This address is accessible from a phone from any network.
+          </p>
+</div>
+<!-- cloudflared found -->
+<div class="hidden" id="tunnel-ready" style="margin-top:12px">
+<p class="hint ok">
+<span style="font-size:16px">✓</span> cloudflared found: <span class="mono-path" id="cf-path"></span>
+</p>
+</div>
+</div>
+</div>
+<!-- Step 4: Complete -->
+<div class="step hidden" id="step-4">
+<div class="card">
+<h2>Done!</h2>
+<p class="subtitle" id="step4-sub">Connect your phone using QR code or connection code</p>
+<div id="complete-info"></div>
+<p class="hint">Can't connect via Wi-Fi? Allow Remotai access to the local network in the system settings.</p>
+</div>
+</div>
+<!-- Navigation buttons -->
+<div class="btn-row hidden">
+<button class="btn btn-secondary hidden" id="btn-back">Back</button>
+<button class="btn btn-primary" id="btn-next">Next</button>
+</div>
+<footer class="foot">
+<span id="foot-ver"></span>
+<span class="sep">·</span>
+<span>updates automatically</span>
+<span class="sep">·</span>
+<a class="link" href="https://remotai.ru" rel="noopener" target="_blank">remotai.ru</a>
+</footer>
+</div>
+<script src="/setup/assets/setup.en.js"></script>
+</body>
+</html>

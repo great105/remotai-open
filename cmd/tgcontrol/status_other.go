@@ -5,6 +5,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"tgcontrol/internal/localize"
 )
 
 func cliAutostartState() (bool, string) {
@@ -15,7 +16,7 @@ func cliAutostartState() (bool, string) {
 	if _, err := os.Stat(filepath.Join(home, ".config", "systemd", "user", "remotai.service")); err == nil {
 		return true, "systemd user-unit"
 	}
-	return false, "не настроен"
+	return false, localize.Text("не настроен")
 }
 
 func cleanupInstalledArtifacts() error { return nil }

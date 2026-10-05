@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 /**
  * Состав гида «Как работать с системой» — данные, а не разметка.
  *
@@ -160,9 +161,9 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     leadKey: "guide.telegram.lead",
     bodyKeys: ["guide.telegram.body1", "guide.telegram.body2", "guide.telegram.body3"],
     examples: [
-      { labelKey: "guide.telegram.ex1", command: 'remotai send "сборка готова"' },
+      { labelKey: "guide.telegram.ex1", get command() { return t("ui.sections.mc986a10883"); } },
       { labelKey: "guide.telegram.ex2", command: "remotai send --file ./report.pdf" },
-      { labelKey: "guide.telegram.ex3", command: "установи скилл из папки Remotai/skills/telegram" },
+      { labelKey: "guide.telegram.ex3", get command() { return t("ui.sections.m2b00238d8f"); } },
     ],
   },
   {
@@ -436,8 +437,8 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     ],
     examples: [
       { labelKey: "guide.peer.ex1", command: "remotai remote list" },
-      { labelKey: "guide.peer.ex2", command: "remotai remote <компьютер> doctor" },
-      { labelKey: "guide.peer.ex3", command: "remotai remote <компьютер> vpn on" },
+      { labelKey: "guide.peer.ex2", get command() { return t("ui.sections.mfde302b661"); } },
+      { labelKey: "guide.peer.ex3", get command() { return t("ui.sections.m2c7a66f337"); } },
       { labelKey: "guide.peer.ex4", command: "remotai config set peer_access full" },
     ],
     actions: [{ labelKey: "guide.action.openSettings", route: "/settings?section=computer" }],
@@ -487,26 +488,26 @@ export const GUIDE_TROUBLES: GuideTrouble[] = [
 // Люди ищут действие своими словами. Эти короткие запросы дополняют видимый
 // текст гида; каждый ведёт к уже существующему экрану, а не запускает действие.
 const SEARCH_TERMS: Record<string, string[]> = {
-  terminals: ["открыть терминал", "командная строка", "запустить агента"],
-  agentSleep: ["остановить агента", "поставить агента на паузу", "усыпить агента", "сон агента"],
-  files: ["загрузить файл", "отправить файл", "скачать файл"],
-  whichAgent: ["установить агента", "поставить Claude Code", "установить Codex"],
-  agentSessions: ["история чатов", "история бесед", "возобновить беседу", "продолжить диалог"],
-  agentSkills: ["установить скилл", "добавить навык агенту"],
-  agentMcp: ["подключить MCP", "добавить MCP", "инструменты MCP"],
-  agentCheck: ["проверить доступ к модели", "проверить ключ агента"],
-  agentUpdate: ["обновить агента", "новая версия агента"],
-  agentBehaviour: ["агент по умолчанию", "кнопки ответа агента", "настроить запуск агента"],
-  tokenUsage: ["сколько токенов потратил", "потраченные токены", "статистика токенов"],
-  screen: ["удаленный рабочий стол", "посмотреть экран", "управление экраном"],
-  quality: ["четкость картинки", "качество экрана", "включить звук"],
-  devices: ["подключить второй компьютер", "подключить новый ПК", "подключить ноутбук", "подключить новый ноутбук", "добавить компьютер", "доступ к компьютеру"],
-  ssh: ["подключиться по SSH", "SSH туннель", "файлы SSH сервера"],
-  sshAdd: ["добавить SSH-сервер", "подключить сервер по SSH"],
-  system: ["нагрузка процессора", "память компьютера", "запущенные процессы"],
-  computerPower: ["сон ПК", "разбудить ПК", "усыпить компьютер", "выключить ПК", "перезагрузить ПК", "сон компьютера"],
-  autostart: ["настроить автозапуск", "запускать при включении компьютера"],
-  logins: ["подключить телефон", "привязать телефон", "способы входа"],
+  terminals: [t("ui.sections.m3145fda0ba"), t("ui.sections.m5a458f060e"), t("ui.sections.m4f01dd2064")],
+  agentSleep: [t("ui.sections.m728fff764c"), t("ui.sections.m125bee3d52"), t("ui.sections.maf875e48a9"), t("ui.sections.me1c44cc98f")],
+  files: [t("ui.sections.meca0f9b9cd"), t("ui.sections.mdf1b5f4a7c"), t("ui.sections.mcae8181aaa")],
+  whichAgent: [t("ui.sections.m18fb810443"), t("ui.sections.m3d8f7d50df"), t("ui.sections.mbef89680c2")],
+  agentSessions: [t("ui.sections.m7bde61d7be"), t("ui.sections.m5ef014e657"), t("ui.sections.md6c1319f45"), t("ui.sections.mf2ddc5af65")],
+  agentSkills: [t("ui.sections.m37c46d6a1d"), t("ui.sections.m3511b90651")],
+  agentMcp: [t("ui.sections.mbd652b2f44"), t("ui.sections.me1029d8cbb"), t("ui.sections.m3dd1255692")],
+  agentCheck: [t("ui.sections.mbd7d5cb927"), t("ui.sections.mf07c3056b4")],
+  agentUpdate: [t("ui.sections.m1faf765de3"), t("ui.sections.m38624d32f9")],
+  agentBehaviour: [t("ui.sections.m847bc0796f"), t("ui.sections.m56a068b692"), t("ui.sections.mc1fd74e356")],
+  tokenUsage: [t("ui.sections.mf033df5dc8"), t("ui.sections.m3247752022"), t("ui.sections.m265fd7d586")],
+  screen: [t("ui.sections.m2f814af5a0"), t("ui.sections.mcf1928d881"), t("ui.sections.m7a30b98b9d")],
+  quality: [t("ui.sections.m82cfb9c041"), t("ui.sections.m5067eddf44"), t("ui.sections.m2a33b38729")],
+  devices: [t("ui.sections.m41cfa3c1d3"), t("ui.sections.m60da6d0afe"), t("ui.sections.m8d03f61678"), t("ui.sections.mc377d95545"), t("ui.sections.mc67208fc2a"), t("ui.sections.m989f99faa7")],
+  ssh: [t("ui.sections.m5afbc0a1b6"), t("ui.sections.me5e8cbb16e"), t("ui.sections.m26c3274f9a")],
+  sshAdd: [t("ui.sections.m2e32d13303"), t("ui.sections.m9d56e2f0fd")],
+  system: [t("ui.sections.m43f4a95f68"), t("ui.sections.m0aa38d57b5"), t("ui.sections.m8572a416b1")],
+  computerPower: [t("ui.sections.m259fafd022"), t("ui.sections.m8ed7007c47"), t("ui.sections.mcc72cd6cfb"), t("ui.sections.m83fb2effaa"), t("ui.sections.me1e96e1765"), t("ui.sections.mdf00c96f12")],
+  autostart: [t("ui.sections.m4e1fc93caf"), t("ui.sections.mc99da23c50")],
+  logins: [t("ui.sections.m811fc93f5a"), t("ui.sections.m76ab8f17dc"), t("ui.sections.m92da8d340b")],
 };
 
 /**
@@ -558,9 +559,9 @@ export function searchGuideShortcuts(
 }
 
 function queryWords(query: string): string[] {
-  const ignore = new Set(["к", "по", "на", "в", "во", "с", "со", "из", "у", "от", "для", "и", "или",
-    "как", "где", "что", "это", "мне", "можно", "хочу", "найти", "открыть", "показать",
-    "настроить", "сделать", "поменять", "пожалуйста"]);
+  const ignore = new Set(["к", t("ui.sections.m4420c2cf22"), t("ui.sections.m2d38cb12fa"), "в", t("ui.sections.m9e8ae3c429"), "с", t("ui.sections.ma839618c61"), t("ui.sections.mbeed168817"), "у", t("ui.sections.mdba126a790"), t("ui.sections.m1773659527"), "и", t("ui.sections.m30bb0333ca"),
+    t("ui.sections.m0adcaf5b04"), t("ui.sections.mc9a8de2f49"), t("ui.sections.m2e8900251d"), t("ui.sections.m8f30281037"), t("ui.sections.m10894c7394"), t("ui.sections.me1939f9312"), t("ui.sections.m5e7d77b456"), t("ui.sections.mc294e39032"), t("ui.sections.ma1856fdfe7"), t("ui.sections.mf619fde0f7"),
+    t("ui.sections.m4941b7f603"), t("ui.sections.me0e0b92767"), t("ui.sections.md310509c09"), t("ui.sections.m441aca7660")]);
   return textWords(query).filter((word) => !ignore.has(word));
 }
 

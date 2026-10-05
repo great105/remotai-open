@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 /** Published lifecycle from the session-owned gateway roster, never inferred from reply text. */
 export type HermesSubagentStatus = "running" | "completed" | "failed" | "cancelled" | "unknown";
 
@@ -44,13 +45,13 @@ export function isTerminalHermesSubagentStatus(status: HermesSubagentStatus): bo
 export function normalizeHermesSubagents(value: unknown): HermesSubagent[] {
   const result = value && typeof value === "object" && !Array.isArray(value)
     ? value as Record<string, unknown> : null;
-  if (!result || !Array.isArray(result.subagents)) throw new Error("Hermes не подтвердил список помощников.");
+  if (!result || !Array.isArray(result.subagents)) throw new Error(t("ui.subagents.mc2672d6108"));
   const seen = new Set<string>();
   return result.subagents.map(item => {
     const row = item && typeof item === "object" && !Array.isArray(item)
       ? item as Record<string, unknown> : null;
     const id = typeof row?.subagent_id === "string" ? row.subagent_id : "";
-    if (!row || !id || id.trim() !== id || id.length > 256 || seen.has(id)) throw new Error("Hermes не подтвердил список помощников.");
+    if (!row || !id || id.trim() !== id || id.length > 256 || seen.has(id)) throw new Error(t("ui.subagents.mc2672d6108"));
     seen.add(id);
     const toolCount = typeof row.tool_count === "number" && Number.isSafeInteger(row.tool_count) && row.tool_count >= 0
       ? row.tool_count : 0;

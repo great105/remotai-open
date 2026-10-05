@@ -899,7 +899,7 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
     })
     : "";
   const resumeBlockedReason = resumeLaunchAccount?.blockedReason || (
-    resumeAgent && !resumeCommand ? "Продолжение аккаунта временно недоступно." : ""
+    resumeAgent && !resumeCommand ? t("ui.ptytermview.m08af1cd944") : ""
   );
   const [searchOpen, setSearchOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
@@ -6663,10 +6663,10 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
   /** «12м» / «3ч» — сколько агент ждёт ответа (status_at = начало ожидания). */
   const sinceValue = (ms: number): string => {
     const sec = Math.max(0, ((Date.now() - ms) / 1000) | 0);
-    if (sec < 60) return `${sec}с`;
-    if (sec < 3600) return `${(sec / 60) | 0}м`;
-    if (sec < 86400) return `${(sec / 3600) | 0}ч`;
-    return `${(sec / 86400) | 0}д`;
+    if (sec < 60) return t("ui.ptytermview.mee89ed3363", { p0: (sec) });
+    if (sec < 3600) return t("ui.ptytermview.m2cc2493765", { p0: ((sec / 60) | 0) });
+    if (sec < 86400) return t("ui.ptytermview.mb190c47c3b", { p0: ((sec / 3600) | 0) });
+    return t("ui.ptytermview.m991812ce32", { p0: ((sec / 86400) | 0) });
   };
 
   /**
@@ -6935,7 +6935,7 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
           launchArgs: resumeAgent.agent.launch_args,
         });
         if (!freshCommand) {
-          throw new Error(launchAccount?.blockedReason || "Продолжение аккаунта заблокировано.");
+          throw new Error(launchAccount?.blockedReason || t("ui.ptylistview.mc16c569984"));
         }
       }
       const res = await createPtySession(cwd || ".", "", 80, 24);
@@ -8565,14 +8565,12 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
       {sshHost && showSSHInstall && !sshBannerOff && (
         <div className="pty-ssh-banner">
           <span className="pty-ssh-banner-text">
-            Это SSH-сессия на {sshHost}. Установить Remotai на этот сервер?
-          </span>
+            {t("ui.ptytermview.mc6a69aa617")}{sshHost}{t("ui.ptytermview.md722764619")}</span>
           <button
             className="pty-key-btn pty-key-accent"
             onClick={() => { haptic(); sendRaw("curl -fsSL https://remotai.ru/install.sh | sh\r"); }}
           >
-            Установить Remotai
-          </button>
+            {t("ui.ptytermview.m8fae251a47")}</button>
           <button
             className="pty-ssh-banner-close"
             aria-label={t("pty.a11y.hideBanner")}
@@ -9316,8 +9314,7 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
               title={t("pty.snippets")}
               aria-label={t("pty.snippets")}
             >
-              <span aria-hidden>{"⚡"}</span> Команды
-            </button>
+              <span aria-hidden>{"⚡"}</span> {t("ui.ptytermview.mcdf80e6c15")}</button>
           )}
           {/* Отдельно от сниппетов: выбрать AI-агента и поднять его здесь же. */}
           {state.alive && (

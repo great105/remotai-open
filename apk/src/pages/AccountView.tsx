@@ -1,3 +1,4 @@
+import { getLocale } from "@tgcontrol/shared";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { mapApiError } from "@tgcontrol/shared";
@@ -221,7 +222,7 @@ export function AccountView() {
     }
   };
 
-  const paidUntil = sub?.paid_until ? new Date(sub.paid_until).toLocaleDateString("ru-RU") : "";
+  const paidUntil = sub?.paid_until ? new Date(sub.paid_until).toLocaleDateString(getLocale()) : "";
   const tier = sub?.tier || me?.effective_tier || me?.tier || "free";
   const trial = me && !sub?.founder ? trialLine(me, paidUntil) : null;
   const loadProblem = (messageKey: string) => (
@@ -249,7 +250,7 @@ export function AccountView() {
           <section className="card">
             <p>{t("account.localOnly")}</p>
             <p className="plan-note">{t("plan.localFree")}</p>
-            <button className="btn btn-primary" onClick={() => navigate("/cloud-login", { state: { next: "/account" } })}>Войти или создать аккаунт</button>
+            <button className="btn btn-primary" onClick={() => navigate("/cloud-login", { state: { next: "/account" } })}>{t("ui.accountview.md57fdc2469")}</button>
           </section>
         )}
 
@@ -351,7 +352,7 @@ export function AccountView() {
                 {sub.card ? (
                   <>
                     <div className="plan-card-line">
-                      {t("billing.cardBound", { type: sub.card.type || "Карта", last4: sub.card.last4 })}
+                      {t("billing.cardBound", { type: sub.card.type || t("ui.accountview.m5736d0caff"), last4: sub.card.last4 })}
                     </div>
                     <p className="plan-note">{sub.auto_renew ? t("billing.autoRenew") : t("billing.noAutoRenew")}</p>
                     <button className="btn btn-secondary btn-sm" onClick={unbind} disabled={busy}>

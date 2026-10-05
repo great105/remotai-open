@@ -1,3 +1,4 @@
+import { getLocale } from "@tgcontrol/shared";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   ApiError, confirmDialog, copySkill, copyTargets, defaultInstallTargets, deleteSkill, filterSkills,
@@ -546,7 +547,7 @@ export function SkillsPanel() {
                   <b>{b.name}</b>
                   <small>{t("skills.recentFrom", {
                     where: placeTitle(locations.find((l) => l.id === b.location)) || b.location,
-                    when: new Date(b.at * 1000).toLocaleString("ru-RU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }),
+                    when: new Date(b.at * 1000).toLocaleString(getLocale(), { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }),
                   })}</small>
                 </span>
                 <button type="button" className="btn btn-secondary btn-sm" onClick={() => { haptic(); void restore(b); }}>

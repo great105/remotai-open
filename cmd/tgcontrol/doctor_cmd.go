@@ -6,6 +6,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"tgcontrol/internal/localize"
 
 	"tgcontrol/internal/config"
 	"tgcontrol/internal/relay"
@@ -41,7 +42,7 @@ func doctorStartFix() string {
 	case "darwin":
 		return "запустите: " + serviceStartHint() + "; если уже стоит — " + serviceRestartHint()
 	case "windows":
-		return "запустите приложение Remotai на этом компьютере"
+		return localize.Text("запустите приложение Remotai на этом компьютере")
 	default:
 		return doctorLinuxFix(userUnitInstalled())
 	}
@@ -51,9 +52,9 @@ func doctorStartFix() string {
 // remotai.service not found»: его служба живёт в менеджере пользователя.
 func doctorLinuxFix(userUnit bool) string {
 	if userUnit {
-		return "запустите приложение Remotai на этом компьютере (на сервере: systemctl --user start remotai)"
+		return localize.Text("запустите приложение Remotai на этом компьютере (на сервере: systemctl --user start remotai)")
 	}
-	return "запустите приложение Remotai на этом компьютере (на сервере: sudo systemctl start remotai)"
+	return localize.Text("запустите приложение Remotai на этом компьютере (на сервере: sudo systemctl start remotai)")
 }
 
 func runDoctor(args []string) int {
@@ -67,7 +68,7 @@ func runDoctor(args []string) int {
 	live, ok := readLocalCLIStatus(cfg.Port())
 	if ok {
 		status = live
-		out = append(out, finding{Level: "ok", Title: fmt.Sprintf("Remotai работает на порту %d", live.Port)})
+		out = append(out, finding{Level: "ok", Title: fmt.Sprintf(localize.Text("Remotai работает на порту %d"), live.Port)})
 	} else {
 		// Совет — командой ТОЙ системы, где человек находится. На маке
 		// «systemctl start remotai» человек честно выполнил и получил
@@ -75,7 +76,7 @@ func runDoctor(args []string) int {
 		// его в тупик вместо починки.
 		out = append(out, finding{
 			Level: "problem",
-			Title: fmt.Sprintf("Remotai не отвечает на 127.0.0.1:%d", cfg.Port()),
+			Title: fmt.Sprintf(localize.Text("Remotai не отвечает на 127.0.0.1:%d"), cfg.Port()),
 			Fix:   doctorStartFix(),
 		})
 	}
@@ -83,20 +84,20 @@ func runDoctor(args []string) int {
 	// 2. Привязка к аккаунту: без неё компьютера нет в приложении.
 	if relay.Available() {
 		if ok && status.RelayConnected {
-			out = append(out, finding{Level: "ok", Title: "Компьютер в сети и виден в приложении"})
+			out = append(out, finding{Level: "ok", Title: localize.Text("Компьютер в сети и виден в приложении")})
 		} else if ok {
 			reason := relayReasonText(status.RelayError.Kind, status.RelayError.HTTPStatus)
 			out = append(out, finding{
 				Level: "problem",
 				Title: "Компьютер привязан, но не выходит на связь: " + reason,
-				Fix:   "проверьте интернет и VPN; если привязка отозвана — remotai pair",
+				Fix:   localize.Text("проверьте интернет и VPN; если привязка отозвана — remotai pair"),
 			})
 		}
 	} else {
 		out = append(out, finding{
 			Level: "warn",
-			Title: "Компьютер не привязан к аккаунту — с телефона его не видно",
-			Fix:   "remotai pair (код появится в терминале, подтвердите в приложении)",
+			Title: localize.Text("Компьютер не привязан к аккаунту — с телефона его не видно"),
+			Fix:   localize.Text("remotai pair (код появится в терминале, подтвердите в приложении)"),
 		})
 	}
 
@@ -112,8 +113,8 @@ func runDoctor(args []string) int {
 	} else {
 		out = append(out, finding{
 			Level: "warn",
-			Title: "Автозапуск выключен — после перезагрузки компьютер не появится сам",
-			Fix:   "включите в приложении («Система») или попросите владельца: remotai config set autostart true",
+			Title: localize.Text("Автозапуск выключен — после перезагрузки компьютер не появится сам"),
+			Fix:   localize.Text("включите в приложении («Система») или попросите владельца: remotai config set autostart true"),
 		})
 	}
 
@@ -138,7 +139,7 @@ func runDoctor(args []string) int {
 			}
 			f := finding{Level: level, Title: boot.Report.Title}
 			if boot.Report.Unexpected {
-				f.Fix = "если это повторяется — посмотрите лог: remotai doctor --json и %LOCALAPPDATA%\\Remotai\\remotai.log"
+				f.Fix = localize.Text("если это повторяется — посмотрите лог: remotai doctor --json и %LOCALAPPDATA%\\Remotai\\remotai.log")
 			}
 			out = append(out, f)
 		}
@@ -159,7 +160,7 @@ func runDoctor(args []string) int {
 				out = append(out, finding{
 					Level:   "warn",
 					Title:   "Компьютер не в сети, а " + net.VPN.Name + " запущен — частая причина именно в нём",
-					Fix:     "проверить и при необходимости выключить: remotai vpn status / remotai vpn off",
+					Fix:     localize.Text("проверить и при необходимости выключить: remotai vpn status / remotai vpn off"),
 					SelfFix: "remotai vpn status",
 				})
 			}
@@ -167,7 +168,7 @@ func runDoctor(args []string) int {
 				out = append(out, finding{
 					Level: "warn",
 					Title: net.VPN.Name + " выключен",
-					Fix:   "включить обратно: remotai vpn on",
+					Fix:   localize.Text("включить обратно: remotai vpn on"),
 				})
 			}
 			if net.Last != nil && net.Last.Text != "" {
@@ -186,8 +187,8 @@ func runDoctor(args []string) int {
 	if info, err := version.CheckForUpdate(""); err == nil && info != nil && info.Available {
 		out = append(out, finding{
 			Level: "warn",
-			Title: fmt.Sprintf("Есть новая версия %s (сейчас %s)", info.Version, version.Version),
-			Fix:   "обновится само; можно ускорить в приложении: «Настройки → Обновить сейчас»",
+			Title: fmt.Sprintf(localize.Text("Есть новая версия %s (сейчас %s)"), info.Version, version.Version),
+			Fix:   localize.Text("обновится само; можно ускорить в приложении: «Настройки → Обновить сейчас»"),
 		})
 	}
 
@@ -215,7 +216,7 @@ func runDoctor(args []string) int {
 					out = append(out, finding{
 						Level: "warn",
 						Title: name + ": вход не выполнен",
-						Fix:   "запустите этого агента и войдите внутри него (/login)",
+						Fix:   localize.Text("запустите этого агента и войдите внутри него (/login)"),
 					})
 					continue
 				}
@@ -223,8 +224,8 @@ func runDoctor(args []string) int {
 					if w.ID == "five_hour" && w.UsedPercent >= 85 {
 						out = append(out, finding{
 							Level: "warn",
-							Title: fmt.Sprintf("%s: осталось %d%% пятичасового окна", name, int(100-w.UsedPercent)),
-							Fix:   "переключитесь на другой аккаунт в приложении («Агенты») или подождите сброса",
+							Title: fmt.Sprintf(localize.Text("%s: осталось %d%% пятичасового окна"), name, int(100-w.UsedPercent)),
+							Fix:   localize.Text("переключитесь на другой аккаунт в приложении («Агенты») или подождите сброса"),
 						})
 					}
 				}
@@ -264,7 +265,7 @@ func doctorMark(level string) string {
 
 // cliDoctorUsage — короткая справка, если позвали с непонятным аргументом.
 func cliDoctorUsage() {
-	fmt.Fprintln(os.Stderr, "Использование: remotai doctor [--json]")
+	fmt.Fprintln(os.Stderr, localize.Text("Использование: remotai doctor [--json]"))
 }
 
 var _ = strings.TrimSpace // держим импорт: строковые помощники используются ниже по мере роста проверок

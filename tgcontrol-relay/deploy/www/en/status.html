@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Remotai status</title>
+<link href="/app/favicon.svg?lang=en" rel="icon" type="image/svg+xml"/>
+<meta content="Checking the availability of the Remotai cloud and assistance with connecting to AI agents." name="description"/>
+<style>
+    body{font-family:system-ui,sans-serif;max-width:660px;margin:0 auto;padding:24px;color:#252525;line-height:1.6;background:#fafafa}
+    a{color:#275639}h1{font-size:28px;line-height:1.2;margin-top:36px}h2{font-size:20px}
+    button{font:inherit;padding:10px 18px;min-height:44px;border:1px solid #777;border-radius:6px;background:white;cursor:pointer}
+    #result{font-size:20px;font-weight:600}#checked{color:#555}section{border-top:1px solid #ddd;margin-top:28px;padding-top:16px}
+  </style>
+<link href="https://remotai.ru/en/status.html" rel="canonical"/><link href="https://remotai.ru/status.html" hreflang="ru" rel="alternate"/><link href="https://remotai.ru/en/status.html" hreflang="en" rel="alternate"/><link href="https://remotai.ru/status.html" hreflang="x-default" rel="alternate"/></head>
+<body><a class="language-link" href="/status.html" hreflang="ru" lang="ru" style="margin-left:auto;padding:8px;white-space:nowrap;font-size:13px">Русский</a>
+<a href="/en/">← Remotai</a>
+<h1>Cloud status</h1>
+<p aria-live="polite" id="result" role="status">Checking availability...</p>
+<p id="checked"></p>
+<button id="refresh" type="button">Check again</button>
+<section>
+<h2>Agent or computer unavailable?</h2>
+<p>This check shows the availability of the cloud and its database. If they work, make sure that the connected machine is turned on, Remotai is running and the Internet is available on both sides.</p>
+<p>If the payment has been completed but access has not appeared, click “Check payment” in your personal account. There is no need to repeat payment.</p>
+<p><a href="/app/?lang=en#/account">Personal account</a> · <a href="https://t.me/Autocode1_bot">Telegram support</a></p>
+</section>
+<script>
+    const refresh = document.getElementById('refresh');
+    async function check() {
+      refresh.disabled = true;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+      try {
+        const response = await fetch('/health', { cache: 'no-store', signal: controller.signal });
+        const health = await response.json();
+        if (!response.ok || !health.ok || !health.db_ok) throw new Error('unavailable');
+        document.getElementById('result').textContent = "Cloud and database available";
+      } catch {
+        document.getElementById('result').textContent = "Failed to confirm cloud availability";
+      } finally {
+        clearTimeout(timeout);
+        document.getElementById('checked').textContent = "Last check: " + new Date().toLocaleString('ru-RU');
+        refresh.disabled = false;
+      }
+    }
+    refresh.addEventListener('click', check);
+    check();
+  </script>
+</body>
+</html>

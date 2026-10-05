@@ -1,3 +1,4 @@
+import { t } from "./i18n";
 // Framework-agnostic HTTP client core shared by the Mini App and the APK.
 //
 // Preserves the original per-app behaviour (30s abort timeout, JSON parse,
@@ -119,7 +120,7 @@ export function toNetworkError(e: unknown, route: "direct" | "cloud"): unknown {
   // заменяет человеческий текст из mapApiError.
   if (raw) console.debug("[api] сетевой сбой:", route, raw);
   return new ApiError(
-    route === "cloud" ? "Нет связи с сервисом" : "Компьютер не отвечает",
+    route === "cloud" ? t("ui.api.m0133aa7d59") : t("conn.pcNotResponding"),
     0,
     route === "cloud" ? ERR_NETWORK_CLOUD : ERR_NETWORK,
   );
@@ -181,43 +182,43 @@ export function mapApiError(e: unknown): string {
     // было ни одной, и человек на 402 читал «Достигнут лимит компьютеров» —
     // совет отвязать машину при живом и нормальном аккаунте (аудит путей
     // 29.08.2026). Формулировка канона: НЕ «доступ заблокирован».
-    subscription_required: "Для облачного доступа и работы с серверами нужна подписка Про. Локальная работа на своём компьютере остаётся бесплатной.",
-    server_subscription_required: "Для работы с серверами нужна подписка Про. Локальная работа на своём компьютере остаётся бесплатной.",
-    server_account_required: "Подключите этот компьютер к аккаунту Remotai для работы с серверами.",
-    server_access_unavailable: "Не удалось проверить подписку. Повторите проверку. Локальная работа на своём компьютере доступна.",
-    no_permission: "Недостаточно прав для этой операции.",
-    file_in_use: "Файл занят другой программой. Закройте его и повторите.",
-    disk_full: "На диске закончилось свободное место.",
-    not_empty: "Папка не пуста.",
-    dir_not_empty: "Папка не пуста.",
-    read_only: "Диск или папка доступны только для чтения.",
-    too_large: "Файл слишком большой для этой операции.",
-    outside_roots: "Этот путь находится вне разрешённых папок.",
-    bad_path: "Путь указан неверно.",
-    not_found: "Файл или папка больше не существуют.",
-    already_exists: "В выбранной папке уже есть объект с таким именем.",
-    is_dir: "Выбранная операция доступна только для файла.",
-    not_a_dir: "Выбранный путь не является папкой.",
-    bad_range: "Не удалось продолжить передачу: размер файла изменился.",
-    file_changed: "Файл изменился во время передачи. Начните заново.",
-    dst_inside_src: "Нельзя скопировать папку внутрь неё самой.",
-    io_error: "Ошибка чтения или записи файла.",
-    query_too_short: "Введите не меньше двух символов.",
-    upload_offset: "Передача прервалась в неожиданном месте. Повторите загрузку — она продолжится с сохранённой позиции.",
-    bad_upload_id: "Не удалось продолжить старую загрузку. Начните её заново.",
-    telegram_not_linked: "Свяжите аккаунт с Telegram, чтобы получать файлы в чате.",
-    telegram_unavailable: "Telegram-бот сейчас недоступен.",
-    telegram_send_failed: "Telegram не принял файл. Попробуйте ещё раз.",
-    file_transfer_failed: "Не удалось забрать файл с компьютера.",
-    no_terminal_emulator: "На этом компьютере нет графического терминала. Работайте в текущем окне Remotai.",
-    device_limit: "Достигнут лимит компьютеров. Откройте «Мои компьютеры» и отвяжите ненужный.",
-    pty_limit: "Достигнут лимит терминалов. Закройте ненужный терминал и повторите.",
-    invalid_cwd: "Эта рабочая папка недоступна. Выберите другую.",
-    license_required: "Эта возможность недоступна на текущем плане.",
-    team_required: "Эта возможность доступна на плане Team.",
-    pro_required: "Эта возможность доступна на плане Pro.",
-    agent_not_allowed: "Этот AI-агент не разрешён в текущей конфигурации.",
-    session_expired: "Сессия аккаунта истекла. Войдите снова и повторите подключение.",
+    subscription_required: t("ui.apicore.m01d700d09d"),
+    server_subscription_required: t("ui.apicore.maba35f1f99"),
+    server_account_required: t("ui.apicore.m1208f9faa3"),
+    server_access_unavailable: t("ui.apicore.ma793b27336"),
+    no_permission: t("ui.apicore.m9124d44363"),
+    file_in_use: t("ui.apicore.m71ba92cf61"),
+    disk_full: t("ui.apicore.m2864ba2e80"),
+    not_empty: t("ui.apicore.m6593b80270"),
+    dir_not_empty: t("ui.apicore.m6593b80270"),
+    read_only: t("ui.apicore.m83e5eda292"),
+    too_large: t("ui.apicore.me8f72d307e"),
+    outside_roots: t("ui.apicore.m940c64d194"),
+    bad_path: t("ui.apicore.m2e4da78b20"),
+    not_found: t("ui.apicore.m780f1d68ff"),
+    already_exists: t("ui.apicore.m49d56df154"),
+    is_dir: t("ui.apicore.ma9b34a8f6c"),
+    not_a_dir: t("ui.apicore.m04d4ee4950"),
+    bad_range: t("ui.apicore.m7a618e7e9e"),
+    file_changed: t("ui.apicore.m8c5fe71387"),
+    dst_inside_src: t("ui.apicore.mba7fe8e063"),
+    io_error: t("ui.apicore.meecf88add0"),
+    query_too_short: t("ui.apicore.m0e636ac599"),
+    upload_offset: t("ui.apicore.m42530eba70"),
+    bad_upload_id: t("ui.apicore.m85a426a542"),
+    telegram_not_linked: t("ui.apicore.m07e2b9a748"),
+    telegram_unavailable: t("ui.apicore.m209116bd36"),
+    telegram_send_failed: t("ui.apicore.mffab414197"),
+    file_transfer_failed: t("ui.apicore.m5f4159e03a"),
+    no_terminal_emulator: t("ui.apicore.m8015b64ed3"),
+    device_limit: t("ui.apicore.md3078fee64"),
+    pty_limit: t("ui.apicore.me1212fbdcd"),
+    invalid_cwd: t("ui.apicore.m5a8a5db560"),
+    license_required: t("ui.apicore.m526e6779d9"),
+    team_required: t("ui.apicore.m7667556949"),
+    pro_required: t("ui.apicore.mb36c9754eb"),
+    agent_not_allowed: t("ui.apicore.mee22944f88"),
+    session_expired: t("ui.apicore.m80c2318d7d"),
     // Совет «проверьте символы» был почти всегда ложным следом: регистр, дефис,
     // пробелы и похожие знаки (5/S, 2/Z, 8/B, 6/G, U/V) релей сворачивает сам,
     // а живой разбор 23.08 показал другое — за сутки на релее НИ ОДНОГО
@@ -226,51 +227,51 @@ export function mapApiError(e: unknown): string {
     // час, а через час после этого исчезает и из базы. Ведём к действию,
     // которое правда помогает, — взять свежий код на том компьютере.
     pair_code_not_found:
-      "Код не найден — скорее всего он устарел: код живёт час. Возьмите свежий на том компьютере: окно Remotai → «Получить новый код».",
-    viewer_read_only: "Ваша роль разрешает только просмотр состояния устройства.",
+      t("ui.apicore.m9e93b2d652"),
+    viewer_read_only: t("ui.apicore.m6e40dafc5c"),
     // Конфликт именно пейринга. Раньше этот текст висел на ВСЁМ статусе 409, и
     // «этот вход уже занят» или «в компании остались устройства» советовали
     // отвязать рабочий ПК (находка N131). Совет про «Отключить облако» верен
     // только здесь, по явному коду.
-    device_taken: "Этот компьютер уже привязан к другому аккаунту. На ПК нажмите «Отключить облако», затем повторите.",
+    device_taken: t("ui.apicore.m28f2454b41"),
     // Остальные конфликты 409 релея: у каждого своя причина и своё действие,
     // и ни одно из них не связано с отвязкой компьютера.
-    identity_taken: "Этот способ входа уже привязан к другому аккаунту. Войдите под ним отдельно или выберите другой способ.",
-    workspace_not_empty: "В этой компании ещё есть компьютеры. Перенесите или отвяжите их, затем удалите компанию.",
-    personal_workspace: "Личное пространство удалить нельзя — в нём живут ваши собственные компьютеры.",
-    current_session: "Это текущий сеанс. Чтобы закрыть его, выйдите из аккаунта.",
-    cross_device: "Файл лежит на другом диске: такой перенос выполняется копированием и займёт время.",
-    power_not_pending: "Отменять нечего — выключение не запланировано или его уже не остановить.",
-    power_unsupported: "На этом компьютере нет системной команды выключения.",
-    screenshot_failed: "Не удалось снять экран компьютера: возможно, он заблокирован или монитор отключён.",
-    managed_externally: "Автозапуском управляет система этого компьютера — меняйте его настройками сервера.",
-    secret_not_remembered: "Пароль этого сервера не сохранён — введите его заново.",
+    identity_taken: t("ui.apicore.m40fd6aab57"),
+    workspace_not_empty: t("ui.apicore.m2dc6f363c1"),
+    personal_workspace: t("ui.apicore.m41a86a9f10"),
+    current_session: t("ui.apicore.m8563e3641f"),
+    cross_device: t("ui.apicore.me40143dc60"),
+    power_not_pending: t("ui.apicore.mc9f77cb6f7"),
+    power_unsupported: t("ui.apicore.m1ee350436d"),
+    screenshot_failed: t("ui.apicore.m10476e4473"),
+    managed_externally: t("ui.apicore.m1b2e6176ea"),
+    secret_not_remembered: t("ui.apicore.maf1fc6fff0"),
     // Терминал жив, но связь с ним сейчас не поднялась. Без этих двух строк
     // ответ агента проваливался в безкодовый 404 и человек читал «Не найдено.»
     // о терминале, в котором прямо сейчас идёт работа (боевой случай
     // 17.08.2026). Ждать вручную не нужно: связь возвращает фоновый relink.
-    host_busy: "Терминал жив, но пока не отвечает. Remotai возвращает связь сам — это займёт несколько секунд.",
-    host_gone: "Этого терминала на компьютере больше нет: его закрыли или компьютер перезагружался. Откройте новый в той же папке.",
+    host_busy: t("ui.apicore.mbe75b9ed49"),
+    host_gone: t("ui.apicore.m6119cc9a86"),
   };
   if (typeof code === "string" && codeMessages[code]) return codeMessages[code];
   // Сетевой сбой (fetch без ответа) разбираем ДО статусов: у TypeError нет
   // status, поэтому раньше он проваливался в финальный фолбэк и человек читал
   // английское «Failed to fetch» — в том числе на самом первом экране входа.
   if (isNetworkFailure(e)) {
-    if (browserOffline()) return "Нет связи с сетью. Проверьте Wi-Fi или мобильный интернет и повторите.";
+    if (browserOffline()) return t("ui.apicore.m0852e77dd2");
     const route = routeOfFailure(e);
     if (route === "cloud") {
-      return `Нет связи с ${APP_NAME}. Проверьте интернет; если включён VPN, попробуйте его выключить.`;
+      return t("ui.apicore.mf3a1498cd6", { p0: (APP_NAME) });
     }
     // Маршрут неизвестен (приложение не сообщило его через setNetworkContext) —
     // называем обе возможные причины, но ни одну не выдаём за факт.
-    if (route === "unknown") return "Нет связи. Проверьте интернет и что компьютер включён.";
+    if (route === "unknown") return t("ui.apicore.m875883151f");
     // Прямой путь: ниже сработает isPcOffline с текстом «Компьютер не в сети».
   }
   // Компьютер выключен/спит/обновляется — самый частый отказ дня. Проверяем ДО
   // общей ветки 5xx, иначе получалось «Ошибка сервера — попробуйте позже», хотя
   // сервер в порядке, а ждать нужно не «позже», а включения компьютера.
-  if (isPcOffline(e)) return "Компьютер не в сети. Включите его — Remotai подключится сам.";
+  if (isPcOffline(e)) return t("ui.apicore.me8b6475fcc");
   if (typeof status === "number") {
     switch (status) {
       // Безкодовый 401/403 приходит не только от протухшей сессии: так же
@@ -278,23 +279,23 @@ export function mapApiError(e: unknown): string {
       // отозванный доступ к компьютеру. Поэтому 401 и 403 разведены, и ни один
       // не выдаёт «сессия истекла» за факт (находка V13) — причину называет
       // машинный код выше (session_expired, viewer_read_only и другие).
-      case 401: return "Доступ не подтверждён. Обновите экран, а если не поможет — войдите заново.";
-      case 403: return "Доступ к этому действию закрыт: компьютер могли отвязать от аккаунта или у вашей роли нет прав.";
-      case 402: return "Достигнут лимит компьютеров. Откройте «Мои компьютеры» и отвяжите ненужный.";
-      case 404: return "Не найдено.";
+      case 401: return t("ui.apicore.m4f656ee049");
+      case 403: return t("ui.apicore.m56dd0087fd");
+      case 402: return t("ui.apicore.md3078fee64");
+      case 404: return t("ui.apicore.m4ed62665dd");
       // Безкодовый 409 приходит из совершенно разных мест (привязка второго
       // способа входа, удаление непустой компании, закрытие текущей сессии), и
       // конкретный совет здесь неизбежно врёт. Про пейринг говорит только код
       // device_taken выше.
-      case 409: return "Действие конфликтует с текущим состоянием — обновите экран и повторите.";
-      case 410: return "Код подключения устарел. Получите новый на компьютере и повторите.";
-      case 429: return "Слишком много запросов — попробуйте через минуту.";
-      case 0: return code === "timeout" ? "Превышено время ожидания." : "Нет связи с сервером.";
+      case 409: return t("ui.apicore.m673cda4807");
+      case 410: return t("ui.apicore.m3d46fa177a");
+      case 429: return t("ui.apicore.m46eed9c208");
+      case 0: return code === "timeout" ? t("ui.apicore.me43ae1cc1e") : t("ui.apicore.m7825abf2a5");
       // 503 — не «что-то сломалось», а «сейчас не обслуживаем»: перезапуск или
       // перегрузка на нашей стороне. Прежний общий текст «Ошибка сервера —
       // попробуйте позже» не называл ни причину, ни срок, и человек не знал,
       // ждать ему или что-то чинить (аудит путей 29.08.2026).
-      case 503: return "Сервис сейчас недоступен — обычно это перезапуск на нашей стороне и проходит за минуту. Повторите чуть позже.";
+      case 503: return t("ui.apicore.mbc79b79bb1");
       // 502/504 — запрос не дошёл до компьютера или ответ не успел вернуться.
       // Сюда попадают только те случаи, где `isPcOffline` уже сказала «машина
       // жива» (иначе экран показал бы честное «не в сети»), поэтому звать
@@ -302,9 +303,9 @@ export function mapApiError(e: unknown): string {
       // сервера — попробуйте позже» не называл ни причины, ни шага: замер
       // сценария J10 05.09.2026 поймал его в «Файлах» при 502.
       case 502:
-      case 504: return "Запрос до компьютера не дошёл — связь оборвалась по дороге. Повторите: обычно помогает сразу.";
+      case 504: return t("ui.apicore.m608411cf74");
     }
-    if (status >= 500) return "Ошибка сервера — попробуйте позже.";
+    if (status >= 500) return t("ui.apicore.m4211f52862");
   }
   // Фолбэк. Сообщение отдаём человеку ТОЛЬКО если оно написано по-русски (то
   // есть кем-то из наших и для людей). Машинные и англоязычные тексты агента,
@@ -312,7 +313,7 @@ export function mapApiError(e: unknown): string {
   const text = typeof message === "string" ? message.trim() : "";
   if (/[А-Яа-яЁё]/.test(text)) return text;
   if (text) console.debug("[api] непереведённая ошибка:", text);
-  return "Не удалось выполнить операцию. Попробуйте ещё раз.";
+  return t("ui.apicore.ma2cb4bf0a7");
 }
 
 export interface HttpClientConfig {
@@ -373,7 +374,7 @@ export function createHttpClient(config: HttpClientConfig): HttpClient {
       return res.json() as Promise<T>;
     } catch (e: any) {
       if (e?.name === "AbortError") {
-        if (externalSignal?.aborted) throw new ApiError("Запрос отменён", 0, "aborted");
+        if (externalSignal?.aborted) throw new ApiError(t("ui.api.m542bd26f07"), 0, "aborted");
         throw new ApiError(timeoutMessage, 0, "timeout");
       }
       // Сеть не дала ответа (ПК выключен, Wi-Fi пропал, VPN рвёт TLS): fetch

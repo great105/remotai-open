@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 /**
  * QR-код, нарисованный на месте, без обращения к сети.
  *
@@ -20,7 +21,7 @@ interface QrCodeProps {
   title?: string;
 }
 
-export function QrCode({ value, size = 220, title = "QR-код" }: QrCodeProps) {
+export function QrCode({ value, size = 220, title = t("ui.qrcode.mf91f5592a9") }: QrCodeProps) {
   // 0 — «подбери версию сам» по длине данных; M — уровень коррекции, при
   // котором код читается с экрана даже под углом и бликом.
   const qr = qrcode(0, "M");

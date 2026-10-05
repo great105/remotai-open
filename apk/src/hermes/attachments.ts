@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 import { HermesUserError, type HermesClient } from "./client";
 
 export interface ChatAttachment {
@@ -32,7 +33,7 @@ export async function stageAttachmentRefs(
       });
       if (!isCurrent()) return null;
       if (!staged.attached || typeof staged.ref_text !== "string" || !staged.ref_text) {
-        throw new HermesUserError("Hermes не подтвердил вложение. Файлы и текст сохранены; обновите Hermes и попробуйте снова.");
+        throw new HermesUserError(t("ui.attachments.m0d8fb0cbee"));
       }
       ref = staged.ref_text;
       cache.set(key, ref);

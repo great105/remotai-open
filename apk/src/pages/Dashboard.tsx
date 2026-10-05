@@ -808,7 +808,7 @@ function AIDashboard() {
                   key={a.id}
                   className={`agent-chip ${newAgent === a.id ? "active" : ""}`}
                   onClick={() => { setNewAgent(a.id); setNewName(suggestName(a.id)); }}
-                  title={a.description}
+                  title={ownedText(a.description)}
                 >
                   <span className="agent-chip-icon">{a.icon}</span>
                   <span className="agent-chip-name">{a.name}</span>
@@ -1027,3 +1027,4 @@ function AIDashboard() {
     </div>
   );
 }
+import { ownedText } from "@tgcontrol/shared";

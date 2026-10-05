@@ -16,6 +16,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"tgcontrol/internal/localize"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -257,7 +258,7 @@ func main() {
 	runtimePort, bindInfo, activatedExisting := resolveStartupPort(cfg.Port(), silentStart)
 	if activatedExisting {
 		if silentStart {
-			log.Printf("Remotai уже слушает :%d — сторож завершается тихо.", cfg.Port())
+			log.Printf(localize.Text("Remotai уже слушает :%d — сторож завершается тихо."), cfg.Port())
 		} else {
 			log.Printf("Another Remotai instance is already listening on :%d — activated its window.", cfg.Port())
 		}
@@ -300,7 +301,7 @@ func main() {
 		setupServer.SetStartupBindError(bindInfo)
 		setupURL := fmt.Sprintf("http://localhost:%d/setup", port)
 		openSetupWindow := func() {
-			if !desktopui.Show("Remotai — Настройка", setupURL, 520, 820) {
+			if !desktopui.Show(localize.Text("Remotai — Настройка"), setupURL, 520, 820) {
 				openBrowser(setupURL)
 			}
 		}
@@ -802,7 +803,7 @@ func runCleanupKeepPairing() int {
 		fmt.Fprintf(os.Stderr, "remotai cleanup: %v\n", err)
 		return 1
 	}
-	fmt.Println("✅ Файлы установки удалены, привязка к аккаунту сохранена: после повторной установки компьютер вернётся в приложение сам.")
+	fmt.Println(localize.Text("✅ Файлы установки удалены, привязка к аккаунту сохранена: после повторной установки компьютер вернётся в приложение сам."))
 	return 0
 }
 

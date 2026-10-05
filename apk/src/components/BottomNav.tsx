@@ -129,8 +129,8 @@ const MORE_ITEMS: NavItem[] = [
 ];
 
 const MORE_SEARCH_ALIASES: Partial<Record<NavTab, string[]>> = {
-  guide: ["помощь", "инструкция", "справка"],
-  support: ["поддержка", "написать в поддержку"],
+  guide: [t("ui.bottomnav.m050adc9123"), t("ui.bottomnav.m59cebb5a70"), t("ui.bottomnav.mb6846e0341")],
+  support: [t("ui.bottomnav.m597d4fefc0"), t("ui.bottomnav.m9983122d67")],
 };
 
 /**

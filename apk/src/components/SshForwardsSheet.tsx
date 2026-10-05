@@ -17,18 +17,18 @@ import { getSshPassword, runWithSshTrust, sshErrorText, sshTargetLabel } from ".
 const TYPE_META: Record<SshForwardType, { badge: string; title: string; desc: string }> = {
   local: {
     badge: "L",
-    title: "Локальный",
-    desc: "Порт на вашем ПК пробрасывается через SSH-сервер к цели. Например, удалённая база станет доступна как localhost:5432 на ПК.",
+    get title() { return t("ui.sshforwardssheet.m0a5f4ba135"); },
+    get desc() { return t("ui.sshforwardssheet.m7d17f0244c"); },
   },
   remote: {
     badge: "R",
-    title: "Удалённый",
-    desc: "Порт на SSH-сервере ведёт к вашему ПК. Так сервер открывает доступ к сервису, запущенному у вас.",
+    get title() { return t("ui.sshforwardssheet.mcfa48b420b"); },
+    get desc() { return t("ui.sshforwardssheet.m2bcee762ea"); },
   },
   dynamic: {
     badge: "SOCKS",
-    title: "SOCKS-прокси",
-    desc: "SOCKS5-прокси на вашем ПК: любой трафик пойдёт через SSH-сервер. Цель указывать не нужно.",
+    get title() { return t("ui.sshforwardssheet.m49c327a3ba"); },
+    get desc() { return t("ui.sshforwardssheet.m1f70cf16d3"); },
   },
 };
 
@@ -252,7 +252,7 @@ export function SshForwardsSheet({ open, onClose, hosts, presetHost }: Props) {
     setSavedSpecs(nextSpecs);
     localStorage.setItem("ssh.forwardSpecs", JSON.stringify(nextSpecs));
     hapticSuccess();
-    toastSuccess("Проброс создан");
+    toastSuccess(t("ui.sshforwardssheet.m3b765c1a5a"));
     setBindPort("");
     setTargetHost("");
     setTargetPort("");
@@ -269,7 +269,7 @@ export function SshForwardsSheet({ open, onClose, hosts, presetHost }: Props) {
     setBindPort(String(spec.bind_port || ""));
     setTargetHost(spec.target_host || "");
     setTargetPort(spec.target_port ? String(spec.target_port) : "");
-    toastSuccess("Настройки проброса восстановлены — подтвердите создание");
+    toastSuccess(t("ui.sshforwardssheet.m2e7e80fcab"));
   };
 
   const handleCreate = async () => {
@@ -290,7 +290,7 @@ export function SshForwardsSheet({ open, onClose, hosts, presetHost }: Props) {
   };
 
   const handleDelete = async (f: SshForward) => {
-    if (!(await tgConfirm(`Удалить проброс ${f.bind_addr}:${f.bind_port}?`, { danger: true, confirmText: t("confirm.btn.delete") }))) return;
+    if (!(await tgConfirm(t("ui.sshforwardssheet.mce6cc6969d", { p0: (f.bind_addr), p1: (f.bind_port) }), { danger: true, confirmText: t("confirm.btn.delete") }))) return;
     try {
       await deleteSshForward(f.id);
       haptic("medium");
@@ -315,8 +315,8 @@ export function SshForwardsSheet({ open, onClose, hosts, presetHost }: Props) {
         onKeyDown={trapTabInSheet}
       >
         <div className="help-sheet-header">
-          <div className="modal-title" id="ssh-fwd-title">Проброс портов</div>
-          <button className="icon-btn" onClick={onClose} aria-label="Закрыть">{"✕"}</button>
+          <div className="modal-title" id="ssh-fwd-title">{t("ssh.forwards")}</div>
+          <button className="icon-btn" onClick={onClose} aria-label={t("pty.searchClose")}>{"✕"}</button>
         </div>
 
         {/* Активные пробросы */}
@@ -327,7 +327,7 @@ export function SshForwardsSheet({ open, onClose, hosts, presetHost }: Props) {
         ) : loadErr ? (
           <div className="ssh-empty">{t("ssh.forward.agentUnavailable")}</div>
         ) : forwards.length === 0 ? (
-          <div className="ssh-empty">Активных пробросов нет.</div>
+          <div className="ssh-empty">{t("ui.sshforwardssheet.m652d02b6c4")}</div>
         ) : (
           <div className="ssh-fwd-list">
             {forwards.map((f) => (
@@ -342,27 +342,27 @@ export function SshForwardsSheet({ open, onClose, hosts, presetHost }: Props) {
                   </div>
                   <div className="ssh-fwd-sub">
                     {f.server}
-                    {f.status === "error" ? "" : " · активен"}
+                    {f.status === "error" ? "" : t("ui.sshforwardssheet.m2886c10373")}
                   </div>
                   {f.status === "error" && (
                     <div className="ssh-fwd-error">{forwardErrorText(f)}</div>
                   )}
                   {f.access && (
                     <div className="ssh-fwd-access">
-                      Доступ: {f.access}
+                      {t("ui.sshforwardssheet.m5e509bd1c5")}{f.access}
                       <button className="ssh-inline-action" onClick={() => {
                         void navigator.clipboard?.writeText(f.access);
-                        toastSuccess("Адрес скопирован");
-                      }}>Копировать</button>
+                        toastSuccess(t("ui.sshforwardssheet.m314016f996"));
+                      }}>{t("pty.copy")}</button>
                       {f.type !== "dynamic" && (
                         <button className="ssh-inline-action" onClick={() => {
                           window.open(`http://${f.access}`, "_blank", "noopener");
-                        }}>Открыть</button>
+                        }}>{t("remote.browserOpen")}</button>
                       )}
                     </div>
                   )}
                 </div>
-                <button className="ssh-icon-btn" title="Удалить" aria-label="Удалить"
+                <button className="ssh-icon-btn" title={t("mcp.delete")} aria-label={t("mcp.delete")}
                   onClick={() => void handleDelete(f)}>{"✕"}</button>
               </div>
             ))}
@@ -370,7 +370,7 @@ export function SshForwardsSheet({ open, onClose, hosts, presetHost }: Props) {
         )}
 
         {/* Форма создания */}
-        <div className="ssh-fwd-form-title">Новый проброс</div>
+        <div className="ssh-fwd-form-title">{t("ui.sshforwardssheet.m0c528f0238")}</div>
         {restorableSpecs.length > 0 && (
           <div className="ssh-forward-restore">
             <div className="ssh-sheet-hint">{t("ssh.forward.restoreHint")}</div>
@@ -379,7 +379,7 @@ export function SshForwardsSheet({ open, onClose, hosts, presetHost }: Props) {
                 {/* LOCAL/REMOTE/DYNAMIC — имена из ssh(1), а не из этой формы:
                     в чипах выше тот же проброс называется «Локальный». */}
                 <button className="btn btn-secondary" onClick={() => restoreSpec(spec)}>
-                  Восстановить {TYPE_META[spec.type]?.title || spec.type} · {spec.bind_port}
+                  {t("ui.sshforwardssheet.mc195495cf2")}{TYPE_META[spec.type]?.title || spec.type} · {spec.bind_port}
                 </button>
                 {(spec as any).id && (
                   <button className="ssh-icon-btn" title={t("ssh.forward.forgetSpec")} aria-label={t("ssh.forward.forgetSpec")}
@@ -414,7 +414,7 @@ export function SshForwardsSheet({ open, onClose, hosts, presetHost }: Props) {
             setPassword(h ? getSshPassword(h) : "");
           }}
         >
-          <option value="manual">Ввести сервер вручную…</option>
+          <option value="manual">{t("ui.sshforwardssheet.m15524a0a1e")}</option>
           {hosts.map((h) => (
             <option key={h.id} value={h.id}>
               {h.name ? `${h.name} (${sshTargetLabel(h)})` : sshTargetLabel(h)}
@@ -525,7 +525,7 @@ export function SshForwardsSheet({ open, onClose, hosts, presetHost }: Props) {
         <div className="ssh-sheet-hint">{t("ssh.forward.notPersistent")}</div>
         <button className="btn btn-primary ssh-sheet-submit" disabled={busy || offline}
           onClick={() => void handleCreate()}>
-          {busy ? "Создание…" : "Создать проброс"}
+          {busy ? t("ui.sshforwardssheet.m5e17213144") : t("ui.sshforwardssheet.m5ac75e6894")}
         </button>
       </div>
     </div>

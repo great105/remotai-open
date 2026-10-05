@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Сервер под ключ для Claude Code и Codex: настройка и поддержка | Remotai</title>
+<meta name="description" content="Поднимем и настроим сервер под вашего ИИ-агента: провайдер, страна, установка Claude Code или Codex, автозапуск, доступ с телефона. 8 000 ₽ разово, поддержка 1 500 ₽ в месяц." />
+<link rel="canonical" href="https://remotai.ru/uslugi.html" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Сервер под ключ для Claude Code и Codex" />
+<meta property="og:description" content="Мы арендуем и настраиваем сервер, ставим агента, подключаем ваш телефон. Вы просто пользуетесь." />
+<meta property="og:url" content="https://remotai.ru/uslugi.html" />
+<link rel="icon" href="/favicon.ico" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/blog/blog.css" />
+<style>
+.wrap{max-width:860px}
+.hero{padding:48px 0 20px}
+.price-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:8px 0 32px}
+.price-cards>*{min-width:0}
+.pc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px}
+.pc.main{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent-dim)}
+.pc .tag{display:inline-block;font-family:var(--font-mono);font-size:12px;color:var(--accent);background:var(--accent-dim);border-radius:999px;padding:3px 10px;margin-bottom:12px}
+.pc .sum{font-family:var(--font-display);font-size:30px;margin:0 0 4px}
+.pc .per{color:var(--faint);font-size:14px;margin:0 0 14px}
+.pc ul{margin:0;padding-left:20px}
+.pc li{margin-bottom:7px;color:var(--muted);font-size:15px}
+.steps{counter-reset:s;display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-bottom:32px}
+.step{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px 18px 16px 58px;position:relative;min-width:0}
+.step:before{counter-increment:s;content:counter(s);position:absolute;left:18px;top:16px;width:26px;height:26px;border-radius:8px;background:var(--accent-dim);color:var(--accent);font-family:var(--font-mono);display:flex;align-items:center;justify-content:center;font-size:14px}
+.step b{display:block;margin-bottom:4px}
+.step span{color:var(--muted);font-size:15px}
+form{background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:24px;margin:8px 0 40px}
+form h2{margin-top:0}
+label{display:block;margin-bottom:14px}
+label span{display:block;font-size:14px;color:var(--muted);margin-bottom:6px}
+input,textarea,select{width:100%;background:var(--bg2);border:1px solid var(--line2);border-radius:10px;padding:12px 14px;color:var(--fg);font-family:var(--font-body);font-size:16px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
+textarea{min-height:90px;resize:vertical}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+button{background:var(--accent);color:#06251c;border:0;border-radius:11px;padding:14px 26px;font-family:var(--font-body);font-weight:600;font-size:16px;cursor:pointer}
+button:disabled{opacity:.6;cursor:default}
+.form-note{color:var(--faint);font-size:13px;margin-top:12px}
+.result{margin-top:14px;font-size:15px}
+.result.ok{color:var(--accent)}
+.result.err{color:#ff8a7a}
+</style>
+
+<link rel="alternate" hreflang="ru" href="https://remotai.ru/uslugi.html" />
+<link rel="alternate" hreflang="en" href="https://remotai.ru/en/uslugi.html" />
+<link rel="alternate" hreflang="x-default" href="https://remotai.ru/uslugi.html" />
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="/">Remot<span>ai</span></a><a class="language-link" href="/en/uslugi.html" hreflang="en" lang="en" style="margin-left:auto;padding:8px;white-space:nowrap;font-size:13px">English</a>
+    <nav class="nav">
+      <a href="/blog/">Блог</a>
+      <a href="/server.html">Агент на сервере</a>
+      <a href="/#pricing">Цены</a>
+      <a href="/app/">Веб-версия</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>Сервер под ключ: мы настроим, вы просто пользуетесь</h1>
+    <p class="lead">Арендуем сервер в нужной стране, ставим на него Claude Code или Codex, настраиваем автозапуск и доступ с вашего телефона. Вам остаётся открыть приложение и работать.</p>
+  </div>
+
+  <div class="price-cards">
+    <div class="pc main">
+      <span class="tag">Разово</span>
+      <div class="sum">8 000 ₽</div>
+      <p class="per">настройка под ключ</p>
+      <ul>
+        <li>Подбираем провайдера и страну под ваши задачи</li>
+        <li>Арендуем и настраиваем сервер</li>
+        <li>Ставим Claude Code, Codex или оба сразу</li>
+        <li>Настраиваем автозапуск: переживает перезагрузку</li>
+        <li>Подключаем ваш телефон и проверяем всё вместе с вами</li>
+      </ul>
+    </div>
+    <div class="pc">
+      <span class="tag">Ежемесячно</span>
+      <div class="sum">1 500 ₽</div>
+      <p class="per">поддержка, по желанию</p>
+      <ul>
+        <li>Следим, что сервер и агент живы</li>
+        <li>Обновляем агента и систему</li>
+        <li>Чиним, когда что-то отвалилось</li>
+        <li>Отвечаем на вопросы по работе</li>
+        <li>Можно отключить в любой момент</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Что вы платите отдельно</h2>
+  <p>Аренду самого сервера его провайдеру: обычно от 300 до 800 ₽ в месяц. Подписку на Claude или OpenAI по их тарифам, аккаунт остаётся вашим. И подписку Remotai за доступ с телефона, 900 ₽ в месяц, первые 7 дней бесплатно.</p>
+
+  <h2>Как проходит настройка</h2>
+  <div class="steps">
+    <div class="step"><b>Созваниваемся или переписываемся</b><span>Выясняем, что вам нужно: какой агент, какие задачи, нужен ли доступ к вашим репозиториям.</span></div>
+    <div class="step"><b>Берём сервер</b><span>Подбираем провайдера и страну. Можно на ваш аккаунт у провайдера, можно на наш с последующей передачей.</span></div>
+    <div class="step"><b>Настраиваем</b><span>Система, агент, автозапуск, доступ с телефона. Проверяем, что всё поднимается после перезагрузки.</span></div>
+    <div class="step"><b>Передаём и показываем</b><span>Открываете приложение, видите свой сервер и работаете. Показываем, как запускать задачи и что делать, если что-то пошло не так.</span></div>
+  </div>
+
+  <form id="lead">
+    <h2>Оставить заявку</h2>
+    <p style="color:var(--muted);margin-top:0">Напишите, что нужно, и как с вами связаться. Ответим и обсудим детали.</p>
+    <label>
+      <span>Что интересует</span>
+      <select name="service">
+        <option>Сервер под ключ, 8 000 ₽</option>
+        <option>Сервер под ключ и поддержка, 8 000 ₽ и 1 500 ₽ в месяц</option>
+        <option>Только поддержка моего сервера, 1 500 ₽ в месяц</option>
+        <option>Пока просто вопрос</option>
+      </select>
+    </label>
+    <label>
+      <span>Как вас зовут</span>
+      <input name="name" autocomplete="name" placeholder="Необязательно" />
+    </label>
+    <label>
+      <span>Как с вами связаться</span>
+      <input name="contact" required placeholder="Телеграм, почта или телефон" />
+    </label>
+    <label>
+      <span>Что нужно сделать</span>
+      <textarea name="comment" placeholder="Например: нужен Claude Code на сервере, работаю с телефона, свой ноутбук выключаю"></textarea>
+    </label>
+    <label class="hp"><span>Не заполняйте это поле</span><input name="website" tabindex="-1" autocomplete="off" /></label>
+    <button type="submit">Отправить заявку</button>
+    <div class="result" id="result"></div>
+    <p class="form-note">Данные уходят только нам и используются, чтобы ответить на заявку. Условия обработки описаны в <a href="/privacy">политике конфиденциальности</a>.</p>
+  </form>
+</div>
+
+<footer>
+  <div class="wrap">
+    <p>ИП Ваулин Евгений Николаевич · ИНН 773461030140 · ОГРНИП 325774600620214</p>
+    <p><a href="/">Главная</a> · <a href="/blog/">Блог</a> · <a href="/server.html">Агент на сервере</a> · <a href="/offer.html">Оферта</a></p>
+  </div>
+</footer>
+
+<script>
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym(111692890,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+
+(function(){
+  try{
+    var q=new URLSearchParams(location.search),utm={};
+    ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","yclid"].forEach(function(k){var v=q.get(k);if(v)utm[k]=v.slice(0,200);});
+    if(Object.keys(utm).length&&!localStorage.getItem("utm"))localStorage.setItem("utm",JSON.stringify(utm));
+  }catch(e){}
+
+  var form=document.getElementById("lead"), result=document.getElementById("result");
+  form.addEventListener("submit",function(ev){
+    ev.preventDefault();
+    var btn=form.querySelector("button"), fd=new FormData(form), body={};
+    fd.forEach(function(v,k){ body[k]=v; });
+    // Откуда пришёл человек: рекламная метка или страница блога. Пусть заявка
+    // приходит сразу с источником, иначе потом не понять, что сработало.
+    try{ var u=localStorage.getItem("utm"); if(u) body.comment=(body.comment||"")+"\n\nИсточник: "+u; }catch(e){}
+    btn.disabled=true; result.className="result"; result.textContent="Отправляем…";
+    fetch("/api/lead",{method:"POST",headers:{"Content-Type":"application/json; charset=utf-8"},body:JSON.stringify(body)})
+      .then(function(r){ return r.json().then(function(j){ return {code:r.status,j:j}; }); })
+      .then(function(res){
+        if(res.code===200&&res.j.ok){
+          result.className="result ok";
+          result.textContent="Заявка отправлена. Ответим в течение дня.";
+          form.reset();
+          try{ ym(111692890,"reachGoal","lead_sent",{service:body.service}); }catch(e){}
+        }else if(res.code===429){
+          result.className="result err";
+          result.textContent="Слишком часто. Подождите полминуты и попробуйте снова.";
+          btn.disabled=false;
+        }else{
+          result.className="result err";
+          result.textContent="Не отправилось. Напишите нам в Telegram: t.me/Autocode1_bot";
+          btn.disabled=false;
+        }
+      })
+      .catch(function(){
+        result.className="result err";
+        result.textContent="Не отправилось. Напишите нам в Telegram: t.me/Autocode1_bot";
+        btn.disabled=false;
+      });
+  });
+})();
+</script>
+</body>
+</html>

@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"tgcontrol/internal/localize"
 	"time"
 
 	"tgcontrol/internal/config"
@@ -46,19 +47,19 @@ func runVPN(args []string) int {
 			fmt.Fprintln(os.Stderr, "Remotai не отвечает на 127.0.0.1:"+strconv.Itoa(port))
 			return 1
 		}
-		fmt.Printf("Интернет:  %s\n", yesNo(st.Internet, "есть", "нет"))
-		fmt.Printf("Облако:    %s\n", yesNo(st.Cloud, "отвечает", "не отвечает"))
+		fmt.Printf(localize.Text("Интернет:  %s\n"), yesNo(st.Internet, localize.Text("есть"), localize.Text("нет")))
+		fmt.Printf(localize.Text("Облако:    %s\n"), yesNo(st.Cloud, localize.Text("отвечает"), localize.Text("не отвечает")))
 		if st.VPN != nil {
-			fmt.Printf("VPN:       %s — %s (pid %d)\n", st.VPN.Name, yesNo(st.VPN.Running, "запущен", "выключен"), st.VPN.PID)
+			fmt.Printf("VPN:       %s — %s (pid %d)\n", st.VPN.Name, yesNo(st.VPN.Running, localize.Text("запущен"), localize.Text("выключен")), st.VPN.PID)
 			if st.VPN.StartHint != "" {
-				fmt.Printf("Включить:  %s\n", st.VPN.StartHint)
+				fmt.Printf(localize.Text("Включить:  %s\n"), st.VPN.StartHint)
 			}
 		} else {
-			fmt.Println("VPN:       не найден")
+			fmt.Println(localize.Text("VPN:       не найден"))
 		}
-		fmt.Printf("Сторож:    %s\n", yesNo(st.Watchdog, "включён", "выключен"))
+		fmt.Printf(localize.Text("Сторож:    %s\n"), yesNo(st.Watchdog, localize.Text("включён"), localize.Text("выключен")))
 		if st.Last != nil && st.Last.Text != "" {
-			fmt.Printf("Последнее: %s\n", st.Last.Text)
+			fmt.Printf(localize.Text("Последнее: %s\n"), st.Last.Text)
 		}
 		return 0
 	case "off", "stop", "on", "start":
@@ -77,16 +78,16 @@ func runVPN(args []string) int {
 			return 1
 		}
 		if want == "stop" {
-			fmt.Printf("✅ %v выключен.\n", out["vpn"])
+			fmt.Printf(localize.Text("✅ %v выключен.\n"), out["vpn"])
 			if hint, ok := out["start_hint"].(string); ok && hint != "" {
-				fmt.Printf("   Включить обратно: remotai vpn on (%s)\n", hint)
+				fmt.Printf(localize.Text("   Включить обратно: remotai vpn on (%s)\n"), hint)
 			}
 		} else {
-			fmt.Printf("✅ VPN запущен (%v).\n", out["how"])
+			fmt.Printf(localize.Text("✅ VPN запущен (%v).\n"), out["how"])
 		}
 		return 0
 	default:
-		fmt.Fprintln(os.Stderr, "Использование: remotai vpn [status|off|on]")
+		fmt.Fprintln(os.Stderr, localize.Text("Использование: remotai vpn [status|off|on]"))
 		return 2
 	}
 }

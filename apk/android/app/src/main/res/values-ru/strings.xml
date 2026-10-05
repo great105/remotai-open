@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="download_started">Скачивание: %1$s</string>
+    <string name="download_unavailable">Менеджер загрузок недоступен</string>
+    <string name="download_failed">Не удалось скачать файл. Попробуйте ещё раз.</string>
+</resources>

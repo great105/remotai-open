@@ -1,3 +1,4 @@
+import { getLocale } from "@tgcontrol/shared";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useToast, mapApiError } from "@tgcontrol/shared";
@@ -50,8 +51,8 @@ function fmtTime(iso: string): string {
   const d = new Date(ts);
   const today = new Date();
   const sameDay = d.toDateString() === today.toDateString();
-  const hm = d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
-  return sameDay ? hm : `${d.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })} ${hm}`;
+  const hm = d.toLocaleTimeString(getLocale(), { hour: "2-digit", minute: "2-digit" });
+  return sameDay ? hm : `${d.toLocaleDateString(getLocale(), { day: "numeric", month: "short" })} ${hm}`;
 }
 
 /**
@@ -83,8 +84,8 @@ export function SupportView() {
     const query = new URLSearchParams(location.search);
     if (query.get("topic") !== "installation") return readSupportDraft();
     const os = query.get("os");
-    const system = os === "macos" ? "macOS" : os === "linux" ? "Linux" : os === "windows" ? "Windows" : "моём компьютере";
-    return prefillSupportDraft(`Не получается установить Remotai на ${system}.\nЧто происходит: `);
+    const system = os === "macos" ? "macOS" : os === "linux" ? "Linux" : os === "windows" ? "Windows" : t("ui.supportview.m9c9d3a3cb0");
+    return prefillSupportDraft(t("ui.supportview.mc44993b9a9", { p0: (system) }));
   });
   const [sending, setSending] = useState(false);
   const [pending, setPending] = useState<PendingMessage[]>([]);

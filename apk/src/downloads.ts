@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 /**
  * Откуда взять Remotai для КОМПЬЮТЕРА, за которым человек сидит прямо сейчас.
  *
@@ -48,9 +49,9 @@ export function desktopDownloadFor(os: DesktopOS, arch: LinuxArch = "amd64"): De
     case "windows":
       return {
         os,
-        label: "Скачать Remotai для Windows",
+        label: t("ui.installtarget.m2254aa6696"),
         url: `${base}/download/remotai-setup.exe`,
-        altLabel: "Portable-версия без установки",
+        altLabel: t("ui.downloads.m5f8570b2bc"),
         altUrl: `${base}/download/remotai.exe`,
       };
     case "macos":
@@ -58,16 +59,16 @@ export function desktopDownloadFor(os: DesktopOS, arch: LinuxArch = "amd64"): De
       // A universal app avoids asking people to identify their Mac processor.
       return {
         os,
-        label: "Скачать Remotai для macOS",
+        label: t("ui.downloads.m04c253eae7"),
         url: `${base}/download/remotai-macos.dmg`,
         guideUrl: `${base}/app/#/start?task=host&os=macos`,
       };
     case "linux":
       return {
         os,
-        label: "Скачать .deb — Ubuntu, Debian, Mint",
+        label: t("ui.downloads.m35583c8439"),
         url: `${base}/download/remotai-linux-${arch}.deb`,
-        altLabel: "Скачать .rpm — Fedora, openSUSE",
+        altLabel: t("ui.downloads.m2d3b674228"),
         altUrl: `${base}/download/remotai-linux-${arch}.rpm`,
         guideUrl: `${base}/app/#/start?task=host&os=linux`,
       };

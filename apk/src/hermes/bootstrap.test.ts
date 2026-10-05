@@ -49,7 +49,14 @@ vi.mock("react", async importOriginal => ({
   useLayoutEffect: (fn: unknown, deps: unknown[]) => host.effect(fn, deps),
   useId: () => "fixture-id",
 }));
-vi.mock("@tgcontrol/shared", () => ({ FolderNavSheet: () => null, SheetShell: () => null, platform: () => ({ saveBlob: host.saveBlob }), transport: () => ({}), useEscape: (open:boolean,close:()=>void) => { if(host.realEscape) useActualEscape(open,close); if(open) host.escapeHandlers.push(close); }, mapApiError: (e: Error) => e.message }));
+vi.mock("@tgcontrol/shared", async () => ({
+  t: (await import("../../../packages/shared/src/i18n")).t,
+  getLocale: () => "ru-RU", useLanguage: () => "ru",
+  FolderNavSheet: () => null, SheetShell: () => null,
+  platform: () => ({ saveBlob: host.saveBlob }), transport: () => ({}),
+  useEscape: (open:boolean,close:()=>void) => { if(host.realEscape) useActualEscape(open,close); if(open) host.escapeHandlers.push(close); },
+  mapApiError: (e: Error) => e.message,
+}));
 vi.mock("react-router-dom", () => ({ useNavigate: () => () => {} }));
 vi.mock("../api", () => ({ uploadPtyFile: (...args: any[]) => host.upload(...args) }));
 vi.mock("../config", () => ({ getMode: () => host.mode, getSelectedDeviceId: () => host.selectedDevice, getTerminalContextKey: () => host.device, getSelectedDeviceName: () => "Fixture" }));

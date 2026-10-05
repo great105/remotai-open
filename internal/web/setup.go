@@ -1071,12 +1071,20 @@ func (s *Server) serveSetupPage(w http.ResponseWriter, r *http.Request) {
 	// The desktop window passes ?force=1 to get the setup page anyway — there
 	// setup.js renders a "running" status screen + QR to add another phone.
 	if cfg.IsConfigured() && r.URL.Query().Get("force") != "1" {
-		http.Redirect(w, r, "/miniapp", http.StatusTemporaryRedirect)
+		target := "/miniapp/"
+		if lang := r.URL.Query().Get("lang"); lang == "en" || lang == "ru" {
+			target += "?lang=" + lang
+		}
+		http.Redirect(w, r, target, http.StatusTemporaryRedirect)
 		return
 	}
 
 	// Try embedded setup HTML
-	data, err := embeddedSetup.ReadFile("setup_static/index.html")
+	setupFile := "setup_static/index.html"
+	if r.URL.Query().Get("lang") == "en" {
+		setupFile = "setup_static/index.en.html"
+	}
+	data, err := embeddedSetup.ReadFile(setupFile)
 	if err == nil {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.Write(data)
@@ -1085,7 +1093,7 @@ func (s *Server) serveSetupPage(w http.ResponseWriter, r *http.Request) {
 
 	// Try on-disk setup HTML
 	exe, _ := os.Executable()
-	indexPath := filepath.Join(filepath.Dir(exe), "setup_static", "index.html")
+	indexPath := filepath.Join(filepath.Dir(exe), filepath.FromSlash(setupFile))
 	if _, err := os.Stat(indexPath); err == nil {
 		http.ServeFile(w, r, indexPath)
 		return

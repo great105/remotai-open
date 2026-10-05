@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Управление компьютером с телефона: что реально можно сделать | Remotai</title>
+<meta name="description" content="Что можно и чего нельзя сделать с компьютером через телефон: запуск программ, файлы, экран, выключение и включение. Разбираем по задачам, без белого IP и проброса портов." />
+<link rel="canonical" href="https://remotai.ru/blog/upravlenie-kompyuterom-s-telefona.html" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Управление компьютером с телефона: что реально можно сделать" />
+<meta property="og:description" content="Что можно и чего нельзя сделать с компьютером через телефон: запуск программ, файлы, экран, выключение и включение. Разбираем по задачам, без белого IP и проброса портов." />
+<meta property="og:url" content="https://remotai.ru/blog/upravlenie-kompyuterom-s-telefona.html" />
+<link rel="icon" href="/favicon.ico" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/blog/blog.css" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","headline":"Управление компьютером с телефона: что реально можно сделать",
+"datePublished":"2026-09-11","dateModified":"2026-09-11",
+"author":{"@type":"Person","name":"Евгений Ваулин"},
+"publisher":{"@type":"Organization","name":"Remotai"},
+"mainEntityOfPage":"https://remotai.ru/blog/upravlenie-kompyuterom-s-telefona.html"}
+</script>
+
+<link rel="alternate" hreflang="ru" href="https://remotai.ru/blog/upravlenie-kompyuterom-s-telefona.html" />
+<link rel="alternate" hreflang="en" href="https://remotai.ru/en/blog/upravlenie-kompyuterom-s-telefona.html" />
+<link rel="alternate" hreflang="x-default" href="https://remotai.ru/blog/upravlenie-kompyuterom-s-telefona.html" />
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="/">Remot<span>ai</span></a><a class="language-link" href="/en/blog/upravlenie-kompyuterom-s-telefona.html" hreflang="en" lang="en" style="margin-left:auto;padding:8px;white-space:nowrap;font-size:13px">English</a>
+    <nav class="nav">
+      <a href="/blog/">Блог</a>
+      <a href="/server.html">Агент на сервере</a>
+      <a href="/uslugi.html">Под ключ</a>
+      <a href="/#pricing">Цены</a>
+      <a href="/app/">Веб-версия</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+<article>
+  <h1>Управление компьютером с телефона: что реально можно сделать</h1>
+  <div class="meta">11 сентября 2026 · читать 5 минут</div>
+
+  <p>Управлять компьютером с телефона хотят по разным причинам, и от причины зависит, какой способ подойдёт. Кому-то нужно забрать забытый файл, кому-то перезапустить зависшую программу, кому-то следить за долгой задачей. Разберём по задачам, что действительно работает.</p>
+
+  <h2>Забрать файл или посмотреть папку</h2>
+
+  <p>Самая частая задача и самая простая. Подойдёт любой способ, где есть файловый менеджер: облачные сервисы, если файл заранее туда положен, или удалённый доступ, если нет.</p>
+
+  <p>Нюанс, о котором забывают: файл нужно не только увидеть, но и открыть. Документ или картинку телефон покажет сам, а вот исходник или лог удобнее прочитать прямо на компьютере, не скачивая.</p>
+
+  <h2>Запустить или перезапустить программу</h2>
+
+  <p>Здесь начинаются различия. Через удалённый рабочий стол вы двигаете мышь и жмёте кнопки в чужом интерфейсе, что на телефоне неудобно, но иногда единственный вариант для программ с окнами.</p>
+
+  <p>Если программа консольная, всё намного лучше: одна команда, и она запущена. Логи видно сразу, вывод читается как текст, трафика почти нет.</p>
+
+  <p>Важно, чтобы запущенное продолжало работать после того, как вы закрыли приложение. Если процесс живёт внутри вашей сессии, разрыв связи его убьёт. Правильно, когда он живёт на самом компьютере, а вы только смотрите.</p>
+
+  <h2>Посмотреть, что на экране</h2>
+
+  <p>Иногда нужно просто увидеть картинку: не завис ли рендер, что показывает программа, дошёл ли процесс до конца. Экран через интернет ест трафик, поэтому смотреть на него постоянно не стоит, но заглянуть на минуту полезно.</p>
+
+  <h2>Выключить, перезагрузить, разбудить</h2>
+
+  <p>Выключение и перезагрузка делаются одной командой. А вот включить выключенный компьютер удалённо через интернет не получится: он не может принимать команды, когда не работает. Для этого нужен Wake-on-LAN и устройство в той же сети, либо просто не выключать машину, если она нужна круглосуточно.</p>
+
+  <p>Это одна из причин, по которой для постоянных задач берут сервер, а не домашний компьютер. Разбор этого сценария есть отдельно: <a href="/blog/claude-code-iz-rossii.html">агент на своём сервере</a>.</p>
+
+  <h2>Что мешает почти всем</h2>
+
+  <p><strong>Серый IP.</strong> Домашний интернет обычно не даёт адреса, по которому к вам можно подключиться снаружи. Классические схемы требуют белого IP или настройки роутера, и половина людей останавливается здесь. Решение простое: соединение должен устанавливать сам компьютер, а не телефон. Тогда ни роутер, ни проброс портов не нужны.</p>
+
+  <p><strong>Обрывы связи.</strong> Телефон меняет сети постоянно. Хорошее решение это переживает: вернулись, подключились, увидели то же, что было.</p>
+
+  <p><strong>Управление пальцем.</strong> Интерфейс, рассчитанный на мышь, плохо переносится на маленький экран. Поэтому для работы удобнее консоль, а экран оставить для случаев, когда без графики никак.</p>
+
+  <div class="cta-box">
+    <h3>Попробовать</h3>
+    <p>Открывается в браузере, приложение ставить необязательно. Первые 7 дней бесплатно и без карты, дальше 900 ₽ в месяц.</p>
+    <a class="btn" href="/app/">Открыть веб-версию</a>
+  </div>
+
+  <h2>Про безопасность</h2>
+
+  <p>Три вопроса, которые стоит задать любому решению.</p>
+
+  <p>Кто видит содержимое сессии, если трафик идёт через чужой сервер.</p>
+
+  <p>Как отозвать доступ, если телефон потерян. Должна быть возможность отключить конкретное устройство, а не менять всё подряд.</p>
+
+  <p>Что произойдёт после перезагрузки компьютера: вернётся ли доступ сам или придётся идти к машине руками.</p>
+
+  <h2>Что выбрать</h2>
+
+  <p>Если задача разовая и нужна графика, берите удалённый рабочий стол и потерпите неудобство управления.</p>
+
+  <p>Если вы возвращаетесь к компьютеру регулярно, удобнее консоль плюс файлы, а экран как дополнение. Мы сделали свой инструмент именно так: терминалы и файлы основным, экран по требованию. Работа с компьютером в своей домашней сети бесплатна навсегда, подключение через интернет входит в подписку, 900 рублей в месяц, первые 7 дней бесплатно и без карты.</p>
+
+  <p>Если задача не «дотянуться до своей машины», а «чтобы что-то работало всегда», посмотрите в сторону сервера: он не спит, не выключается и не уезжает с вами.</p>
+</article>
+</div>
+
+<footer>
+  <div class="wrap">
+    <p>ИП Ваулин Евгений Николаевич · ИНН 773461030140 · ОГРНИП 325774600620214</p>
+    <p><a href="/">Главная</a> · <a href="/blog/">Блог</a> · <a href="/server.html">Агент на сервере</a>
+      <a href="/uslugi.html">Под ключ</a> · <a href="/offer.html">Оферта</a></p>
+  </div>
+</footer>
+
+<script>
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym(111692890,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+(function(){
+  var SLUG = "upravlenie-kompyuterom-s-telefona";
+  try{
+    // Метка внешней рекламы важнее: если человек пришёл по объявлению, источником
+    // остаётся оно, а не страница блога, на которую он потом забрёл.
+    var q=new URLSearchParams(location.search),utm={};
+    ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","yclid"].forEach(function(k){var v=q.get(k);if(v)utm[k]=v.slice(0,200);});
+    if(Object.keys(utm).length&&!localStorage.getItem("utm")){
+      localStorage.setItem("utm",JSON.stringify(utm));
+    }else if(!localStorage.getItem("utm")){
+      // Пришёл из поиска прямо в блог: запоминаем статью как источник, чтобы в базе
+      // было видно, какая именно страница привела человека к регистрации и оплате.
+      localStorage.setItem("utm",JSON.stringify({utm_source:"blog",utm_medium:"article",utm_campaign:SLUG}));
+    }
+  }catch(e){}
+  // Цели: клик по кнопке в статье и уход в приложение или на страницу сценария.
+  document.querySelectorAll('a[href^="/app/"], a[href^="/server.html"], a[href^="/#pricing"]').forEach(function(a){
+    a.addEventListener("click",function(){
+      try{ ym(111692890,"reachGoal","blog_cta",{article:SLUG,to:a.getAttribute("href")}); }catch(e){}
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 // Сборка ЛОКАЛЬНОГО пути стрима (то, что агент откроет у себя: /ws/pty/<id>).
 //
 // Почему это отдельный модуль, а не пара строк на месте вызова. Путь до агента
@@ -54,7 +55,7 @@ export function localStreamPath(path: string, params?: StreamParams): string {
       // релея означает, что в облаке терминал не откроется ВООБЩЕ (400), и
       // узнать об этом на localhost невозможно. Пусть ломается в тесте, а не
       // у человека в руках.
-      throw new Error(`параметр «${key}» не разрешён релеем: см. STREAM_QUERY_ALLOWED`);
+      throw new Error(t("ui.streampath.m00749111b5", { p0: (key) }));
     }
     parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(String(raw))}`);
   }

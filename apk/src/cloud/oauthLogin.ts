@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 /** OAuth-вход через redirect-флоу релея (VK ID / Яндекс ID / Google).
  *
  * Поток: POST /v1/auth/oauth/{provider}/begin → {state, authorize_url}.
@@ -82,7 +83,7 @@ async function pollOnce(base: string, state: string, provider: string, link = fa
   if (p.expired) return { ok: false, reason: "expired" };
   if (p.confirmed && p.linked) return { ok: true, provider: p.provider || provider };
   if (p.confirmed && p.jwt) {
-    if (link) throw new CloudError(409, "Сервер не поддерживает безопасную привязку этого способа входа.");
+    if (link) throw new CloudError(409, t("ui.oauthlogin.mccd275c51a"));
     setNetworkContext({ route: "cloud" }); // дальше приложение работает через облако
     saveConfig({
       mode: "cloud",
@@ -118,7 +119,7 @@ export async function startOAuthLogin(provider: string, options: { link?: boolea
     headers,
   }, "cloud");
   if (!r.ok) {
-    throw new CloudError(r.status, "Не удалось начать вход. Попробуйте позже.");
+    throw new CloudError(r.status, t("ui.oauthlogin.m53cd78b5dd"));
   }
   const b = (await r.json()) as BeginResp;
   tlog("oauth-login:begin", { provider });

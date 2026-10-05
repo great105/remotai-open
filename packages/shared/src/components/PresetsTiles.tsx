@@ -73,7 +73,7 @@ export function PresetsTiles({ showSessionPresets = true, showTitle = false, dis
             const name = `${p.agent}-${Date.now().toString(36)}`;
             await createSession(name, p.agent, p.cwd || "");
             navigate(`/session/${encodeURIComponent(name)}`);
-            toastSuccess(`Сессия ${p.agent} запущена`);
+            toastSuccess(t("ui.presetstiles.mbe5292dd43", { p0: (p.agent) }));
           }
           break;
         case "pty":

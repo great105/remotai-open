@@ -5,6 +5,7 @@ package main
 import (
 	"log"
 	"os"
+	"tgcontrol/internal/localize"
 
 	"tgcontrol/internal/bundle"
 )
@@ -14,7 +15,7 @@ import (
 // каждом старте агента (у серверов это обычно и есть единственный «install»).
 func ensureInstalled() {
 	if err := bundle.Ensure(); err != nil {
-		log.Printf("[INSTALL] папка ~/Remotai: %v", err)
+		log.Printf(localize.Text("[INSTALL] папка ~/Remotai: %v"), err)
 	}
 }
 

@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 /** Вход через Telegram для НЕ-Mini-App клиентов (APK / web / окно exe).
  *
  * Поток (SOTA, кросс-платформенный): POST /v1/auth/tg/start → одноразовый nonce
@@ -126,7 +127,7 @@ export async function startTelegramLogin(options: TgLoginOptions = {}): Promise<
   // человек видел о продукте (UX-аудит N63).
   const startRes = await fetchOrNetworkError(base + "/v1/auth/tg/start", { method: "POST" }, "cloud");
   if (!startRes.ok) {
-    throw new CloudError(startRes.status, "Не удалось начать вход через Telegram");
+    throw new CloudError(startRes.status, t("ui.tglogin.m06b198cd3c"));
   }
   const s = (await startRes.json()) as StartResp;
   tlog("tg-login:start", { bot: s.bot_username });
@@ -217,7 +218,7 @@ export async function approveQrLogin(loginToken: string): Promise<boolean> {
       return false;
     }
   }
-  let message = "Не удалось подтвердить вход";
+  let message = t("ui.tglogin.m030889e35b");
   let code: string | undefined;
   try {
     const body = (await res.json()) as { error?: string; code?: string };

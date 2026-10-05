@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 /**
  * Local notifications for AI agent completion events.
  *
@@ -88,8 +89,8 @@ export async function initNotifications(options: { request?: boolean } = {}): Pr
     // Channel must exist before notifications fire on Android 8+.
     await LocalNotifications.createChannel({
       id: CHANNEL_ID,
-      name: "Завершение задач AI",
-      description: "Уведомления когда AI-агент закончил выполнение",
+      name: t("ui.notifications.m17effe82ee"),
+      description: t("ui.notifications.mff7488e75a"),
       importance: 4, // HIGH — heads-up notification
       visibility: 1,
       sound: "default",
@@ -254,13 +255,13 @@ export async function showNotifyEvent(ev: NotifyEvent): Promise<void> {
 
   const success = ev.event === "session.completed";
   const title = success
-    ? `${ev.agent || "Агент"} закончил`
-    : `Ошибка в сессии`;
+    ? t("ui.notifications.mba2879ade5", { p0: (ev.agent || t("pty.agentBtn")) })
+    : t("ui.notifications.m0ad5197a84");
   const body = ev.summary?.trim()
     ? ev.summary.trim()
     : success
-    ? `Сессия "${ev.session}" завершена`
-    : `Сессия "${ev.session}" упала с ошибкой`;
+    ? t("ui.notifications.med0b71ab59", { p0: (ev.session) })
+    : t("ui.notifications.m8c454c90a4", { p0: (ev.session) });
 
   // Android notification id must fit in int32; derive a stable id from session
   // name + event id so identical events overwrite (don't pile up).
@@ -340,36 +341,36 @@ export async function showPtyEvent(ev: PtyEvent, opts: ShowOptions = {}): Promis
     }
   }
 
-  const ptyName = ev.name?.trim() || "терминал";
+  const ptyName = ev.name?.trim() || t("ui.notifications.m9119233037");
   const deviceName = getSelectedDeviceName();
   const agentLabel = ev.agent && isAgentKind(ev.agent)
     ? agentDisplayName(ev.agent)
-    : "Терминал";
+    : t("sys.busyTerminal");
 
   let title: string;
   let body: string;
   switch (ev.event) {
     case "waiting_input":
-      title = `${agentLabel} ждёт ответа`;
+      title = t("ui.notifications.m06925fddf4", { p0: (agentLabel) });
       // Текст вопроса прямо в уведомлении — раньше приходилось открывать
       // терминал, чтобы понять, о чём спрашивают.
       body = ev.hint?.trim()
         ? `«${ptyName}»: ${ev.hint.trim()}`
-        : `В терминале «${ptyName}» ожидается ответ`;
+        : t("ui.notifications.m58746622a6", { p0: (ptyName) });
       break;
     case "finished": {
-      title = "Команда завершена";
+      title = t("ui.notifications.m2142e2ee13");
       // Агентский finished несёт duration_ms — называем, сколько он работал.
       // Поля нет (старый агент / обычная команда) — текст прежний.
       const dur = typeof ev.duration_ms === "number" && ev.duration_ms > 0
         ? ` · ${formatDurationMs(ev.duration_ms)}`
         : "";
-      body = `${agentLabel} закончил в «${ptyName}»${dur}`;
+      body = t("ui.notifications.m5bdc03f230", { p0: (agentLabel), p1: (ptyName), p2: (dur) });
       break;
     }
     case "error":
-      title = "Ошибка в терминале";
-      body = `${agentLabel} в «${ptyName}»`;
+      title = t("ui.notifications.m1c16f67ae4");
+      body = t("ui.notifications.m0c33d9e662", { p0: (agentLabel), p1: (ptyName) });
       break;
     default:
       // Новый агент прислал незнакомый тип события: молчим, вместо системного
@@ -416,12 +417,12 @@ export async function showSupportReply(count: number): Promise<void> {
         // id постоянный: второй ответ ЗАМЕНЯЕТ уведомление, а не кладётся
         // рядом (та же логика, что у pty-событий).
         id: stableInt32("support"),
-        title: "Поддержка Remotai ответила",
+        title: t("ui.notifications.m10a7bd9bb1"),
         // Без склонений по числу: «2 новых сообщения» и «5 новых сообщений»
         // требуют правил, а двоеточие корректно при любом count.
         body: count > 1
-          ? `Новых сообщений: ${count}`
-          : "Откройте чат, чтобы прочитать",
+          ? t("ui.notifications.mac648a28e2", { p0: (count) })
+          : t("ui.notifications.m710e675b87"),
         channelId: CHANNEL_ID,
         smallIcon: "ic_stat_icon_config_sample",
         ongoing: false,

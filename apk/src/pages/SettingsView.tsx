@@ -1,7 +1,7 @@
 import { Fragment, useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useGoBack } from "../navBack";
-import { SheetShell, useEscape, mapApiError } from "@tgcontrol/shared";
+import { SheetShell, useEscape, mapApiError, LanguageSelector } from "@tgcontrol/shared";
 import { getConfig, updateConfig, getAgents, rescanAgents, getSystemStats, getQuickPaths, getBookmarks, getRecentFolders, listFiles, mkDir, removeBookmark, reconnectWS, disconnectWS, getAgentUpdateInfo, applyAgentUpdate, type AgentUpdateInfo, type RecentFolder } from "../api";
 import { getTelegram, haptic, hapticSuccess, tgConfirm } from "../telegram";
 import { RELAY_BASE, SUPPORT_URL } from "@tgcontrol/shared";
@@ -75,9 +75,9 @@ function formatUptime(seconds: number): string {
   const d = Math.floor(seconds / 86400);
   const h = Math.floor((seconds % 86400) / 3600);
   const m = Math.floor((seconds % 3600) / 60);
-  if (d > 0) return `${d} д ${h} ч ${m} м`;
-  if (h > 0) return `${h} ч ${m} м`;
-  return `${m} м`;
+  if (d > 0) return t("ui.settingsview.m2a2dc0fd67", { p0: (d), p1: (h), p2: (m) });
+  if (h > 0) return t("ui.settingsview.m2e7d50d6e2", { p0: (h), p1: (m) });
+  return t("ui.settingsview.mc3327909f9", { p0: (m) });
 }
 
 /**
@@ -87,9 +87,9 @@ function formatUptime(seconds: number): string {
  */
 function loginClientName(session: CloudLoginSession): string {
   if (session.client_name) return session.client_name;
-  if (session.client_kind === "android") return "Приложение Android";
+  if (session.client_kind === "android") return t("infra.logins.android");
   if (session.client_kind === "telegram") return "Telegram Mini App";
-  return "Веб-браузер";
+  return t("infra.logins.web");
 }
 
 /** Клиент открыт по loopback — окно exe или браузер на самом ПК. */
@@ -101,13 +101,13 @@ function onLoopbackHost(): boolean {
 
 function timeAgoForSession(iso: string): string {
   const timestamp = Date.parse(iso);
-  if (!Number.isFinite(timestamp)) return "недавно";
+  if (!Number.isFinite(timestamp)) return t("ui.infrastructureview.m211493da17");
   const minutes = Math.max(0, Math.floor((Date.now() - timestamp) / 60_000));
-  if (minutes < 1) return "только что";
-  if (minutes < 60) return `${minutes} мин назад`;
+  if (minutes < 1) return t("chat.justNow");
+  if (minutes < 60) return t("ui.infrastructureview.m8ceea3d01a", { p0: (minutes) });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} ч назад`;
-  return `${Math.floor(hours / 24)} дн назад`;
+  if (hours < 24) return t("ui.infrastructureview.mb748cc3575", { p0: (hours) });
+  return t("ui.infrastructureview.m644d0bda1d", { p0: (Math.floor(hours / 24)) });
 }
 
 export function SettingsView() {
@@ -477,11 +477,11 @@ export function SettingsView() {
       const res = await h.done;
       if (res.ok) {
         hapticSuccess();
-        toastSuccess("Вход через Telegram выполнен");
+        toastSuccess(t("ui.settingsview.m3eefb0ede2"));
         reconnectWS();
         getMe().then(setMe).catch(() => {});
       } else if (res.reason === "expired" || res.reason === "timeout") {
-        toastError("Время на вход вышло. Попробуйте ещё раз.");
+        toastError(t("settings.notifyTgLinkTimeout"));
       }
     } catch (e: any) {
       toastError(mapApiError(e));
@@ -496,7 +496,7 @@ export function SettingsView() {
   const handleLinkEmailStart = async () => {
     const clean = linkEmail.trim();
     if (!clean.includes("@")) {
-      toastError("Введите адрес почты");
+      toastError(t("ui.cloudloginview.mee5e999b8e"));
       return;
     }
     setLinkBusy(true);
@@ -513,14 +513,14 @@ export function SettingsView() {
   const handleLinkEmailVerify = async () => {
     const clean = linkCode.trim();
     if (clean.length !== 6) {
-      toastError("Введите 6 цифр из письма");
+      toastError(t("ui.cloudloginview.mb9184d66dd"));
       return;
     }
     setLinkBusy(true);
     try {
       await linkEmailIdentity(linkToken!, clean);
       hapticSuccess();
-      toastSuccess("Почта привязана");
+      toastSuccess(t("ui.settingsview.mb60b905af3"));
       setLinkToken(null);
       setLinkCode("");
       setLinkEmail("");
@@ -540,11 +540,11 @@ export function SettingsView() {
       const result = await handle.done;
       if (result.ok) {
         hapticSuccess();
-        toastSuccess(`${provider.label} привязан`);
+        toastSuccess(t("ui.settingsview.m9e32cb9a53", { p0: (provider.label) }));
         refreshIdentities();
         getMe().then(setMe).catch(() => {});
       } else if (result.reason === "expired" || result.reason === "timeout") {
-        toastError("Время на привязку вышло. Попробуйте ещё раз.");
+        toastError(t("ui.settingsview.m14042b9ce1"));
       }
     } catch (error) {
       toastError(mapConflict(error, t("cloud.identityTaken")));
@@ -558,7 +558,7 @@ export function SettingsView() {
       telegram: "Telegram",
       email: "Email",
       vk: "VK ID",
-      yandex: "Яндекс ID",
+      yandex: t("ui.settingsview.mea48ad896a"),
       google: "Google",
       apple: "Apple",
     };
@@ -643,7 +643,7 @@ export function SettingsView() {
 
   const handleSwitchTelegram = async () => {
     if (inTelegram) {
-      toastSuccess("Переключите активный аккаунт в Telegram и снова откройте Mini App.");
+      toastSuccess(t("ui.settingsview.m7848530c88"));
       getTelegram()?.close();
       return;
     }
@@ -816,7 +816,7 @@ export function SettingsView() {
   const lanConnected = connectionRoute === "self_hosted" && !!serverConfig?.url;
   const permanentAccount = !!me && (me.permanent ?? ((me.telegram_id ?? 0) > 0));
   const accountProviderLabel: Record<string, string> = {
-    telegram: "Telegram", email: "Email", vk: "VK ID", yandex: "Яндекс ID",
+    telegram: "Telegram", email: "Email", vk: "VK ID", yandex: t("ui.settingsview.mea48ad896a"),
     google: "Google", apple: "Apple",
   };
   const linkedProviders = new Set((identities || []).map((identity) => identity.provider));
@@ -839,7 +839,7 @@ export function SettingsView() {
                 уровня диктор не даёт по ним оглавления, а перебирать настройки
                 приходится подряд, элемент за элементом. Вид не меняется —
                 размер и начертание задаёт класс. */}
-            <h2 className="setting-label">Аккаунт</h2>
+            <h2 className="setting-label">{t("agentCheck.account")}</h2>
             <div className="settings-info-card">
               {/* Строка «Вход» показывается только ГОСТЮ.
                   У постоянного аккаунта она слово в слово повторяла первую
@@ -849,8 +849,8 @@ export function SettingsView() {
                   без этой строки он не поймёт, что работает анонимно. */}
               {!permanentAccount && (
                 <div className="settings-info-row">
-                  <span className="settings-info-label">Вход</span>
-                  <span className="settings-info-value">{me == null ? "…" : "Гость (анонимный)"}</span>
+                  <span className="settings-info-label">{t("login.title")}</span>
+                  <span className="settings-info-value">{me == null ? "…" : t("ui.settingsview.m9378bd4ded")}</span>
                 </div>
               )}
               {/* Один список машин — одно имя во всех дверях. Раньше сюда вели
@@ -868,10 +868,9 @@ export function SettingsView() {
             {me != null && !permanentAccount && (
               <>
                 <div style={{ fontSize: 12, color: "var(--tg-hint)", padding: "8px 0", lineHeight: 1.5 }}>
-                  Добавьте постоянный способ входа, чтобы восстановить доступ после переустановки. Подключённые компьютеры сохранятся.
-                </div>
+                  {t("ui.settingsview.mba6021c352")}</div>
                 <button className="btn btn-primary btn-sm" disabled={tgBusy} onClick={() => void handleTgUpgrade()}>
-                  {tgBusy ? "Открываем Telegram…" : "✈ Войти через Telegram"}
+                  {tgBusy ? t("settings.notifyTgConnecting") : t("ui.settingsview.m40f3c3b9ac")}
                 </button>
               </>
             )}
@@ -891,15 +890,13 @@ export function SettingsView() {
             )}
             {identities != null && identities.length === 1 && (
               <div className="settings-single-login-warning">
-                Добавьте запасной способ входа — он поможет, если основной станет недоступен.
-              </div>
+                {t("ui.settingsview.me6c55208df")}</div>
             )}
             {identities != null && !showLinkEmail && (
               <div className="settings-actions-row" style={{ marginTop: 8 }}>
                 {canLinkEmail && (
                   <button className="btn btn-secondary btn-sm" onClick={() => setShowLinkEmail(true)}>
-                    Привязать email
-                  </button>
+                    {t("ui.settingsview.m97d90c03dd")}</button>
                 )}
                 {oauthToLink.map((provider) => (
                   <button
@@ -908,12 +905,12 @@ export function SettingsView() {
                     disabled={linkOAuthBusy !== null}
                     onClick={() => void handleLinkOAuth(provider)}
                   >
-                    {linkOAuthBusy === provider.id ? `Открываем ${provider.label}…` : `Привязать ${provider.label}`}
+                    {linkOAuthBusy === provider.id ? t("ui.cloudloginview.mcad753516b", { p0: (provider.label) }) : t("ui.settingsview.md3a0b6102d", { p0: (provider.label) })}
                   </button>
                 ))}
                 {permanentAccount && (
                   <button className="btn btn-secondary btn-sm" disabled={tgBusy} onClick={() => void handleSwitchTelegram()}>
-                    {tgBusy ? "Открываем Telegram…" : inTelegram ? "Как сменить Telegram" : "Сменить Telegram-аккаунт"}
+                    {tgBusy ? t("settings.notifyTgConnecting") : inTelegram ? t("ui.settingsview.m4fffc0b49a") : t("ui.settingsview.m9b7db2100d")}
                   </button>
                 )}
                 {/* «Выйти» стоит не здесь, а отдельным блоком ниже: рядом с
@@ -928,7 +925,7 @@ export function SettingsView() {
                 {!linkToken ? (
                   <>
                     <div className="login-field">
-                      <label>Email для запасного входа</label>
+                      <label>{t("ui.settingsview.md565d5199c")}</label>
                       <input
                         value={linkEmail}
                         onChange={(e) => setLinkEmail(e.target.value)}
@@ -941,17 +938,16 @@ export function SettingsView() {
                     </div>
                     <div className="settings-actions-row" style={{ marginTop: 8 }}>
                       <button className="btn btn-secondary btn-sm" disabled={linkBusy} onClick={() => void handleLinkEmailStart()}>
-                        {linkBusy ? "Отправляем…" : "Получить код"}
+                        {linkBusy ? t("ui.cloudloginview.m4cbdc4d6d2") : t("ui.settingsview.m7c5f96cd82")}
                       </button>
                       <button className="btn btn-secondary btn-sm" onClick={() => setShowLinkEmail(false)}>
-                        Отмена
-                      </button>
+                        {t("agentSessions.cancel")}</button>
                     </div>
                   </>
                 ) : (
                   <>
                     <div className="login-field">
-                      <label>Код из письма</label>
+                      <label>{t("ui.cloudloginview.mce3c5d2aec")}</label>
                       <input
                         value={linkCode}
                         onChange={(e) => setLinkCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
@@ -963,11 +959,10 @@ export function SettingsView() {
                     </div>
                     <div className="settings-actions-row" style={{ marginTop: 8 }}>
                       <button className="btn btn-secondary btn-sm" disabled={linkBusy} onClick={() => void handleLinkEmailVerify()}>
-                        {linkBusy ? "Проверяем…" : "Привязать"}
+                        {linkBusy ? t("agents.rescanning") : t("ui.settingsview.m4736e3acda")}
                       </button>
                       <button className="btn btn-secondary btn-sm" onClick={() => { setLinkToken(null); setLinkCode(""); }}>
-                        Назад
-                      </button>
+                        {t("agentSessions.back")}</button>
                     </div>
                   </>
                 )}
@@ -1028,7 +1023,7 @@ export function SettingsView() {
               )}
               {loginSessions?.length === 0 && (
                 <div className="settings-info-row">
-                  <span className="settings-info-label">Других активных входов нет</span>
+                  <span className="settings-info-label">{t("ui.settingsview.m49b61552c7")}</span>
                 </div>
               )}
               {loginSessions?.map((session) => (
@@ -1038,7 +1033,7 @@ export function SettingsView() {
                   </span>
                   <span className="settings-session-main">
                     <b>{loginClientName(session)}</b>
-                    <small>{session.current ? t("settings.loginThisOne") : `Активность ${timeAgoForSession(session.last_seen_at)}`}{session.ip_address ? ` · ${session.ip_address}` : ""}</small>
+                    <small>{session.current ? t("settings.loginThisOne") : t("ui.settingsview.mbe9e231ee1", { p0: (timeAgoForSession(session.last_seen_at)) })}{session.ip_address ? ` · ${session.ip_address}` : ""}</small>
                   </span>
                   {session.current ? (
                     <span className="settings-session-you">{t("settings.sessionThisDevice")}</span>
@@ -1055,7 +1050,7 @@ export function SettingsView() {
             </div>
             {(loginSessions?.some((session) => !session.current) ?? false) && (
               <button className="btn btn-secondary btn-sm settings-revoke-others" disabled={sessionsBusy} onClick={() => void handleRevokeOtherSessions()}>
-                {sessionsBusy ? "Завершаем…" : t("settings.revokeOtherLogins")}
+                {sessionsBusy ? t("ui.settingsview.med9f72f03d") : t("settings.revokeOtherLogins")}
               </button>
             )}
             </>
@@ -1175,7 +1170,7 @@ export function SettingsView() {
             <ConnectionRouteSwitch route={connectionRoute} onSwitch={switchConnectionRoute} />
             <div className="settings-info-card">
               <div className="settings-info-row">
-                <span className="settings-info-label">{serverEntity ? "Сервер" : "Компьютер"}</span>
+                <span className="settings-info-label">{serverEntity ? t("ui.infrastructureview.m917e05143a") : t("infra.local.thisPcName")}</span>
                 {/* Красным — только после честного отказа: пока запрос в пути,
                     это нейтральное «проверяем связь…». */}
                 <span className={`settings-info-value ${configLoading ? "" : "settings-bad"}`}>
@@ -1293,7 +1288,7 @@ export function SettingsView() {
         </div>
         {serverConfig?.mode !== "cloud" && (
           <div className="setting-group">
-            <h2 className="setting-label">Компьютеры и серверы</h2>
+            <h2 className="setting-label">{t("infra.connected.devices")}</h2>
             <div className="settings-info-card">
               <button
                 type="button"
@@ -2172,7 +2167,7 @@ function HelpSection({ unread }: { unread: number }) {
             Telegram Mini App это встроенный браузер. */}
         <a
           className="settings-info-row"
-          href={PRIVACY_URL}
+          href={getLanguage() === "en" && RELAY_BASE === "https://remotai.ru" ? RELAY_BASE + "/en/privacy.html" : PRIVACY_URL}
           target="_blank"
           rel="noopener"
           style={{ textDecoration: "none" }}
@@ -2180,12 +2175,9 @@ function HelpSection({ unread }: { unread: number }) {
           <span className="settings-info-label">{t("settings.help.privacyLink")}</span>
           <span className="settings-info-value" style={{ color: "var(--tg-link)" }}>↗</span>
         </a>
-        {/* Язык. Переключателя нет и словарь в проекте один — русский; человек
-            же ищет пункт «Язык» снова и снова, потому что нигде не сказано, что
-            искать нечего. Честная строка дешевле бесконечного поиска (N19). */}
         <div className="settings-info-row">
           <span className="settings-info-label">{t("settings.language")}</span>
-          <span className="settings-info-value">{t("settings.languageValue")}</span>
+          <LanguageSelector className="settings-info-value" />
         </div>
         {/* «Что мы собираем» — короткий разворот прямо в приложении: проверить
             утверждение можно, не уходя на внешнюю страницу. */}
@@ -2231,3 +2223,4 @@ function HelpSection({ unread }: { unread: number }) {
     </div>
   );
 }
+import { getLanguage } from "@tgcontrol/shared";

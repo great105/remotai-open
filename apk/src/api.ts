@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 /** HTTP + WebSocket client for the TGControl API (standalone APK version).
  *
  * Общие endpoint-обёртки переехали в @tgcontrol/shared (api-endpoints.ts) и
@@ -127,7 +128,7 @@ async function blobError(res: Response, viaRelay: boolean): Promise<Error> {
 const httpClient = createHttpClient({
   baseUrl: getBase,
   getHeaders: headers,
-  timeoutMessage: "Запрос не успел выполниться",
+  get timeoutMessage() { return t("ui.api.m67079554c5"); },
 });
 
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
@@ -169,7 +170,7 @@ async function uploadForm<T>(
 }
 
 function uploadAbortError(): ApiError {
-  return new ApiError("Загрузка отменена", 0, "aborted");
+  return new ApiError(t("pty.uploadCancelled"), 0, "aborted");
 }
 
 function xhrUpload<T>(
@@ -189,7 +190,7 @@ function xhrUpload<T>(
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) {
         try { resolve(xhr.responseText ? JSON.parse(xhr.responseText) : null); }
-        catch { reject(new Error("Некорректный ответ сервера")); }
+        catch { reject(new Error(t("ui.api.m3ecf8d7332"))); }
       } else {
         let parsed: { error?: string; code?: string } = {};
         try { parsed = JSON.parse(xhr.responseText || "{}"); } catch { /* plain body */ }
@@ -198,13 +199,13 @@ function xhrUpload<T>(
         // «(HTTP 413)» ничего не объясняет — по status/code фразу выберет
         // mapApiError (то же правило, что для бинарных ответов в blobError).
         reject(new ApiError(
-          body ? `Не удалось загрузить файл: ${body}` : "Не удалось загрузить файл — компьютер отклонил запрос.",
+          body ? t("ui.api.m3d1f58f18a", { p0: (body) }) : t("ui.api.m1dfcc901ba"),
           xhr.status,
           parsed.code,
         ));
       }
     };
-    xhr.onerror = () => reject(new Error("Не удалось загрузить файл: нет соединения"));
+    xhr.onerror = () => reject(new Error(t("ui.api.m42d096ee61")));
     xhr.onabort = () => reject(uploadAbortError());
     if (signal?.aborted) {
       reject(uploadAbortError());
@@ -293,7 +294,7 @@ export async function sendToTelegram(path: string, name?: string): Promise<any> 
   if (syncRoute() !== "cloud") return sendToTelegramLocal(path);
   const relayBase = getRelayBase().replace(/\/+$/, "");
   const deviceId = getSelectedDeviceId();
-  if (!deviceId) throw new ApiError("Компьютер не выбран", 400, "device_not_selected");
+  if (!deviceId) throw new ApiError(t("ui.api.m569b6dad77"), 400, "device_not_selected");
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 120_000);
   try {
@@ -308,7 +309,7 @@ export async function sendToTelegram(path: string, name?: string): Promise<any> 
     return body;
   } catch (e: any) {
     if (e?.name === "AbortError") {
-      throw new ApiError("Telegram не успел принять файл. Попробуйте ещё раз.", 0, "timeout");
+      throw new ApiError(t("ui.api.mda82ec9d7e"), 0, "timeout");
     }
     throw e;
   } finally {
@@ -392,7 +393,7 @@ function notifyCloudAuthLost() {
 async function cloudApi<T>(path: string, init?: RequestInit): Promise<T> {
   const relayBase = getRelayBase().replace(/\/+$/, "");
   const deviceId = getSelectedDeviceId();
-  if (!deviceId) throw new Error("Компьютер не выбран");
+  if (!deviceId) throw new Error(t("ui.api.m569b6dad77"));
 
   const [rawPath, rawQuery] = path.split("?");
   const query: Record<string, string> = {};
@@ -456,7 +457,7 @@ async function cloudApi<T>(path: string, init?: RequestInit): Promise<T> {
     return (text ? JSON.parse(text) : null) as T;
   } catch (e: any) {
     if (e.name === "AbortError") {
-      const err = new Error(externalSignal?.aborted ? "Запрос отменён" : "Запрос не успел выполниться") as Error & {
+      const err = new Error(externalSignal?.aborted ? t("ui.api.m542bd26f07") : t("ui.api.m67079554c5")) as Error & {
         status?: number; code?: string;
       };
       err.status = 0;
@@ -487,14 +488,14 @@ export function streamWSUrl(localPath: string): string {
   if (syncRoute() === "cloud") {
     const relayBase = getRelayBase().replace(/\/+$/, "").replace(/^http/, "ws");
     const deviceId = getSelectedDeviceId();
-    if (!deviceId) throw new Error("Компьютер не выбран");
+    if (!deviceId) throw new Error(t("ui.api.m569b6dad77"));
     // localPath кодируется ЦЕЛИКОМ (вместе со своим запросом) в один параметр —
     // релей передаёт его агенту как есть.
     return `${relayBase}/v1/client/${encodeURIComponent(deviceId)}/stream` +
       `?${cloudStreamAuthQuery()}&path=${encodeURIComponent(localPath)}`;
   }
   const base = getBase(); // throws on an unsafe URL
-  if (!base) throw new Error("Сервер не настроен");
+  if (!base) throw new Error(t("remote.noServer"));
   const wsBase = base.replace(/^http/, "ws");
   // appendQuery сохраняет уже имеющийся запрос (resume), а не затирает его.
   return appendQuery(`${wsBase}${localPath}`, { initData: getInitData() });
@@ -593,7 +594,7 @@ function bytesToB64(bytes: Uint8Array): string {
 async function cloudBlob(path: string, query?: Record<string, string>, signal?: AbortSignal): Promise<Blob> {
   const relayBase = getRelayBase().replace(/\/+$/, "");
   const deviceId = getSelectedDeviceId();
-  if (!deviceId) throw new Error("Компьютер не выбран");
+  if (!deviceId) throw new Error(t("ui.api.m569b6dad77"));
   const res = await fetchOrNetworkError(`${relayBase}/v1/client/${encodeURIComponent(deviceId)}/request`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: cloudAuthHeader() },
@@ -629,7 +630,7 @@ async function cloudPost(
 ): Promise<any> {
   const relayBase = getRelayBase().replace(/\/+$/, "");
   const deviceId = getSelectedDeviceId();
-  if (!deviceId) throw new Error("Компьютер не выбран");
+  if (!deviceId) throw new Error(t("ui.api.m569b6dad77"));
   const res = await fetchOrNetworkError(`${relayBase}/v1/client/${encodeURIComponent(deviceId)}/request`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: cloudAuthHeader() },
@@ -739,7 +740,7 @@ async function lanChunkUpload<T>(
           options?.signal,
         );
         if (!result?.chunk_ack) {
-          throw new Error("Для больших файлов обновите Remotai на компьютере.");
+          throw new Error(t("ui.api.m9f244941ee"));
         }
         offset = end;
         lastResult = result;
@@ -825,7 +826,7 @@ async function cloudUpload(
           total_size: String(f.size),
         }, body, boundary, options?.signal);
         if (!res.chunk_ack) {
-          throw new Error("Для больших файлов обновите Remotai на компьютере.");
+          throw new Error(t("ui.api.m9f244941ee"));
         }
         offset = end;
         onProgress?.(totalSize ? Math.round(((completed + offset) / totalSize) * 100) : 100);
@@ -911,7 +912,7 @@ export async function downloadBlob(path: string, o: DownloadOpts = {}): Promise<
         o.onProgress?.(total, total);
         return part;
       }
-      throw new Error("Компьютеру нужно обновление: он не умеет отдавать файл частями");
+      throw new Error(t("ui.api.m8e27abe250"));
     }
     if (part.size === 0) break; // защита от бесконечного цикла на пустом ответе
     parts.push(part);
@@ -940,7 +941,7 @@ export interface SshSftpConnArg {
 async function cloudBlobPost(path: string, body: unknown, signal?: AbortSignal): Promise<Blob> {
   const relayBase = getRelayBase().replace(/\/+$/, "");
   const deviceId = getSelectedDeviceId();
-  if (!deviceId) throw new ApiError("Компьютер не выбран", 400, "device_not_selected");
+  if (!deviceId) throw new ApiError(t("ui.api.m569b6dad77"), 400, "device_not_selected");
   const res = await fetchOrNetworkError(`${relayBase}/v1/client/${encodeURIComponent(deviceId)}/request`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: cloudAuthHeader() },
@@ -1042,7 +1043,7 @@ export async function sshSftpDownloadBlob(c: SshSftpConnArg, o: DownloadOpts = {
         o.onProgress?.(total, total);
         return part;
       }
-      throw new Error("Компьютеру нужно обновление: он не умеет отдавать файл частями");
+      throw new Error(t("ui.api.m8e27abe250"));
     }
     if (part.size === 0) break; // защита от бесконечного цикла на пустом ответе
     parts.push(part);

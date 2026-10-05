@@ -1,3 +1,4 @@
+import { getLocale } from "../locale";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { t } from "../i18n";
 import { platform } from "../platform";
@@ -219,7 +220,7 @@ export function SessionCard({ session, isActive, progress, onClick, onSwitch, on
           <div className="card-path">
             {shortPath(s.cwd)}
             {s.last_active_at ? (
-              <span className="card-age" title={new Date(s.last_active_at * 1000).toLocaleString()}>
+              <span className="card-age" title={new Date(s.last_active_at * 1000).toLocaleString(getLocale())}>
                 {timeAgo(s.last_active_at)}
               </span>
             ) : null}

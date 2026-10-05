@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Remotai — удобный удалённый доступ к ИИ-агентам</title>
+<meta name="description" content="Управляйте Claude Code, Codex и другими ИИ-агентами на своём компьютере или сервере: запускайте задачи, следите за работой и отвечайте с телефона или из браузера." />
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+<meta name="theme-color" content="#06080b" />
+<meta name="color-scheme" content="dark" />
+<meta name="format-detection" content="telephone=no" />
+<link rel="canonical" href="https://remotai.ru/" />
+<link rel="alternate" type="text/plain" href="https://remotai.ru/llms.txt" title="Remotai для AI-ассистентов" />
+<meta property="og:title" content="Remotai — удобный удалённый доступ к ИИ-агентам" />
+<meta property="og:description" content="Ваши Claude Code, Codex и другие ИИ-агенты работают на вашей машине. Запускайте задачи, следите за работой и отвечайте с телефона, другого ПК или из Telegram." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://remotai.ru/" />
+<meta property="og:site_name" content="Remotai" />
+<meta property="og:locale" content="ru_RU" />
+<meta property="og:image" content="https://remotai.ru/og.png?v=agents-20260905" />
+<meta property="og:image:secure_url" content="https://remotai.ru/og.png?v=agents-20260905" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Remotai — управляйте ИИ-агентами с телефона или другого ПК" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Remotai — удобный удалённый доступ к ИИ-агентам" />
+<meta name="twitter:description" content="Claude Code, Codex и другие ИИ-агенты на вашей машине. Задавайте задачи, следите за работой и отвечайте удалённо — с телефона или из браузера." />
+<meta name="twitter:image" content="https://remotai.ru/og.png?v=agents-20260905" />
+<meta name="twitter:image:alt" content="Remotai — управляйте ИИ-агентами с телефона или другого ПК" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://remotai.ru/#organization",
+      "name": "Remotai",
+      "url": "https://remotai.ru/",
+      "sameAs": ["https://t.me/Autocode1_bot"]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://remotai.ru/#website",
+      "url": "https://remotai.ru/",
+      "name": "Remotai",
+      "description": "Удобный удалённый доступ к своим ИИ-агентам с телефона или другого компьютера",
+      "inLanguage": "ru-RU",
+      "publisher": { "@id": "https://remotai.ru/#organization" }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://remotai.ru/#webpage",
+      "url": "https://remotai.ru/",
+      "name": "Remotai — удобный удалённый доступ к ИИ-агентам",
+      "description": "Запуск задач, наблюдение за работой и ответы Claude Code, Codex и другим ИИ-агентам на своей машине — с телефона, браузера или Telegram.",
+      "isPartOf": { "@id": "https://remotai.ru/#website" },
+      "about": { "@id": "https://remotai.ru/#software" },
+      "inLanguage": "ru-RU",
+      "dateModified": "2026-09-05",
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://remotai.ru/og.png?v=agents-20260905",
+        "width": 1200,
+        "height": 630,
+        "caption": "Remotai — управляйте ИИ-агентами с телефона или другого ПК"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://remotai.ru/#software",
+      "name": "Remotai",
+      "alternateName": "Remotai AI Agent Remote Control",
+      "url": "https://remotai.ru/",
+      "description": "Удалённое управление своими ИИ-агентами на компьютерах и серверах: запускайте Claude Code, Codex и других агентов, наблюдайте за работой и отвечайте с телефона. Терминалы, файлы, SSH и рабочий стол помогают продолжать задачи в своём окружении.",
+      "applicationCategory": "UtilitiesApplication",
+      "applicationSubCategory": "Remote control for CLI AI agents",
+      "operatingSystem": "Windows 10/11, macOS 12+, Linux, Android 7+, iOS, Web",
+        "softwareVersion": "2.75.14",
+      "inLanguage": "ru-RU",
+      "downloadUrl": "https://remotai.ru/#download",
+      "featureList": [
+        "Удалённое управление Claude Code, Codex и другими ИИ-агентами",
+        "Состояния агентов и ответы на запросы подтверждения",
+        "Удалённый PTY-терминал",
+        "SSH и SFTP к серверам",
+        "Удалённый рабочий стол",
+        "Файловый менеджер",
+        "Мониторинг компьютера",
+        "Подключение без белого IP и проброса портов"
+      ],
+      "publisher": { "@id": "https://remotai.ru/#organization" },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "RUB",
+        "description": "Локальная работа на своём компьютере бесплатна; серверы и облачный доступ — 900 ₽/мес, первые 7 дней бесплатно"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://remotai.ru/#faq",
+      "url": "https://remotai.ru/#faq",
+      "inLanguage": "ru-RU",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Как начать работать с ИИ-агентами с телефона?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Нажмите «Начать» и подключите компьютер или сервер, где работают ваши агенты. На телефоне войдите в свой аккаунт Remotai, откройте подключённую машину и раздел «Терминалы». Запустите агента или продолжите его сессию в Remotai: можно читать результат, отправлять задачи и отвечать на вопросы."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Где работают агенты и что нужно для их запуска?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Агенты работают на вашем компьютере или сервере, с вашими файлами и окружением. Remotai даёт к ним удалённый доступ. Установка и аккаунты самих ИИ-агентов настраиваются отдельно. Машина с агентами должна оставаться включённой и подключённой к сети."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Как управлять компьютером с телефона через Remotai?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Нажмите «Начать», выберите «Подключить компьютер» и установите Remotai на нужную машину по инструкции для её системы. На телефоне войдите в свой аккаунт и добавьте компьютер по коду или QR. Файлы и терминалы доступны на Windows, Mac и Linux. Экран подключённого компьютера работает на Windows и Linux с X11; экран самого Mac пока недоступен."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Нужен ли белый IP или проброс портов?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Нет. Компьютер сам устанавливает исходящее TLS-соединение с облачным relay Remotai, поэтому настраивать роутер, VPN или белый IP не требуется."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "На каких устройствах работает Remotai?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Подключить можно Windows 10/11, macOS 12+ (Apple Silicon и Intel) или Linux amd64/arm64. На Mac доступны файлы, терминалы, SSH, мониторинг и AI-агенты, но экран самого Mac пока недоступен. Для экрана Linux нужна сессия X11; работа с Wayland пока не проверена. Управлять другим компьютером можно из браузера на любой из этих систем, с iPhone/iPad, Android 7+ или через Telegram."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Какие ИИ-агенты поддерживаются?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Remotai распознаёт Claude Code, Codex, Kimi, Gemini, Aider и OpenCode в PTY-терминале, показывает состояние агента и позволяет отвечать на запросы подтверждения с телефона."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Можно ли подключаться к Linux-серверам по SSH?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Да. В Remotai есть SSH-центр с хостами из ssh config, SFTP, ProxyJump и перенаправлением портов. Сам агент Remotai также устанавливается на Linux одной командой."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Что Remotai хранит в облаке?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Облако хранит данные аккаунта и привязанных устройств, минимальные события продуктовой аналитики и добровольно отправленные сообщения поддержки. Содержимое терминалов, команд, файлов, экрана, буфера обмена и нажатий не сохраняется как аналитика."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Сколько стоит Remotai?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Локальная работа на своём компьютере бесплатна навсегда. Серверы, SSH/SFTP, проброс портов и облачный доступ — 900 ₽/мес (Про, 5 устройств) или 1 990 ₽/мес (Флит, 25 устройств); первые 7 дней бесплатно и без карты. Аренда VPS оплачивается отдельно."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%2306080b'/%3E%3Cpath%20d='M16%206L6%2011.5%2016%2017%2026%2011.5Z'%20fill='none'%20stroke='%232ee6b0'%20stroke-width='2'/%3E%3Cpath%20d='M6%2016l10%205.5L26%2016'%20fill='none'%20stroke='%232ee6b0'%20stroke-width='2'/%3E%3Cpath%20d='M6%2020.5l10%205.5%2010-5.5'%20fill='none'%20stroke='%232ee6b0'%20stroke-width='2'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg:#06080b; --bg2:#0a0e13; --panel:#0d1218; --panel2:#10161e;
+    --line:#1c2530; --line2:#28333f;
+    --fg:#e8eef4; --muted:#91a0ae; --faint:#72818f;
+    --accent:#2ee6b0; --accent-deep:#0c8f6c; --accent-dim:rgba(46,230,176,.12);
+    --amber:#ffb454;
+    --font-display:"Unbounded","Arial Black",sans-serif;
+    --font-body:"Golos Text","Segoe UI",sans-serif;
+    --font-mono:"JetBrains Mono","Cascadia Code",Consolas,monospace;
+  }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; overflow-x:clip; }
+  body {
+    margin:0; background:var(--bg); color:var(--fg);
+    font-family:var(--font-body); font-size:16px; line-height:1.6;
+    -webkit-font-smoothing:antialiased; overflow-x:clip;
+  }
+  /* фоновая сетка + верхнее свечение */
+  body::before {
+    content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(46,230,176,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(46,230,176,.035) 1px, transparent 1px);
+    background-size:44px 44px;
+    -webkit-mask-image:radial-gradient(ellipse 90% 60% at 50% 0%, #000 30%, transparent 75%);
+    mask-image:radial-gradient(ellipse 90% 60% at 50% 0%, #000 30%, transparent 75%);
+  }
+  body::after {
+    content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 24px; }
+  a { color:var(--accent); }
+  ::selection { background:rgba(46,230,176,.3); }
+
+  /* ── Хедер ── */
+  header {
+    position:sticky; top:0; z-index:50;
+    background:rgba(6,8,11,.78); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+  }
+  /* Отступы шапки — только по вертикали и с повышенной специфичностью: shorthand
+     `padding:14px 0` съедал боковые отступы `.wrap`, из-за чего «Скачать» упиралась
+     в край экрана, а мобильный `.wrap { padding:0 18px }` обнулял вертикальные. */
+  header .nav { display:flex; align-items:center; gap:12px; padding-top:14px; padding-bottom:14px; }
+  .logo { width:30px; height:30px; flex:0 0 auto; }
+  .brand { font-family:var(--font-display); font-weight:700; font-size:17px; letter-spacing:.5px; color:var(--fg); text-decoration:none; }
+  .ver { font-family:var(--font-mono); font-size:11px; color:var(--accent); background:var(--accent-dim); border:1px solid rgba(46,230,176,.25); border-radius:99px; padding:2px 8px; }
+  .nav-links { margin-left:auto; display:flex; align-items:center; gap:22px; }
+  .nav-links a { display:inline-block; padding:10px 0; font-size:14px; color:var(--muted); text-decoration:none; transition:color .15s; }
+  .nav-links a:hover { color:var(--fg); }
+  .nav-cta {
+    font-family:var(--font-mono); font-size:13px; font-weight:500; color:#04211a !important;
+    background:var(--accent); padding:7px 14px; border-radius:8px; text-decoration:none;
+    transition:transform .12s, box-shadow .12s;
+  }
+  .nav-cta:hover { transform:translateY(-1px); box-shadow:0 4px 18px rgba(46,230,176,.35); color:#04211a; }
+  .nav-sections { display:flex; align-items:center; gap:22px; }
+  .nav-links .nav-login { padding:9px 14px; border:1px solid var(--line2); border-radius:10px; color:var(--fg); font-weight:500; white-space:nowrap; }
+  .nav-login:hover { border-color:var(--accent); }
+  .nav-toggle { display:none; min-height:44px; padding:9px 12px; border:1px solid var(--line2); border-radius:10px; background:var(--panel); color:var(--fg); font:inherit; cursor:pointer; }
+  [hidden] { display:none !important; }
+  :focus-visible { outline:2px solid var(--fg); outline-offset:4px; }
+  section[id] { scroll-margin-top:100px; }
+  @media (max-width:920px) {
+    .nav-links { gap:8px; }
+    .nav-toggle { display:inline-flex; align-items:center; }
+    .nav-sections { display:none; position:absolute; top:100%; left:0; right:0; padding:12px 24px; background:var(--panel); border-bottom:1px solid var(--line2); box-shadow:0 16px 24px #0006; }
+    .nav-sections.is-open { display:grid; grid-template-columns:1fr 1fr; gap:4px 16px; }
+    .nav-sections a { min-height:44px; }
+    .ver { display:none; }
+  }
+
+  /* ── Hero ── */
+  .hero { position:relative; padding:72px 0 56px; display:grid; grid-template-columns:1.05fr .95fr; gap:48px; align-items:center; }
+  .hero > div { min-width:0; }
+  @media (max-width:920px) { .hero { grid-template-columns:1fr; padding:48px 0 40px; } }
+  .hero-glow {
+    position:absolute; top:-120px; right:-180px; width:560px; height:560px; z-index:-1; pointer-events:none;
+    background:radial-gradient(circle, rgba(46,230,176,.14) 0%, transparent 65%);
+  }
+  .eyebrow { font-family:var(--font-mono); font-size:13px; color:var(--accent); letter-spacing:.5px; margin:0 0 18px; opacity:0; animation:rise .6s ease forwards .05s; }
+  .hero h1 {
+    font-family:var(--font-display); font-weight:700;
+    font-size:clamp(28px,4.6vw,46px); line-height:1.18; letter-spacing:.2px; margin:0 0 20px;
+    opacity:0; animation:rise .6s ease forwards .15s;
+  }
+  .hero h1 .accent { color:var(--accent); text-shadow:0 0 28px rgba(46,230,176,.35); }
+  .hero h1 .nowrap { white-space:nowrap; }
+  .hero .lead { font-size:clamp(15px,2vw,17px); color:var(--muted); max-width:490px; margin:0 0 30px; opacity:0; animation:rise .6s ease forwards .25s; }
+  .cta { display:flex; gap:14px; flex-wrap:wrap; opacity:0; animation:rise .6s ease forwards .35s; }
+  .btn {
+    display:inline-flex; align-items:center; gap:10px; text-decoration:none;
+    padding:14px 24px; border-radius:12px; font-weight:600; font-size:15.5px; border:1px solid transparent;
+    transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease, color .12s ease;
+  }
+  .btn svg { flex:0 0 auto; }
+  .btn-primary { background:var(--accent); color:#04211a; box-shadow:0 6px 28px rgba(46,230,176,.28); }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 10px 36px rgba(46,230,176,.4); }
+  .btn-ghost { background:rgba(255,255,255,.02); color:var(--fg); border-color:var(--line2); }
+  .btn-ghost:hover { border-color:var(--accent); color:var(--accent); transform:translateY(-2px); }
+  .meta { margin-top:16px; font-family:var(--font-mono); font-size:12.5px; color:var(--faint); opacity:0; animation:rise .6s ease forwards .45s; line-height:2.1; }
+  .meta .mi { display:inline-block; white-space:nowrap; }
+  .meta .sep { color:var(--line2); margin:0 6px; }
+  .meta b { color:var(--muted); font-weight:500; }
+  .meta a { color:var(--muted); }
+  @keyframes rise { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+
+  .hero-next, .hero-price { margin:16px 0 0; font-size:15px; line-height:1.6; color:var(--muted); }
+  .hero-price { color:var(--fg); }
+  .hero-platforms { margin:14px 0 0; font-size:13px; color:var(--muted); line-height:1.6; }
+  .app-preview { min-width:0; margin:0; }
+  .app-preview img, .product-shot img { display:block; max-width:100%; height:auto; border:1px solid var(--line2); border-radius:14px; background:var(--panel); box-shadow:0 18px 60px #0005; }
+  .app-preview figcaption, .product-shot figcaption { margin:12px 0 0; font-size:13px; color:var(--muted); line-height:1.6; }
+  .product-shot { margin:0; min-width:0; }
+  .plan-note, .plan-warn { color:var(--muted); font-size:14px; line-height:1.6; }
+  .plan-warn .w { color:var(--amber); }
+  .bridge-row { display:grid; gap:10px; margin-top:20px; text-align:left; }
+  .bridge-row .btn { justify-self:start; }
+  .bridge-hint { font-size:14px; color:var(--muted); opacity:1; overflow-wrap:anywhere; }
+  .bridge-row a { overflow-wrap:anywhere; }
+  .download-options { margin:24px 0 0; text-align:left; }
+  .download-options > summary { padding:14px 0; min-height:44px; cursor:pointer; color:var(--fg); font-weight:600; }
+  .download-options h3 { font-size:18px; margin:24px 0 8px; }
+  .download-options select { display:block; width:100%; max-width:340px; min-height:44px; margin:8px 0 20px; padding:10px; border:1px solid var(--line2); border-radius:8px; background:var(--panel2); color:var(--fg); font:inherit; }
+  .download-options .cta { margin-top:12px; }
+  .copy-status { min-height:1.6em; margin:10px 0; color:var(--muted); font-size:14px; }
+  @media (max-width:920px) {
+    .hero { gap:28px; }
+    .app-preview { max-width:460px; justify-self:center; }
+    .hero .lead { max-width:650px; }
+  }
+
+  /* ── Терминал в hero ── */
+  .term-zone { position:relative; opacity:0; animation:rise .7s ease forwards .3s; }
+  .term {
+    background:#080c10; border:1px solid var(--line2); border-radius:14px; overflow:hidden;
+    box-shadow:0 24px 70px rgba(0,0,0,.55), 0 0 0 1px rgba(46,230,176,.06), 0 0 60px rgba(46,230,176,.07);
+    transform:rotate(-1.2deg); transition:transform .35s ease;
+  }
+  .term:hover { transform:rotate(0deg); }
+  .term-bar { display:flex; align-items:center; gap:8px; padding:11px 14px; background:#0c1117; border-bottom:1px solid var(--line); }
+  .dot { width:11px; height:11px; border-radius:50%; }
+  .dot:nth-child(1){background:#ff5f57}.dot:nth-child(2){background:#febc2e}.dot:nth-child(3){background:#28c840}
+  .term-title { margin-left:8px; font-family:var(--font-mono); font-size:12px; color:var(--faint); }
+  .term-body {
+    position:relative; padding:20px 18px 24px; font-family:var(--font-mono); font-size:13.5px; line-height:1.9;
+    color:#bfe9d8; text-shadow:0 0 10px rgba(46,230,176,.18); min-height:240px;
+  }
+  /* сканлайны */
+  .term-body::after {
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 3px);
+  }
+  .tl { display:block; white-space:nowrap; overflow:hidden; }
+  .tl .p { color:var(--accent); font-weight:700; }
+  .tl .ok { color:var(--accent); }
+  .tl .ai { color:var(--amber); }
+  .typed { display:inline-block; overflow:hidden; white-space:nowrap; vertical-align:bottom; width:0; }
+  .t-cmd1 { animation:type15 1s steps(15,end) forwards .7s; }
+  .t-cmd2 { animation:type6 .5s steps(6,end) forwards 4.5s; }
+  @keyframes type15 { to { width:15ch; } }
+  @keyframes type6 { to { width:6ch; } }
+  .fade { opacity:0; animation:appear .25s ease forwards; }
+  .d1{animation-delay:2.1s}.d2{animation-delay:2.5s}.d3{animation-delay:3.5s}.d4{animation-delay:4.2s}.d5{animation-delay:5.3s}.d6{animation-delay:5.9s}
+  @keyframes appear { to { opacity:1; } }
+  .cursor { display:inline-block; width:8px; height:17px; background:var(--accent); vertical-align:text-bottom; animation:blink 1s steps(1) infinite; box-shadow:0 0 10px rgba(46,230,176,.6); }
+  @keyframes blink { 50% { opacity:0; } }
+  .phone-badge {
+    position:absolute; left:-14px; bottom:-16px;
+    display:flex; align-items:center; gap:9px;
+    background:var(--panel2); border:1px solid var(--line2); border-radius:99px;
+    padding:9px 16px; font-family:var(--font-mono); font-size:12.5px; color:var(--muted);
+    box-shadow:0 12px 36px rgba(0,0,0,.5);
+    opacity:0; animation:rise .5s ease forwards 3.8s;
+  }
+  .phone-badge .pulse { width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 0 rgba(46,230,176,.5); animation:pulse 2s infinite 3.8s; }
+  @keyframes pulse { 70% { box-shadow:0 0 0 9px rgba(46,230,176,0); } 100% { box-shadow:0 0 0 0 rgba(46,230,176,0); } }
+  @media (max-width:920px) { .term { transform:none; } .phone-badge { left:10px; } }
+  @media (max-width:480px) {
+    .wrap { padding:0 18px; }
+    .term-body { font-size:11.5px; padding:16px 13px 20px; min-height:200px; }
+    .cursor { height:14px; }
+  }
+
+  /* ── Бегущая строка ── */
+  .ticker { border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--bg2); overflow:hidden; padding:13px 0; }
+  .ticker-track { display:flex; flex-wrap:wrap; justify-content:center; gap:8px 0; }
+  .ticker:hover .ticker-track { animation-play-state:paused; }
+  .ticker-track span { font-family:var(--font-mono); font-size:12.5px; letter-spacing:1.5px; color:var(--faint); text-transform:uppercase; white-space:nowrap; padding:0 18px; }
+  .ticker-track span::after { content:"◆"; color:var(--accent); margin-left:36px; font-size:9px; vertical-align:1px; }
+  @keyframes scroll { to { transform:translateX(-50%); } }
+
+  /* ── Секции ── */
+  section { padding:72px 0 0; }
+  .sec-eyebrow { font-family:var(--font-mono); font-size:13px; color:var(--accent); margin:0 0 10px; }
+  /* Цены. Три полки в ряд на широком, столбиком на телефоне; средняя (Про) —
+     та, которую покупают, поэтому она выделена рамкой, а не размером: скачущая
+     высота карточек читается как поломка вёрстки. */
+  .price-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
+  .price-card { border:1px solid var(--line); border-radius:14px; padding:20px; background:var(--card); }
+  .price-card-main { border-color:var(--accent); }
+  .price-name { font-family:var(--font-mono); font-size:13px; color:var(--accent); margin-bottom:8px; }
+  .price-sum { font-family:var(--font-display); font-weight:700; font-size:30px; line-height:1.1; margin-bottom:10px; }
+  .price-sum span { font-family:var(--font-body); font-weight:400; font-size:15px; opacity:.65; }
+  .price-note { margin:0; font-size:14px; line-height:1.5; opacity:.85; }
+  .price-foot { margin:18px 0 0; font-size:14px; opacity:.85; }
+  .sec-title { font-family:var(--font-display); font-weight:700; font-size:clamp(21px,3vw,30px); line-height:1.25; margin:0 0 36px; max-width:640px; }
+
+  /* ── Короткий ответ + факты для людей и поисковых ассистентов ── */
+  .answer-grid {
+    display:grid; grid-template-columns:1.15fr .85fr; gap:22px; align-items:stretch;
+  }
+  .answer-copy, .facts {
+    background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:28px;
+  }
+  .answer-copy { position:relative; overflow:hidden; }
+  .answer-copy::after {
+    content:""; position:absolute; width:260px; height:260px; right:-130px; bottom:-150px;
+    background:radial-gradient(circle, rgba(46,230,176,.12), transparent 70%); pointer-events:none;
+  }
+  .answer-copy p { margin:0; color:var(--muted); font-size:16px; }
+  .answer-copy p + p { margin-top:14px; }
+  .answer-copy strong { color:var(--fg); }
+  .facts { margin:0; display:grid; gap:0; }
+  .fact {
+    display:grid; grid-template-columns:120px 1fr; gap:18px; padding:13px 0; border-top:1px solid var(--line);
+  }
+  .fact:first-child { border-top:0; padding-top:0; }
+  .fact:last-child { padding-bottom:0; }
+  .fact dt { margin:0; font-family:var(--font-mono); font-size:12px; color:var(--accent); }
+  .fact dd { margin:0; color:var(--muted); font-size:14px; }
+  @media (max-width:820px) {
+    .answer-grid { grid-template-columns:1fr; }
+  }
+  @media (max-width:480px) {
+    .answer-copy, .facts { padding:22px; }
+    .fact { grid-template-columns:1fr; gap:4px; }
+  }
+
+  /* ── Bento-фичи ── */
+  .bento { display:grid; grid-template-columns:repeat(12,1fr); gap:16px; }
+  .bcard {
+    position:relative; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:26px;
+    overflow:hidden; transition:border-color .2s, transform .2s, box-shadow .2s;
+  }
+  .bcard:hover { border-color:rgba(46,230,176,.45); transform:translateY(-3px); box-shadow:0 14px 44px rgba(0,0,0,.4), 0 0 30px rgba(46,230,176,.06); }
+  .bcard .idx { position:absolute; top:22px; right:24px; font-family:var(--font-mono); font-size:12px; color:var(--faint); }
+  .bcard .ico { width:38px; height:38px; border-radius:10px; background:var(--accent-dim); border:1px solid rgba(46,230,176,.2); display:flex; align-items:center; justify-content:center; margin-bottom:18px; }
+  .bcard .ico svg { stroke:var(--accent); }
+  .bcard h3 { margin:0 0 8px; font-size:17px; font-weight:600; }
+  .bcard p { margin:0; color:var(--muted); font-size:14.5px; }
+  .bcard .snippet {
+    margin-top:18px; background:#080c10; border:1px solid var(--line); border-radius:10px;
+    padding:12px 14px; font-family:var(--font-mono); font-size:12.5px; color:#bfe9d8; line-height:1.8;
+  }
+  .snippet .p { color:var(--accent); font-weight:700; }
+  .snippet .c { color:var(--faint); }
+  .b7 { grid-column:span 7; } .b5 { grid-column:span 5; } .b4 { grid-column:span 4; }
+  @media (max-width:860px) { .b7,.b5,.b4 { grid-column:span 12; } }
+  @media (min-width:861px) and (max-width:1000px) { .b4 { grid-column:span 6; } }
+
+  /* ── Шаги ── */
+  .steps { position:relative; max-width:680px; }
+  .step { position:relative; display:flex; gap:22px; padding:0 0 36px 0; }
+  .step::before { content:""; position:absolute; left:21px; top:46px; bottom:2px; width:1px; background:linear-gradient(var(--line2), transparent); }
+  .step:last-child { padding-bottom:0; }
+  .step:last-child::before { display:none; }
+  .step .n {
+    flex:0 0 44px; height:44px; border-radius:12px;
+    background:var(--accent-dim); border:1px solid rgba(46,230,176,.3); color:var(--accent);
+    font-family:var(--font-mono); font-weight:700; font-size:16px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .step b { display:block; font-size:16.5px; margin:9px 0 5px; }
+  .step span { color:var(--muted); font-size:14.5px; }
+  .step code { background:#080c10; border:1px solid var(--line); border-radius:6px; padding:2px 7px; font-family:var(--font-mono); font-size:13px; color:var(--accent); }
+
+  /* ── Кейсы (интерактивные вкладки) ── */
+  .cases { display:grid; grid-template-columns:250px 1fr; gap:28px; align-items:start; }
+  .case-tabs { display:flex; flex-direction:column; gap:8px; position:sticky; top:84px; }
+  .case-tab {
+    display:flex; align-items:center; gap:12px; text-align:left; white-space:nowrap;
+    background:transparent; border:1px solid var(--line); border-radius:12px; padding:12px 16px;
+    color:var(--muted); font-family:var(--font-body); font-size:14.5px; font-weight:500; cursor:pointer;
+    transition:border-color .15s, color .15s, background .15s, transform .15s;
+  }
+  .case-tab .tidx { font-family:var(--font-mono); font-size:11px; color:var(--faint); transition:color .15s; }
+  .case-tab:hover { border-color:var(--line2); color:var(--fg); transform:translateX(3px); }
+  .case-tab.active { background:var(--accent-dim); border-color:rgba(46,230,176,.45); color:var(--fg); transform:none; }
+  .case-tab.active .tidx { color:var(--accent); }
+  .case-panels { min-width:0; }
+  .case-panel { display:none; }
+  .case-panel.active { display:grid; grid-template-columns:1fr 1fr; gap:26px; animation:caseIn .3s ease; }
+  @keyframes caseIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+  .case-info h3 { margin:0 0 10px; font-size:19px; font-weight:600; }
+  .case-info > p { margin:0 0 20px; color:var(--muted); font-size:14.5px; }
+  .case-steps { list-style:none; margin:0; padding:0; }
+  .case-steps li { display:flex; gap:12px; padding:10px 0; border-top:1px solid var(--line); font-size:14px; color:var(--muted); }
+  .case-steps li:last-child { border-bottom:1px solid var(--line); }
+  .case-steps .cn { flex:0 0 auto; font-family:var(--font-mono); font-size:12px; color:var(--accent); padding-top:2px; }
+  .case-demo {
+    align-self:start; background:#080c10; border:1px solid var(--line2); border-radius:14px; overflow:hidden;
+    box-shadow:0 16px 44px rgba(0,0,0,.35);
+  }
+  .cd-bar { display:flex; align-items:center; gap:8px; padding:10px 14px; background:#0c1117; border-bottom:1px solid var(--line); font-family:var(--font-mono); font-size:12px; color:var(--faint); }
+  .cd-bar .pulse { width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 0 rgba(46,230,176,.5); animation:pulse 2s infinite; }
+  .cd-body { padding:16px 16px 20px; font-family:var(--font-mono); font-size:13px; line-height:1.9; color:#bfe9d8; }
+  .ln { display:block; white-space:pre-wrap; word-break:break-word; opacity:0; }
+  .ln.shown { animation:appear .3s ease forwards; }
+  .ln .p { color:var(--accent); font-weight:700; }
+  .ln .ok { color:var(--accent); }
+  .ln .ai { color:var(--amber); }
+  .ln .c { color:var(--faint); }
+  .ln .tw::after { content:"▌"; color:var(--accent); animation:blink 1s steps(1) infinite; }
+  .ln .tw.tw-done::after { content:""; }
+  /* приглашение в пустом терминале до первого клика */
+  .ln.idle { opacity:1; }
+  .ln.idle.gone { display:none; }
+  .ln.idle .cursor { height:14px; width:7px; }
+  /* кнопки-действия под демо */
+  .cd-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:12px 14px; border-top:1px solid var(--line); background:#0a0f14; }
+  .cd-hint { font-family:var(--font-mono); font-size:11px; color:var(--faint); margin-right:2px; }
+  .chip {
+    display:inline-flex; align-items:center; min-height:42px;
+    font-family:var(--font-mono); font-size:12px; color:var(--accent);
+    background:var(--accent-dim); border:1px solid rgba(46,230,176,.3); border-radius:8px;
+    padding:8px 13px; cursor:pointer; text-align:left;
+    transition:background .15s, transform .15s, opacity .15s, box-shadow .15s;
+  }
+  .chip:hover:not(:disabled) { background:rgba(46,230,176,.2); transform:translateY(-1px); }
+  .chip.next { border-color:var(--accent); box-shadow:0 0 12px rgba(46,230,176,.3); animation:chipPulse 1.6s ease infinite; }
+  @keyframes chipPulse { 50% { box-shadow:0 0 0 rgba(46,230,176,0); } }
+  .chip:disabled { opacity:.35; cursor:default; }
+  .chip-reset { margin-left:auto; color:var(--muted); background:transparent; border-color:var(--line2); }
+  .chip-reset:hover:not(:disabled) { color:var(--fg); border-color:var(--faint); background:transparent; }
+  @media (max-width:920px) {
+    .cases { grid-template-columns:1fr; }
+    .case-tabs {
+      flex-direction:row; overflow-x:auto; position:static; padding-bottom:8px; scrollbar-width:none;
+      -webkit-mask-image:linear-gradient(90deg, #000 86%, transparent);
+      mask-image:linear-gradient(90deg, #000 86%, transparent);
+    }
+    .case-tabs::-webkit-scrollbar { display:none; }
+    .case-tab:hover { transform:none; }
+    .case-panel.active { grid-template-columns:1fr; }
+  }
+
+  /* ── Команда установки Linux ── */
+  .cmdline {
+    display:flex; align-items:center; gap:10px; margin:0 auto; max-width:520px;
+    background:#080c10; border:1px solid var(--line2); border-radius:12px; padding:12px 14px;
+    font-family:var(--font-mono); font-size:13.5px; color:#bfe9d8; text-align:left;
+  }
+  .cmdline .p { color:var(--accent); font-weight:700; flex:0 0 auto; }
+  .cmdline code { flex:1 1 auto; overflow-x:auto; white-space:nowrap; scrollbar-width:none; }
+  .cmdline code::-webkit-scrollbar { display:none; }
+  .cmdline button {
+    flex:0 0 auto; background:var(--accent-dim); border:1px solid rgba(46,230,176,.3); color:var(--accent);
+    border-radius:8px; padding:9px 12px; min-height:40px; font-family:var(--font-mono); font-size:12px; cursor:pointer;
+    transition:background .15s;
+  }
+  .cmdline button:hover { background:rgba(46,230,176,.2); }
+
+  /* ── Частые вопросы ── */
+  .faq-list {
+    display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start;
+  }
+  .faq-list details {
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    transition:border-color .15s, background .15s;
+  }
+  .faq-list details[open] { border-color:rgba(46,230,176,.42); background:var(--panel2); }
+  .faq-list summary {
+    position:relative; list-style:none; cursor:pointer; padding:18px 52px 18px 20px;
+    color:var(--fg); font-weight:600; line-height:1.4;
+  }
+  .faq-list summary::-webkit-details-marker { display:none; }
+  .faq-list summary::after {
+    content:"+"; position:absolute; right:20px; top:50%; transform:translateY(-50%);
+    color:var(--accent); font-family:var(--font-mono); font-size:22px; font-weight:400;
+  }
+  .faq-list details[open] summary::after { content:"−"; }
+  .faq-list details p {
+    margin:0; padding:0 20px 20px; color:var(--muted); font-size:14.5px;
+  }
+  @media (max-width:760px) { .faq-list { grid-template-columns:1fr; } }
+
+  /* ── Скачать ── */
+  .dl-panel {
+    position:relative; border-radius:20px; padding:48px 40px; text-align:center; overflow:hidden;
+    background:linear-gradient(180deg, var(--panel2), var(--panel));
+    border:1px solid var(--line2);
+  }
+  .dl-panel::before {
+    content:""; position:absolute; top:-160px; left:50%; transform:translateX(-50%);
+    width:520px; height:320px; pointer-events:none;
+    background:radial-gradient(ellipse, rgba(46,230,176,.16), transparent 70%);
+  }
+  .dl-panel h2 { font-family:var(--font-display); font-size:clamp(20px,3vw,28px); margin:0 0 12px; position:relative; }
+  .dl-panel .sub { color:var(--muted); margin:0 auto 28px; max-width:440px; position:relative; }
+  .dl-panel .cta { justify-content:center; opacity:1; animation:none; position:relative; }
+  .dl-panel .meta { opacity:1; animation:none; position:relative; }
+  .dl-panel .cmdline { margin-top:26px; position:relative; }
+  .dl-panel .cmd-cap { position:relative; margin:26px 0 8px; font-family:var(--font-mono); font-size:12px; color:var(--faint); }
+  .notes {
+    margin:26px auto 0; max-width:620px; text-align:left;
+    background:#080c10; border:1px solid var(--line); border-radius:12px;
+    padding:16px 20px; font-family:var(--font-mono); font-size:12.5px; line-height:2; color:var(--muted); position:relative;
+  }
+  .notes .w { color:var(--amber); font-weight:700; }
+  @media (max-width:560px) {
+    .dl-panel { padding:30px 18px; border-radius:16px; }
+    .dl-panel .cta { flex-direction:column; align-items:stretch; }
+    .dl-panel .cta .btn { width:100%; justify-content:center; padding:14px 12px; font-size:14.5px; }
+    /* Команда должна читаться глазами: кнопка «копировать» уходит на свою строку,
+       а сама команда переносится по словам вместо горизонтального огрызка. */
+    .cmdline { flex-wrap:wrap; align-items:flex-start; padding:12px 13px; font-size:12.5px; }
+    .cmdline code { flex:1 1 0; white-space:normal; overflow-x:visible; overflow-wrap:anywhere; }
+    .cmdline button { flex:1 0 100%; margin-top:10px; }
+    .notes { padding:14px 15px; }
+  }
+
+  /* ── Футер ── */
+  footer { margin-top:80px; border-top:1px solid var(--line); padding:30px 0 46px; }
+  .foot { display:flex; align-items:center; gap:14px; flex-wrap:wrap; font-family:var(--font-mono); font-size:12.5px; color:var(--faint); }
+  .foot a { display:inline-block; padding:10px 0; color:var(--muted); text-decoration:none; }
+  .foot a:hover { color:var(--accent); }
+  .foot .sep { color:var(--line2); }
+  .foot .right { margin-left:auto; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration:.01ms !important; animation-delay:0s !important; animation-iteration-count:1 !important; transition:none !important; }
+    .typed { width:auto !important; }
+    .fade, .eyebrow, .hero h1, .hero .lead, .cta, .meta, .term-zone, .phone-badge { opacity:1 !important; }
+  }
+.foot.legal { padding-top: 0; font-size: 12px; color: var(--muted, #8b95a7); }
+.foot.legal a { color: inherit; }
+</style>
+<!-- Yandex.Metrika counter (111692890, аккаунт great105) -->
+<!--
+  ⚠ Считаем ТОЛЬКО живых людей на боевом домене.
+  Замер 03.09.2026: из 119 визитов за месяц 83 пришли с нашего же стенда
+  приёмки — `check-landing-iphone.mjs` подаёт ЭТОТ файл на 127.0.0.1 и открывает
+  его тремя headless-браузерами, а гео уходило в Германию (VPN разработчика).
+  Трафик выглядел втрое больше настоящего: 3,5 визита в день против 1,2.
+  Поэтому счётчики не заводятся нигде, кроме remotai.ru: локальный прогон,
+  превью и чужая копия страницы статистику больше не портят.
+-->
+<script type="text/javascript">
+window.__analyticsLive = /(^|\.)remotai\.ru$/.test(location.hostname);
+if (window.__analyticsLive) {
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();
+for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+ym(111692890, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true });
+}
+</script>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) — ресурс remotai.ru, аккаунт GA «Remotai» -->
+<!-- Тот же фильтр, что и у Метрики: вне remotai.ru тег не грузится вовсе. -->
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+if (window.__analyticsLive) {
+  var g = document.createElement('script');
+  g.async = 1; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-N73332J6EB';
+  document.head.appendChild(g);
+  gtag('js', new Date());
+  gtag('config', 'G-N73332J6EB');
+}
+</script>
+<!-- /Google tag -->
+
+<link rel="alternate" hreflang="ru" href="https://remotai.ru/" />
+<link rel="alternate" hreflang="en" href="https://remotai.ru/en/" />
+<link rel="alternate" hreflang="x-default" href="https://remotai.ru/" />
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <svg class="logo" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="6" fill="#0d1218"/><path d="M16 6L6 11.5 16 17 26 11.5Z" fill="none" stroke="#2ee6b0" stroke-width="2"/><path d="M6 16l10 5.5L26 16" fill="none" stroke="#2ee6b0" stroke-width="2"/><path d="M6 20.5l10 5.5 10-5.5" fill="none" stroke="#2ee6b0" stroke-width="2"/></svg>
+    <a class="brand" href="/">Remotai</a><a class="language-link" href="/en/" hreflang="en" lang="en" style="margin-left:auto;padding:8px;white-space:nowrap;font-size:13px">English</a>
+<span class="ver">v2.75</span>
+    <nav class="nav-links" aria-label="Основная навигация">
+      <div class="nav-sections" id="nav-sections">
+        <a href="#features">Возможности</a>
+        <a href="#cases">Сценарии</a>
+        <a href="#pricing">Цены</a>
+        <a href="#faq">Вопросы</a>
+        <a href="/blog/">Блог</a>
+        <a href="/uslugi.html">Под ключ</a>
+        <a href="#download">Установка</a>
+        <a href="#support">Поддержка</a>
+      </div>
+      <a class="nav-login" href="/app/" title="Личный кабинет: подписка, карта и ваши компьютеры">Войти</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-sections">Меню</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+  <section class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div>
+      <!-- 13.09.2026: первый экран — дверь A канона («агент работает, пока тебя
+           нет», КАНОН-ПРОДУКТА.md, раздел 4). Прежний заголовок «Управляйте
+           ИИ-агентами» описывал функцию, а «управление ИИ-агентами» почти не
+           ищут (139 запросов в месяц). Сравнение с первым экраном HAPI:
+           ПРОДВИЖЕНИЕ/19-ПЕРВЫЙ-ЭКРАН-HAPI-VS-REMOTAI.md. «ИИ-агент» в заголовке
+           обязателен (PROD-003, check-landing-seo). -->
+      <h1><span class="nowrap">ИИ-агент</span> работает,<br/><span class="accent">пока вас нет.</span></h1>
+      <p class="lead">Уходите по делам: Claude Code, Codex и другие агенты продолжают работу на вашем компьютере или сервере. Когда нужен ваш ответ, придёт уведомление, а с телефона откроется тот же полноценный терминал, что и на компьютере.</p>
+      <!-- Две двери, а не одна. Замер 09.09.2026: человек с рекламы проводит на
+           сайте 8 секунд, смотрит 1,4 страницы, и 16 визитов из 43 кончались на
+           экране «Подключите компьютер» — единственная кнопка вела туда, то есть
+           требовала поставить программу раньше, чем человек понял, зачем.
+           Пришедшие своим ходом читают 338 секунд и регистрируются трое из
+           восьми — им есть что читать, просто холодному это не предлагали. -->
+      <div class="cta">
+        <a class="btn btn-primary" href="/app/#/start">Начать</a>
+        <a class="btn btn-ghost" href="#about" id="cta-learn">Как это работает</a>
+      </div>
+      <!-- На первом экране — одна строка цены. «Подскажем шаги» и «машина должна
+           оставаться включённой» живут ниже: в шагах и в «Что такое Remotai». -->
+      <p class="hero-price">На своём компьютере локально — бесплатно. Серверы и облачный доступ — 7 дней без карты, затем от 900 ₽/мес. <a href="#pricing">Все тарифы</a></p>
+    </div>
+    <figure class="app-preview">
+      <img src="/preview-agents-v2645.png" width="460" height="620" alt="Агенты в Remotai: Claude Code ждёт ответа, Codex работает; задачи можно открыть с телефона" fetchpriority="high" />
+      <figcaption>Видно, кто работает, а кто ждёт вашего ответа.<br/>Настоящий интерфейс Remotai, пример задач.</figcaption>
+    </figure>
+  </section>
+
+</div>
+
+<div class="ticker">
+  <div class="ticker-track"><span>Claude Code и Codex</span><span>ваши проекты и окружение</span><span>полный терминал с телефона</span><span>без настройки роутера</span></div>
+</div>
+
+<div class="wrap">
+
+  <section id="about">
+    <p class="sec-eyebrow">// коротко о продукте</p>
+    <h2 class="sec-title">Что такое Remotai</h2>
+    <div class="answer-grid">
+      <div class="answer-copy">
+        <p><strong>Remotai — удобный удалённый доступ к своим ИИ-агентам.</strong> Claude Code, Codex и другие агенты работают на вашем компьютере или сервере, с вашими проектами, файлами и привычным окружением. Вы запускаете задачи, читаете результат и отвечаете агентам с телефона или другого ПК.</p>
+        <p>Установите Remotai на машину с агентами, добавьте её в свой аккаунт по коду или QR и откройте терминалы. Машина должна оставаться включённой и подключённой к сети. Файлы, SSH и рабочий стол доступны рядом, когда нужны для задачи.</p>
+      </div>
+      <dl class="facts" aria-label="Ключевые факты о Remotai">
+        <div class="fact"><dt>ИИ-агенты</dt><dd>Claude Code, Codex, Kimi, Gemini, Aider и OpenCode</dd></div>
+        <div class="fact"><dt>Компьютеры</dt><dd>Windows 10/11, macOS 12+ и Linux amd64/arm64</dd></div>
+        <div class="fact"><dt>Телефон</dt><dd>Android 7+, iPhone/iPad в браузере, Telegram Mini App</dd></div>
+        <div class="fact"><dt>Доступ</dt><dd>Добавление по коду или QR, управление через свой аккаунт</dd></div>
+        <div class="fact"><dt>Экран</dt><dd>Windows и Linux с X11. На Mac — терминалы, файлы и SSH; экран самого Mac пока недоступен.</dd></div>
+        <div class="fact"><dt>Стоимость</dt><dd>На своём компьютере локально — бесплатно. Серверы и облачный доступ — 7 дней без карты, затем от 900 ₽/мес.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="features">
+    <p class="sec-eyebrow">// возможности</p>
+    <h2 class="sec-title">Всё для работы с агентами на расстоянии</h2>
+    <div class="bento">
+      <div class="bcard b7">
+        <span class="idx">01</span>
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 7 4 4-4 4"/><path d="M12 17h7"/></svg></div>
+        <h3>Полноценный терминал, как на компьютере</h3>
+        <p>С телефона открывается тот же терминал, что и на компьютере, а не урезанный чат: это одна и та же сессия. Запускайте Claude Code, Codex, Kimi, Gemini, Aider и OpenCode, вводите команды, листайте вывод, отвечайте на вопросы агента, жмите Esc и Ctrl+C. Всё, что можно сделать за компьютером, можно сделать и с телефона. Видно, кто работает, а кто ждёт вашего ответа.</p>
+        <div class="snippet"><span class="p">$</span> claude "почини билд"&nbsp;&nbsp;<span class="c"># на вашей машине</span></div>
+      </div>
+      <div class="bcard b5">
+        <span class="idx">02</span>
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 1 7 7c0 2.4-1.2 4.2-3 5.7-.9.8-1 1.6-1 2.3h-6c0-.7-.1-1.5-1-2.3-1.8-1.5-3-3.3-3-5.7a7 7 0 0 1 7-7Z"/><path d="M9 21h6"/></svg></div>
+        <h3>Продолжайте с того же места</h3>
+        <p>Начали работать с агентом за компьютером — продолжайте с телефона. Работа на компьютере при этом не прерывается: агент остаётся в том же терминале, а с телефона вы видите тот же экран. Сессии и история сохраняются при перезапуске Remotai и автообновлении. Команда <code>remotai attach</code> открывает ту же сессию в обычном терминале на ПК.</p>
+      </div>
+      <div class="bcard b4">
+        <span class="idx">03</span>
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <h3>Проверьте результат на экране</h3>
+        <p>Откройте экран компьютера, чтобы проверить результат работы агента или выполнить действие в графическом приложении. На сервере без графики доступен виртуальный браузер. Экран компьютера поддерживается на Windows и Linux с X11; на Mac пока недоступен.</p>
+      </div>
+      <div class="bcard b4">
+        <span class="idx">04</span>
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="7" rx="2"/><rect x="2" y="14" width="20" height="7" rx="2"/><path d="M6 6.5h.01M6 17.5h.01"/></svg></div>
+        <h3>Работайте с агентами на сервере</h3>
+        <p>Подключите свой Linux-сервер в Remotai или откройте SSH-терминал. Запускайте агентов в серверном окружении и возвращайтесь к их задачам с телефона. Неизвестный SSH-хост подтверждается по отпечатку.</p>
+      </div>
+      <div class="bcard b4">
+        <span class="idx">05</span>
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg></div>
+        <h3>Файлы проекта рядом</h3>
+        <p>Найдите и скачайте результат работы агента, передайте нужный файл. Рядом нагрузка на процессор, память и процессы, чтобы понять, что происходит на машине.</p>
+      </div>
+      <div class="bcard b7">
+        <span class="idx">06</span>
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v5c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10V6Z"/><path d="m9 12 2 2 4-4"/></svg></div>
+        <h3>Только ваши устройства</h3>
+        <p>Добавьте компьютер по одноразовому коду или QR. Затем управляйте с устройств, на которых вошли в свой аккаунт. Код подтверждает доступ к нужному компьютеру, а список подключённых машин доступен в «Моих компьютерах».</p>
+      </div>
+      <div class="bcard b5">
+        <span class="idx">07</span>
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3 12 12"/><path d="M15 3h6v6"/></svg></div>
+        <h3>Обновляется сам</h3>
+        <p>Новые версии прилетают сами: приложение проверяет облако, скачивает и мягко перезапускается, когда вы закрыли окно. Терминалы при этом не умирают.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="cases">
+    <p class="sec-eyebrow">// сценарии</p>
+    <h2 class="sec-title">Выберите свой случай и посмотрите, как это работает</h2>
+    <div class="cases">
+      <div class="case-tabs" role="tablist" aria-label="Сценарии использования">
+        <button class="case-tab active" id="tab-agents" data-case="agents" role="tab" aria-controls="case-agents" aria-selected="true" tabindex="0"><span class="tidx">01</span> AI-агенты с телефона</button>
+        <button class="case-tab" id="tab-anywhere" data-case="anywhere" role="tab" aria-controls="case-anywhere" aria-selected="false" tabindex="-1"><span class="tidx">02</span> С любого устройства</button>
+        <button class="case-tab" id="tab-servers" data-case="servers" role="tab" aria-controls="case-servers" aria-selected="false" tabindex="-1"><span class="tidx">03</span> Управление серверами</button>
+        <button class="case-tab" id="tab-vbrowser" data-case="vbrowser" role="tab" aria-controls="case-vbrowser" aria-selected="false" tabindex="-1"><span class="tidx">04</span> Браузер на сервере</button>
+        <button class="case-tab" id="tab-desktop" data-case="desktop" role="tab" aria-controls="case-desktop" aria-selected="false" tabindex="-1"><span class="tidx">05</span> Рабочий стол и файлы</button>
+        <button class="case-tab" id="tab-telegram" data-case="telegram" role="tab" aria-controls="case-telegram" aria-selected="false" tabindex="-1"><span class="tidx">06</span> Всё в Telegram</button>
+      </div>
+
+      <div class="case-panels">
+
+        <div class="case-panel active" id="case-agents" tabindex="0" role="tabpanel" aria-labelledby="tab-agents">
+          <div class="case-info">
+            <h3>Запустите агента и уйдите по делам</h3>
+            <p>Claude Code, Codex, Kimi, Gemini, Aider, OpenCode: Remotai сам видит, какой агент запущен на ПК и что он делает. Когда агент ждёт подтверждения, вопрос приходит на телефон, а отвечаете вы одним тапом.</p>
+            <ul class="case-steps">
+              <li><span class="cn">1.</span> Откройте терминал домашнего ПК прямо из приложения</li>
+              <li><span class="cn">2.</span> Запустите агента и поставьте задачу своими словами</li>
+              <li><span class="cn">3.</span> Подтверждайте действия и забирайте результат, где бы вы ни были</li>
+            </ul>
+          </div>
+          <div class="case-demo">
+            <div class="cd-bar"><span class="pulse"></span> терминал · DESKTOP-HOME</div>
+            <div class="cd-body">
+              <span class="ln idle"><span class="p">$</span> <span class="c">жду вашу команду</span> <span class="cursor"></span></span>
+              <span class="ln s1"><span class="p">$</span> <span class="tw" data-text='claude "собери релиз 2.21 и доложи"'></span></span>
+              <span class="ln s1"><span class="ai">►</span> Claude Code работает · 12 мин</span>
+              <span class="ln s1"><span class="ai">?</span> разрешить: npm run build</span>
+              <span class="ln s2"><span class="ok">✓ [да]</span> <span class="c">← нажато с телефона</span></span>
+              <span class="ln s2"><span class="ok">✓</span> готово: build/remotai.exe · отчёт в чате</span>
+            </div>
+            <div class="cd-actions">
+              <span class="cd-hint">// погоняйте сами:</span>
+              <button class="chip next" data-step="1">$ claude "собери релиз"</button>
+              <button class="chip" data-step="2">[да] разрешить</button>
+              <button class="chip chip-reset" type="button">↻ заново</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="case-panel" id="case-anywhere" tabindex="0" role="tabpanel" aria-labelledby="tab-anywhere" hidden>
+          <div class="case-info">
+            <h3>Один компьютер, пульт всегда под рукой</h3>
+            <p>Приложение для Android, веб-версия для iPhone и любого браузера, мини-приложение в Telegram. Начали в одном месте, продолжили в другом: сессии и терминалы при этом не рвутся.</p>
+            <ul class="case-steps">
+              <li><span class="cn">1.</span> Android: установите APK с этого сайта</li>
+              <li><span class="cn">2.</span> iPhone или чужой компьютер: откройте remotai.ru/app</li>
+              <li><span class="cn">3.</span> Вообще без установки: бот в Telegram</li>
+            </ul>
+          </div>
+          <div class="case-demo">
+            <div class="cd-bar"><span class="pulse"></span> чем подключиться</div>
+            <div class="cd-body">
+              <span class="ln idle"><span class="p">◆</span> <span class="c">выберите устройство кнопкой ниже</span> <span class="cursor"></span></span>
+              <span class="ln s1"><span class="ok">Android APK</span>      <span class="c">терминал · экран · файлы</span></span>
+              <span class="ln s2"><span class="ok">iPhone / Safari</span>   <span class="c">remotai.ru/app</span></span>
+              <span class="ln s3"><span class="ok">Telegram</span>          <span class="c">@Autocode1_bot · мини-апп</span></span>
+              <span class="ln s4"><span class="ok">Планшет</span>           <span class="c">тот же веб-клиент</span></span>
+              <span class="ln s4"><span class="c">везде один и тот же ПК на связи</span></span>
+            </div>
+            <div class="cd-actions">
+              <span class="cd-hint">// нажимайте по очереди:</span>
+              <button class="chip next" data-step="1">Android APK</button>
+              <button class="chip" data-step="2">iPhone / Safari</button>
+              <button class="chip" data-step="3">Telegram</button>
+              <button class="chip" data-step="4">Планшет</button>
+              <button class="chip chip-reset" type="button">↻ заново</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="case-panel" id="case-servers" tabindex="0" role="tabpanel" aria-labelledby="tab-servers" hidden>
+          <div class="case-info">
+            <h3>Все серверы в одном списке</h3>
+            <p>SSH-терминал до любого хоста прямо из приложения: ключи, пароли, подтверждение отпечатка. А одна команда превращает сервер в полноценное устройство Remotai: терминалы, файлы и мониторинг рядом с домашним ПК.</p>
+            <ul class="case-steps">
+              <li><span class="cn">1.</span> Подключитесь по SSH из приложения, как в Termius</li>
+              <li><span class="cn">2.</span> Или поставьте агент одной командой и отсканируйте код</li>
+              <li><span class="cn">3.</span> Следите за CPU, памятью и дисками, перезагружайте с телефона</li>
+            </ul>
+          </div>
+          <div class="case-demo">
+            <div class="cd-bar"><span class="pulse"></span> srv-prod-1 · Ubuntu 24.04</div>
+            <div class="cd-body">
+              <span class="ln idle"><span class="p">$</span> <span class="c">жду вашу команду</span> <span class="cursor"></span></span>
+              <span class="ln s1"><span class="p">$</span> <span class="tw" data-text="curl -fsSL https://remotai.ru/install.sh | sh"></span></span>
+              <span class="ln s1"><span class="ok">✓</span> агент установлен · systemd · автозапуск</span>
+              <span class="ln s1"><span class="ok">✓</span> код пары: <span class="ai">7FQ-K2M</span> · ждём телефон</span>
+              <span class="ln s2"><span class="ok">✓</span> srv-prod-1 появился в списке устройств</span>
+              <span class="ln s2"><span class="c">CPU 12% · RAM 41% · диск 63% · uptime 42д</span></span>
+            </div>
+            <div class="cd-actions">
+              <span class="cd-hint">// погоняйте сами:</span>
+              <button class="chip next" data-step="1">$ curl … install.sh | sh</button>
+              <button class="chip" data-step="2">отсканировать код телефоном</button>
+              <button class="chip chip-reset" type="button">↻ заново</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="case-panel" id="case-vbrowser" tabindex="0" role="tabpanel" aria-labelledby="tab-vbrowser" hidden>
+          <div class="case-info">
+            <h3>Chrome там, где нет рабочего стола</h3>
+            <p>На сервере без графики Remotai поднимает виртуальный браузер. Вы видите его экран и управляете с телефона: авторизации, проверки, парсинг, всё, для чего нужен настоящий Chrome, а не curl.</p>
+            <ul class="case-steps">
+              <li><span class="cn">1.</span> Откройте «Экран» на подключённом Linux-сервере</li>
+              <li><span class="cn">2.</span> Виртуальный браузер поднимется сам</li>
+              <li><span class="cn">3.</span> Кликайте, вводите текст, забирайте скриншоты</li>
+            </ul>
+          </div>
+          <div class="case-demo">
+            <div class="cd-bar"><span class="pulse"></span> виртуальный браузер · srv-prod-1</div>
+            <div class="cd-body">
+              <span class="ln idle"><span class="p">$</span> <span class="c">жду вашу команду</span> <span class="cursor"></span></span>
+              <span class="ln s1"><span class="p">$</span> экран: графики нет, поднимаю vbrowser</span>
+              <span class="ln s1"><span class="ai">►</span> Chrome · виртуальный дисплей 1280×800</span>
+              <span class="ln s2"><span class="ok">✓</span> сессии и куки живут на сервере</span>
+              <span class="ln s2"><span class="c">управление: тач · клавиатура · буфер обмена</span></span>
+            </div>
+            <div class="cd-actions">
+              <span class="cd-hint">// погоняйте сами:</span>
+              <button class="chip next" data-step="1">открыть экран сервера</button>
+              <button class="chip" data-step="2">кликнуть по странице</button>
+              <button class="chip chip-reset" type="button">↻ заново</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="case-panel" id="case-desktop" tabindex="0" role="tabpanel" aria-labelledby="tab-desktop" hidden>
+          <div class="case-info">
+            <h3>Домашний ПК как будто с собой</h3>
+            <p>Выберите компьютер, затем откройте «Файлы» или «Экран». Можно скачать документ или поработать за рабочим столом с телефона. Экран доступен на Windows и Linux с X11; на Mac используйте файлы и терминалы.</p>
+            <ul class="case-steps">
+              <li><span class="cn">1.</span> Откройте экран и работайте, как сидя за столом</li>
+              <li><span class="cn">2.</span> Найдите нужный документ в разделе «Файлы»</li>
+              <li><span class="cn">3.</span> Скачайте файл на телефон или другой компьютер</li>
+            </ul>
+          </div>
+          <figure class="product-shot">
+            <img src="/preview-files-v2645.png" width="460" height="620" loading="lazy" alt="Раздел «Файлы» в Remotai: папка «Документы» домашнего компьютера, договор и отчёт" />
+            <figcaption>Найдите файл на своём компьютере и скачайте его на устройство, с которого управляете. Пример содержимого папки.</figcaption>
+          </figure>
+        </div>
+
+        <div class="case-panel" id="case-telegram" tabindex="0" role="tabpanel" aria-labelledby="tab-telegram" hidden>
+          <div class="case-info">
+            <h3>Весь контроль, не выходя из мессенджера</h3>
+            <p>Бот принимает код пары с экрана ПК и открывает мини-приложение прямо в чате. Топики группы привязываются к разным агентам: в одном Claude чинит билд, в другом Kimi пишет скрипт.</p>
+            <ul class="case-steps">
+              <li><span class="cn">1.</span> Отправьте боту код с экрана компьютера</li>
+              <li><span class="cn">2.</span> Откройте мини-приложение прямо в чате</li>
+              <li><span class="cn">3.</span> Разведите агентов по топикам группы и рулите каждым</li>
+            </ul>
+          </div>
+          <div class="case-demo">
+            <div class="cd-bar"><span class="pulse"></span> Telegram · @Autocode1_bot</div>
+            <div class="cd-body">
+              <span class="ln idle"><span class="p">&gt;</span> <span class="c">бот ждёт код с экрана ПК</span> <span class="cursor"></span></span>
+              <span class="ln s1"><span class="p">&gt;</span> <span class="tw" data-text="код: 7FQ-K2M"></span></span>
+              <span class="ln s1"><span class="ok">✓</span> DESKTOP-HOME подключён</span>
+              <span class="ln s2"><span class="c">топик #backend</span> <span class="ai">→</span> Claude Code</span>
+              <span class="ln s2"><span class="c">топик #scripts</span> <span class="ai">→</span> Kimi</span>
+              <span class="ln s3"><span class="ok">✓</span> мини-апп: терминал, файлы, экран</span>
+            </div>
+            <div class="cd-actions">
+              <span class="cd-hint">// погоняйте сами:</span>
+              <button class="chip next" data-step="1">отправить код боту</button>
+              <button class="chip" data-step="2">привязать топики</button>
+              <button class="chip" data-step="3">открыть мини-апп</button>
+              <button class="chip chip-reset" type="button">↻ заново</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="start">
+    <p class="sec-eyebrow">// как начать</p>
+    <h2 class="sec-title">От задачи — к своему компьютеру</h2>
+    <div class="steps">
+      <div class="step"><div class="n">01</div><div><b>Выберите задачу</b><span>Управлять уже подключённым компьютером, подключить новый ПК или добавить сервер. Кнопка «Начать» откроет этот выбор.</span></div></div>
+      <div class="step"><div class="n">02</div><div><b>Подключите нужную машину</b><span>Если компьютер ещё не добавлен, установите Remotai на него. Покажем отдельную инструкцию для Windows, macOS или Linux и подскажем, где получить код.</span></div></div>
+      <div class="step"><div class="n">03</div><div><b>Войдите и управляйте</b><span>На телефоне или другом ПК войдите в один аккаунт Remotai. Добавьте машину по её коду или QR, затем выберите её в «Моих компьютерах». Уже добавленные компьютеры будут в списке.</span></div></div>
+    </div>
+  </section>
+
+  <!-- Цены на витрине.
+       До 01.09.2026 их здесь не было ВОВСЕ: ни суммы, ни слова «Про», ни входа
+       в личный кабинет. Владелец искал подписку на сайте и не нашёл — а мы к
+       тому моменту уже сделали и кассу, и экран подписки, только внутри
+       приложения, куда надо войти. Человек, решивший заплатить, узнать цену не
+       мог никак.
+       Числа — из КАНОН-ПРОДУКТА.md, тот же источник, что и /v1/pricing. -->
+  <section id="pricing">
+    <p class="sec-eyebrow">// сколько стоит</p>
+    <h2 class="sec-title">Локально — бесплатно. Серверы и облако — по подписке</h2>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="price-name">Локально</div>
+        <div class="price-sum">0 ₽</div>
+        <p class="price-note">Локальная работа на своём компьютере: терминалы, агенты, файлы и экран — бесплатно навсегда. Серверы, SSH/SFTP и проброс портов входят в Про.</p>
+      </div>
+      <div class="price-card price-card-main">
+        <div class="price-name">Про</div>
+        <div class="price-sum">900 ₽<span>/мес</span></div>
+        <p class="price-note">Серверы, SSH/SFTP, проброс портов и облачный доступ: 5 устройств, терминалы и агенты без ограничений. Первые 7 дней бесплатно, карта не нужна. Аренда VPS оплачивается отдельно.</p>
+      </div>
+      <div class="price-card">
+        <div class="price-name">Флит</div>
+        <div class="price-sum">1 990 ₽<span>/мес</span></div>
+        <p class="price-note">Парк машин и другие люди: 25 облачных устройств, приоритет экрана, трое участников включены.</p>
+      </div>
+    </div>
+    <p class="price-foot">
+      Оплата через СБП или картой за 30 дней. Автоматических списаний нет. Продлить доступ можно вручную — <a href="/app/#/plan">в личном кабинете</a>.
+    </p>
+  </section>
+
+  <section id="faq">
+    <p class="sec-eyebrow">// прямые ответы</p>
+    <h2 class="sec-title">Как работать с ИИ-агентами через Remotai</h2>
+    <div class="faq-list">
+      <details>
+        <summary>Как начать работать с ИИ-агентами с телефона?</summary>
+        <p>Нажмите «Начать» и подключите компьютер или сервер, где работают ваши агенты. На телефоне войдите в свой аккаунт Remotai, откройте подключённую машину и раздел «Терминалы». Запустите агента или продолжите его сессию в Remotai: можно читать результат, отправлять задачи и отвечать на вопросы.</p>
+      </details>
+      <details>
+        <summary>Где работают агенты и что нужно для их запуска?</summary>
+        <p>Агенты работают на вашем компьютере или сервере, с вашими файлами и окружением. Remotai даёт к ним удалённый доступ. Установка и аккаунты самих ИИ-агентов настраиваются отдельно. Машина с агентами должна оставаться включённой и подключённой к сети.</p>
+      </details>
+      <details>
+        <summary>Как управлять компьютером с телефона через Remotai?</summary>
+        <p>Нажмите «Начать», выберите «Подключить компьютер» и установите Remotai на нужную машину по инструкции для её системы. На телефоне войдите в свой аккаунт и добавьте компьютер по коду или QR. Файлы и терминалы доступны на Windows, Mac и Linux. Экран подключённого компьютера работает на Windows и Linux с X11; экран самого Mac пока недоступен.</p>
+      </details>
+      <details>
+        <summary>Нужен ли белый IP или проброс портов?</summary>
+        <p>Нет. Компьютер сам устанавливает исходящее TLS-соединение с облачным relay Remotai, поэтому настраивать роутер, VPN или белый IP не требуется.</p>
+      </details>
+      <details>
+        <summary>На каких устройствах работает Remotai?</summary>
+        <p>Подключить можно Windows 10/11, macOS 12+ (Apple Silicon и Intel) или Linux amd64/arm64. На Mac доступны файлы, терминалы, SSH, мониторинг и AI-агенты, но экран самого Mac пока недоступен. Для экрана Linux нужна сессия X11; работа с Wayland пока не проверена. Управлять другим компьютером можно из браузера на любой из этих систем, с iPhone/iPad, Android 7+ или через Telegram.</p>
+      </details>
+      <details>
+        <summary>Какие ИИ-агенты поддерживаются?</summary>
+        <p>Remotai распознаёт Claude Code, Codex, Kimi, Gemini, Aider и OpenCode в PTY-терминале, показывает состояние агента и позволяет отвечать на запросы подтверждения с телефона.</p>
+      </details>
+      <details>
+        <summary>Можно ли подключаться к Linux-серверам по SSH?</summary>
+        <p>Да. В Remotai есть SSH-центр с хостами из ssh config, SFTP, ProxyJump и перенаправлением портов. Сам агент Remotai также устанавливается на Linux одной командой.</p>
+      </details>
+      <details>
+        <summary>Что Remotai хранит в облаке?</summary>
+        <p>Облако хранит данные аккаунта и привязанных устройств, минимальные события продуктовой аналитики и добровольно отправленные сообщения поддержки. Содержимое терминалов, команд, файлов, экрана, буфера обмена и нажатий не сохраняется как аналитика. Подробности — в <a href="/privacy">политике конфиденциальности</a>.</p>
+      </details>
+      <details>
+        <summary>Сколько стоит Remotai?</summary>
+        <p>Локальная работа на своём компьютере бесплатна навсегда. Серверы, SSH/SFTP, проброс портов и облачный доступ — 900 ₽/мес (Про, 5 устройств) или 1 990 ₽/мес (Флит, 25 устройств); первые 7 дней бесплатно и без карты. Аренда VPS оплачивается отдельно.</p>
+      </details>
+    </div>
+  </section>
+
+  <section id="download">
+    <div class="dl-panel">
+      <h2>Ваши агенты — всегда под рукой</h2>
+      <p class="sub">Подключите компьютер или сервер, где работают агенты. Remotai покажет подходящую инструкцию, чтобы вы могли продолжить работу с телефона или другого ПК.</p>
+      <div class="cta"><a class="btn btn-primary" href="/app/#/start">Начать</a></div>
+      <div class="bridge-row" hidden id="bridge-row">
+        <button class="btn btn-ghost" type="button" id="bridge-copy">Скопировать ссылку для компьютера</button>
+        <span class="bridge-hint" id="bridge-hint" role="status" aria-live="polite">Откройте ссылку на компьютере, к которому нужен доступ. Сразу увидите шаг установки.</span>
+        <a id="bridge-link" href="https://remotai.ru/app/#/start?task=host">remotai.ru/app/#/start?task=host</a>
+      </div>
+      <p class="plan-note">Не получается скачать или установить? <a id="download-support" href="/app/#/support?topic=installation">Написать в поддержку</a>.</p>
+      <details class="download-options" id="download-options">
+        <summary>Установщики и другие способы входа</summary>
+        <h3>На компьютер или сервер с агентами</h3>
+        <label for="download-os">Система подключаемого компьютера</label>
+        <select id="download-os"><option value="windows">Windows 10 / 11</option><option value="macos">macOS 12+</option><option value="linux">Linux</option></select>
+        <div id="download-windows">
+          <a class="btn btn-ghost cta-pc" href="/download/remotai-setup.exe" download>Скачать для Windows</a>
+          <p class="plan-warn"><span class="w">[!]</span> Установщик пока без цифровой подписи. Windows может показать «Неизвестный издатель». Проверьте, что файл скачан с remotai.ru; затем «Подробнее» → «Выполнить в любом случае». В Edge: «⋯» → «Сохранить» → «Всё равно сохранить».</p>
+          <p class="plan-note">На Windows откройте Remotai и выберите «Подключить этот компьютер». Автозапуск оставит его доступным после входа в Windows. <a href="/download/remotai.exe" download>Portable-версия без установщика</a>.</p>
+        </div>
+        <div id="download-unix" hidden>
+          <p class="plan-note">Установщики macOS и Linux содержат Remotai 2.74.2. Для Hermes после подключения компьютера обновите Remotai до 2.75.1: «Настройки» → «Подключение и обновления» → «Обновить сейчас».</p>
+          <div id="download-macos">
+            <a class="btn btn-ghost" href="/download/remotai-macos.dmg" download>Скачать для macOS — Intel и Apple Silicon</a>
+            <p class="plan-note">Откройте DMG, перетащите Remotai в Applications («Программы»), затем откройте приложение. Интерфейс появится в браузере.</p>
+            <p class="plan-note">Пакет пока без подписи Apple Developer ID. Если Mac не разрешает открытие, в пошаговой инструкции показано, где разрешить его в настройках системы.</p>
+          </div>
+          <div id="download-linux" hidden>
+            <label for="download-arch">Процессор компьютера</label>
+            <select id="download-arch"><option value="amd64">Intel / AMD — большинство компьютеров</option><option value="arm64">ARM64 — например, Raspberry Pi 64-bit</option></select>
+            <a class="btn btn-ghost" id="download-deb" href="/download/remotai-linux-amd64.deb" download>Скачать .deb — Ubuntu, Debian, Mint</a>
+            <a class="btn btn-ghost" id="download-rpm" href="/download/remotai-linux-amd64.rpm" download>Скачать .rpm — Fedora, openSUSE</a>
+            <p class="plan-note">Откройте файл в программе установки приложений и нажмите «Установить». Затем откройте Remotai из меню приложений: интерфейс появится в браузере.</p>
+          </div>
+          <p class="plan-note" id="download-capabilities"></p>
+          <p class="plan-note">В Remotai выберите «Подключить этот компьютер» → «Через интернет», чтобы получить код подключения. Автозапуск можно включить в «Панели ПК».</p>
+          <a id="download-guide" href="/app/#/start?task=host&amp;os=macos">Открыть пошаговую инструкцию</a>
+        </div>
+        <details id="server-install">
+          <summary>Установка на сервер Linux / VPS без монитора</summary>
+          <p class="cmd-cap">Выполните в SSH-терминале сервера:</p>
+          <div class="cmdline"><span class="p" aria-hidden="true">$</span><code id="install-cmd" tabindex="0">curl -fsSL https://remotai.ru/install.sh | sh</code><button type="button" id="copy-cmd">копировать</button></div>
+          <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
+          <a href="/app/#/start?task=server">Пошаговая инструкция для сервера</a>
+        </details>
+        <h3>На устройство, с которого будете управлять</h3>
+        <p class="plan-note">Войдите в тот же аккаунт: ваши подключённые компьютеры появятся в списке.</p>
+        <a class="btn btn-ghost" id="cta-phone" href="/app/">Открыть в браузере</a>
+        <p class="plan-note" id="controller-note">Веб-версия работает на компьютере, iPhone и Android. Есть также <a href="/download/remotai.apk" download>приложение для Android</a> и <a href="https://t.me/Autocode1_bot" target="_blank" rel="noopener">бот в Telegram</a>.</p>
+        <!-- Владельцу iPhone: приложение с иконкой у него уже возможно — веб-версия
+             ставится на главный экран как PWA. Safari кнопку «Установить» не
+             показывает НИКОГДА, поэтому шаги называем словами прямо здесь, до
+             открытия приложения. Ту же подсказку человек увидит и внутри, на
+             экране входа (apk/src/components/InstallPwaBanner.tsx). -->
+        <p class="plan-note" id="ios-install" hidden>Чтобы получить на iPhone приложение с иконкой: откройте веб-версию, нажмите «Поделиться» в панели Safari и выберите «На экран „Домой“». Remotai будет открываться во весь экран, без адресной строки. Сделайте это <b>до входа</b> — у приложения с главного экрана своё хранилище, иначе вход придётся повторить.</p>
+      </details>
+    </div>
+  </section>
+
+  <section id="support">
+    <h2>Поможем с установкой</h2>
+    <p class="sub">Remotai не скачивается, не открывается или показывает ошибку? Напишите, какая у вас система и на каком шаге возникла проблема. Можно скопировать текст ошибки.</p>
+    <div class="cta"><a class="btn btn-primary" href="/app/#/support?topic=installation">Написать в поддержку</a></div>
+    <p class="plan-note">Чат работает прямо на сайте. Войдите в аккаунт доступным способом, чтобы отправить сообщение и получить ответ. Устанавливать приложение и подключать компьютер не нужно.</p>
+  </section>
+
+</div>
+</main>
+
+<footer><p id="source-publishing" style="padding:12px 0">Бесплатный самостоятельный запуск: <a href="https://github.com/great105/remotai-open">исходный код и инструкция по развёртыванию</a>. Облачный сервис Remotai доступен по подписке.</p>
+  <div class="wrap foot">
+    <span>Remotai © 2026</span>
+    <span class="sep">/</span>
+    <span>удобный удалённый доступ к своим ИИ-агентам</span>
+    <a class="right" href="https://t.me/Autocode1_bot" target="_blank" rel="noopener">Telegram-бот</a>
+    <a href="https://t.me/Autocode1_bot" target="_blank" rel="noopener">поддержка</a>
+    <a href="/blog/">блог</a>
+    <a href="/uslugi.html">сервер под ключ</a>
+    <a href="/claude-code.html">Claude Code с телефона</a>
+    <a href="/server.html">агент на сервере</a>
+    <a href="/privacy">конфиденциальность</a>
+    <a href="/offer.html">оферта</a>
+    <a href="/llms.txt">для AI</a>
+    <a href="/status.html">статус сервиса</a>
+  </div>
+  <!-- Реквизиты продавца: обязательны для модерации платного трафика (Директ,
+       РСЯ) и для оплаты через кассу. Домашний адрес и телефон ИП намеренно не
+       публикуем — закон и модерация требуют ФИО, ИНН и ОГРНИП. -->
+  <div class="wrap foot legal">
+    <span>ИП Ваулин Евгений Николаевич · ИНН 773461030140 · ОГРНИП 325774600620214 · <a href="mailto:vaulin.evg@gmail.com">vaulin.evg@gmail.com</a></span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var menu = document.querySelector('.nav-toggle');
+    var links = document.getElementById('nav-sections');
+    function closeMenu() { menu.setAttribute('aria-expanded', 'false'); links.classList.remove('is-open'); }
+    menu.addEventListener('click', function () {
+      var open = menu.getAttribute('aria-expanded') !== 'true';
+      menu.setAttribute('aria-expanded', String(open)); links.classList.toggle('is-open', open);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && menu.getAttribute('aria-expanded') === 'true') { closeMenu(); menu.focus(); }
+    });
+    links.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        var wasOpen = menu.getAttribute('aria-expanded') === 'true';
+        closeMenu();
+        var target = document.querySelector(link.hash);
+        if (wasOpen && target) { target.setAttribute('tabindex', '-1'); target.focus({ preventScroll:true }); }
+      });
+    });
+    window.matchMedia('(max-width:920px)').addEventListener('change', closeMenu);
+
+    var ua = navigator.userAgent || '';
+    var iOS = /iPhone|iPod|iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    var android = /Android/.test(ua);
+    var controller = document.getElementById('cta-phone');
+    if (iOS) {
+      controller.textContent = 'Открыть веб-версию на iPhone / iPad';
+      document.getElementById('ios-install').hidden = false;
+    }
+    if (android) {
+      controller.href = '/download/remotai.apk'; controller.setAttribute('download', '');
+      controller.textContent = 'Скачать приложение для Android';
+      document.getElementById('controller-note').innerHTML = 'Android попросит разрешение на установку из этого источника. Можно также <a href="/app/">открыть Remotai в браузере</a>.';
+    }
+    document.getElementById('bridge-row').hidden = !(iOS || android);
+    var os = document.getElementById('download-os');
+    function showOS() {
+      var windows = os.value === 'windows';
+      document.getElementById('download-windows').hidden = !windows;
+      document.getElementById('download-unix').hidden = windows;
+      document.getElementById('download-macos').hidden = os.value !== 'macos';
+      document.getElementById('download-linux').hidden = os.value !== 'linux';
+      document.getElementById('download-capabilities').textContent = os.value === 'macos'
+        ? 'Доступны файлы, терминалы, SSH, мониторинг и AI-агенты. Экран самого Mac пока недоступен; управлять другим компьютером с Mac можно в браузере.'
+        : 'Терминалы и файлы работают без монитора. Для экрана Linux нужна графическая сессия X11; работа с Wayland пока не проверена.';
+      document.getElementById('download-guide').href = '/app/#/start?task=host&os=' + os.value;
+      document.getElementById('download-support').href = '/app/#/support?topic=installation&os=' + os.value;
+    }
+    os.addEventListener('change', showOS); showOS();
+    document.getElementById('download-arch').addEventListener('change', function () {
+      var arch = this.value === 'arm64' ? 'arm64' : 'amd64';
+      document.getElementById('download-deb').href = '/download/remotai-linux-' + arch + '.deb';
+      document.getElementById('download-rpm').href = '/download/remotai-linux-' + arch + '.rpm';
+    });
+  })();
+
+  // Аналитика воронки: UTM из URL → localStorage (подхватит веб-клиент /app
+  // при регистрации — тот же origin), визит и скачивания — beacon'ом на релей.
+  // Только факт визита/клика, никакого контента и fingerprinting.
+  (function () {
+    function beacon(kind, extra) {
+      try {
+        var body = JSON.stringify(Object.assign({ kind: kind }, extra || {}));
+        var blob = new Blob([body], { type: 'application/json' });
+        if (!navigator.sendBeacon || !navigator.sendBeacon('/v1/events', blob)) {
+          fetch('/v1/events', { method: 'POST', body: body, keepalive: true }).catch(function () {});
+        }
+      } catch (e) {}
+    }
+
+    // UTM: first-touch — не затираем уже сохранённый источник.
+    //
+    // Ловим ПЯТЬ меток и yclid, а не три. Замер 09.09.2026: объявления Директа
+    // передают `utm_content={phrase_id}` — это условие показа (у нас приходили
+    // 205797015681 и другие), а лендинг его выбрасывал. Из-за этого метка,
+    // доехавшая до регистрации, называла кампанию, но НЕ говорила, по какому
+    // запросу человек пришёл, — то есть не отвечала на вопрос «целевой клик или
+    // нет» ровно там, где появляются деньги. `yclid` — идентификатор клика
+    // Яндекса, единственное, чем регистрацию можно связать с конкретным кликом.
+    //
+    // ⚠ `utm_source` приходит В ДВУХ написаниях: наш `yandex` и `ya` от
+    // автоматической разметки Яндекса (за 3 дня 9 визитов из 176). Отчёт,
+    // фильтрующий строго по `yandex`, молча терял эти визиты.
+    var params = new URLSearchParams(location.search);
+    var utm = {};
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'yclid'].forEach(function (k) {
+      var v = params.get(k);
+      if (v) utm[k] = v.slice(0, 200);
+    });
+    if (Object.keys(utm).length > 0) {
+      try { if (!localStorage.getItem('utm')) localStorage.setItem('utm', JSON.stringify(utm)); } catch (e) {}
+    } else {
+      try { var saved = localStorage.getItem('utm'); if (saved) utm = JSON.parse(saved); } catch (e) {}
+    }
+
+    // Визит — один раз за сессию вкладки.
+    try {
+      if (!sessionStorage.getItem('lv')) {
+        sessionStorage.setItem('lv', '1');
+        // Храним только origin источника, без пути/query — рекламной аналитике
+        // этого достаточно, а случайные чувствительные параметры не попадут в БД.
+        var referrer = '';
+        try { if (document.referrer) referrer = new URL(document.referrer).origin; } catch (e) {}
+        beacon('landing_visit', { utm: utm, meta: { referrer: referrer } });
+      }
+    } catch (e) {}
+
+    // Скачивания.
+    document.querySelectorAll('a[href^="/download/"]').forEach(function (a) {
+      a.addEventListener('click', function () {
+        beacon('landing_download', { utm: utm, meta: { target: a.getAttribute('href') } });
+      });
+    });
+
+    // Цели на ключевые действия: Метрика (счётчик 111692890) и GA4 (G-N73332J6EB).
+    // Имя события одно и то же в обеих системах — иначе отчёты не сойдутся.
+    function ymGoal(name) {
+      try { if (window.ym) ym(111692890, 'reachGoal', name); } catch (e) {}
+      try { if (window.gtag) gtag('event', name); } catch (e) {}
+    }
+    document.querySelectorAll('a[href^="/download/"]').forEach(function (a) {
+      a.addEventListener('click', function () {
+        // Каждая ОС — своя цель: DMG/DEB/RPM (с 2.66.0) шли в «Windows», и по
+        // такой цели нельзя ни оптимизировать кампанию, ни узнать цену
+        // установки на каждой ОС. Правило зеркалит downloadGoalFor в клиенте.
+        var h = (a.getAttribute('href') || '').toLowerCase();
+        ymGoal(h.slice(-4) === '.apk' ? 'download_apk'
+          : h.slice(-4) === '.dmg' ? 'download_mac'
+          : (h.slice(-4) === '.deb' || h.slice(-4) === '.rpm') ? 'download_linux'
+          : 'download_win');
+      });
+    });
+    document.querySelectorAll('a[href^="/app/"]').forEach(function (a) {
+      a.addEventListener('click', function () { ymGoal('open_web'); });
+    });
+    document.querySelectorAll('a[href^="https://t.me/"]').forEach(function (a) {
+      a.addEventListener('click', function () { ymGoal('open_bot'); });
+    });
+    // «Как это работает» — вторая дверь для холодного человека. Цель нужна не
+    // для красоты: без неё нельзя отличить «стал изучать» от «ушёл молча», а
+    // именно это мы и хотим узнать про рекламный трафик.
+    var learn = document.getElementById('cta-learn');
+    if (learn) learn.addEventListener('click', function () { ymGoal('learn_more'); });
+  })();
+
+  // Report a copy only when the clipboard actually accepted it.
+  function connectCopy(button, textElement, status, success) {
+    button.addEventListener('click', async function () {
+      var value = textElement.href || textElement.textContent;
+      var label = button.textContent;
+      button.disabled = true;
+      status.textContent = 'Копирование…';
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(value);
+        } else {
+          var input = document.createElement('textarea');
+          input.value = value; input.setAttribute('readonly', '');
+          input.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+          document.body.appendChild(input);
+          try {
+            input.select();
+            if (!document.execCommand('copy')) throw new Error('Copy rejected');
+          } finally { input.remove(); }
+        }
+        status.textContent = success;
+      } catch (e) {
+        status.textContent = 'Не удалось скопировать. Выделите текст и скопируйте вручную.';
+        var range = document.createRange(); range.selectNodeContents(textElement);
+        var selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(range);
+      } finally {
+        button.disabled = false; button.textContent = label; button.focus({ preventScroll:true });
+      }
+    });
+  }
+  connectCopy(document.getElementById('copy-cmd'), document.getElementById('install-cmd'), document.getElementById('copy-status'), 'Команда скопирована. Выполните её на подключаемом компьютере.');
+  connectCopy(document.getElementById('bridge-copy'), document.getElementById('bridge-link'), document.getElementById('bridge-hint'), 'Ссылка скопирована. Откройте её на нужном компьютере — сразу увидите шаг установки.');
+
+  // интерактивные кейсы: вкладки + проигрываемые вручную демо
+  (function () {
+    var tabs = document.querySelectorAll('.case-tab');
+    var panels = document.querySelectorAll('.case-panel');
+
+    var tablist = document.querySelector('.case-tabs');
+    var narrow = window.matchMedia('(max-width:920px)');
+    function orientation() { tablist.setAttribute('aria-orientation', narrow.matches ? 'horizontal' : 'vertical'); }
+    orientation(); narrow.addEventListener('change', orientation);
+    function activate(tab, moveFocus) {
+      tabs.forEach(function (t) {
+        var selected = t === tab;
+        t.classList.toggle('active', selected); t.setAttribute('aria-selected', String(selected));
+        t.setAttribute('tabindex', selected ? '0' : '-1');
+      });
+      panels.forEach(function (panel) {
+        var selected = panel.id === tab.getAttribute('aria-controls');
+        panel.hidden = !selected; panel.classList.toggle('active', selected);
+      });
+      if (moveFocus) { tab.focus({ preventScroll:true }); tab.scrollIntoView({ block:'nearest', inline:'nearest', behavior:'instant' }); }
+    }
+    tabs.forEach(function (tab, index) {
+      tab.addEventListener('click', function () { activate(tab, false); });
+      tab.addEventListener('keydown', function (e) {
+        var next = index;
+        var forward = narrow.matches ? 'ArrowRight' : 'ArrowDown';
+        var backward = narrow.matches ? 'ArrowLeft' : 'ArrowUp';
+        if (e.key === forward) next = (index + 1) % tabs.length;
+        else if (e.key === backward) next = (index + tabs.length - 1) % tabs.length;
+        else if (e.key === 'Home') next = 0;
+        else if (e.key === 'End') next = tabs.length - 1;
+        else return;
+        e.preventDefault(); activate(tabs[next], true);
+      });
+    });
+
+    // печать команды по буквам, как в настоящем терминале
+    var timers = new WeakMap();
+    function pending(demo) {
+      if (!timers.has(demo)) timers.set(demo, { timeouts:new Set(), intervals:new Set() });
+      return timers.get(demo);
+    }
+    function typeText(demo, el) {
+      var text = el.getAttribute('data-text') || '';
+      var i = 0;
+      el.classList.remove('tw-done');
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = text; el.classList.add('tw-done'); return; }
+      var timer = setInterval(function () {
+        i++;
+        el.textContent = text.slice(0, i);
+        if (i >= text.length) {
+          clearInterval(timer); pending(demo).intervals.delete(timer);
+          el.classList.add('tw-done');
+        }
+      }, 42);
+      pending(demo).intervals.add(timer);
+    }
+
+    function resetDemo(demo) {
+      var state = pending(demo);
+      state.timeouts.forEach(clearTimeout); state.intervals.forEach(clearInterval);
+      state.timeouts.clear(); state.intervals.clear();
+      demo.querySelectorAll('.ln.shown').forEach(function (ln) { ln.classList.remove('shown'); });
+      demo.querySelectorAll('.tw').forEach(function (tw) { tw.textContent = ''; tw.classList.remove('tw-done'); });
+      var idle = demo.querySelector('.ln.idle');
+      if (idle) idle.classList.remove('gone');
+      demo.querySelectorAll('.chip[data-step]').forEach(function (chip) {
+        chip.disabled = false;
+        chip.classList.toggle('next', chip.getAttribute('data-step') === '1');
+      });
+    }
+
+    document.querySelectorAll('.case-demo').forEach(function (demo) {
+      var chips = demo.querySelectorAll('.chip[data-step]');
+
+      chips.forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          var step = chip.getAttribute('data-step');
+          var idle = demo.querySelector('.ln.idle');
+          if (idle) idle.classList.add('gone');
+          var delay = 0;
+          demo.querySelectorAll('.ln.s' + step).forEach(function (ln) {
+            var tw = ln.querySelector('.tw');
+            var timer = setTimeout(function () {
+              pending(demo).timeouts.delete(timer);
+              ln.classList.add('shown');
+              if (tw && !tw.textContent) typeText(demo, tw);
+            }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : delay);
+            pending(demo).timeouts.add(timer);
+            delay += tw ? 1000 : 420;
+          });
+          chip.disabled = true;
+          chip.classList.remove('next');
+          var next = demo.querySelector('.chip[data-step="' + (parseInt(step, 10) + 1) + '"]');
+          if (next) next.classList.add('next');
+        });
+      });
+
+      var resetBtn = demo.querySelector('.chip-reset');
+      if (resetBtn) resetBtn.addEventListener('click', function () { resetDemo(demo); });
+    });
+  })();
+</script>
+
+</body>
+</html>

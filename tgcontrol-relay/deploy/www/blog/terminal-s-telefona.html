@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Терминал с телефона: как открыть консоль своего компьютера | Remotai</title>
+<meta name="description" content="Как получить полноценный терминал компьютера или сервера на телефоне: что не так с обычными SSH-клиентами, как пережить обрыв связи, что делать с Esc и стрелками и почему ломается прокрутка." />
+<link rel="canonical" href="https://remotai.ru/blog/terminal-s-telefona.html" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Терминал с телефона: как открыть консоль своего компьютера" />
+<meta property="og:description" content="Как получить полноценный терминал компьютера или сервера на телефоне: что не так с обычными SSH-клиентами, как пережить обрыв связи, что делать с Esc и стрелками и почему ломается прокрутка." />
+<meta property="og:url" content="https://remotai.ru/blog/terminal-s-telefona.html" />
+<link rel="icon" href="/favicon.ico" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/blog/blog.css" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","headline":"Терминал с телефона: как открыть консоль своего компьютера",
+"datePublished":"2026-09-10","dateModified":"2026-09-10",
+"author":{"@type":"Person","name":"Евгений Ваулин"},
+"publisher":{"@type":"Organization","name":"Remotai"},
+"mainEntityOfPage":"https://remotai.ru/blog/terminal-s-telefona.html"}
+</script>
+
+<link rel="alternate" hreflang="ru" href="https://remotai.ru/blog/terminal-s-telefona.html" />
+<link rel="alternate" hreflang="en" href="https://remotai.ru/en/blog/terminal-s-telefona.html" />
+<link rel="alternate" hreflang="x-default" href="https://remotai.ru/blog/terminal-s-telefona.html" />
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="/">Remot<span>ai</span></a><a class="language-link" href="/en/blog/terminal-s-telefona.html" hreflang="en" lang="en" style="margin-left:auto;padding:8px;white-space:nowrap;font-size:13px">English</a>
+    <nav class="nav">
+      <a href="/blog/">Блог</a>
+      <a href="/server.html">Агент на сервере</a>
+      <a href="/uslugi.html">Под ключ</a>
+      <a href="/#pricing">Цены</a>
+      <a href="/app/">Веб-версия</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+<article>
+  <h1>Терминал с телефона: как открыть консоль своего компьютера</h1>
+  <div class="meta">10 сентября 2026 · читать 5 минут</div>
+
+  <p>Консоль на телефоне нужна не для красоты. Запустить сборку, посмотреть логи упавшего сервиса, перезапустить процесс, ответить агенту, который ждёт подтверждения. Всё это делается двумя строчками, ради которых глупо возвращаться домой.</p>
+
+  <p>Способ есть, и он давно известен: SSH-клиент. Проблема в том, что на телефоне он работает хуже, чем ожидаешь, и вот почему.</p>
+
+  <h2>Что ломается</h2>
+
+  <p><strong>Связь рвётся, и вместе с ней умирает работа.</strong> Вы вышли из метро, телефон сменил сеть, соединение закрылось. Всё, что выполнялось внутри сессии, погибло вместе с ней. Лечится <code>tmux</code> или <code>screen</code>, но их надо запустить заранее, а вспоминают о них обычно после первой потери.</p>
+
+  <p><strong>Не хватает клавиш.</strong> В консоли постоянно нужны Esc, Ctrl, Tab и стрелки. Мобильная клавиатура их не показывает, приложения выносят дополнительную панель, и попадать по мелким кнопкам пальцем неудобно. Особенно это заметно в программах с текстовым интерфейсом: редакторы, менеджеры файлов, консольные агенты.</p>
+
+  <p><strong>Прокрутка достаётся не вам.</strong> Программа, которая сама рисует экран, перехватывает жесты. Пытаешься пролистать вывод, а попадаешь в пункт меню. История при этом живёт в буфере прокрутки, до которого ещё надо добраться.</p>
+
+  <p><strong>Экран прыгает при повороте.</strong> Смена размера окна заставляет программу перерисоваться. Часть истории при этом может потеряться, а вы окажетесь в начале вывода вместо того места, где читали.</p>
+
+  <h2>Как это чинится</h2>
+
+  <p><strong>Процесс должен жить отдельно от вашей сессии.</strong> Тогда обрыв связи перестаёт быть событием: вернулись, подключились, увидели тот же экран. Именно это делает <code>tmux</code>, и именно это должно быть по умолчанию, а не подвигом пользователя.</p>
+
+  <p><strong>Соединение должен инициировать компьютер.</strong> Тогда не нужен ни белый IP, ни проброс портов на роутере. Машина сама держит связь с промежуточным сервером, вы подключаетесь туда же.</p>
+
+  <p><strong>Клавиши должны быть под большим пальцем.</strong> Esc, Ctrl, Tab и стрелки, а не спрятаны в подменю. Это мелочь, которая решает, будете вы пользоваться консолью в телефоне или нет.</p>
+
+  <p><strong>Изменения размера окна нужно фильтровать.</strong> Мелкие скачки высоты, которые дают клавиатура и адресная строка браузера, не должны заставлять программу перерисовывать всё. Иначе каждое открытие клавиатуры будет стоить вам места в истории.</p>
+
+  <h2>Что выбрать</h2>
+
+  <p>Если задача разовая, хватит любого SSH-клиента и привычки запускать <code>tmux</code> первой командой.</p>
+
+  <p>Если вы возвращаетесь к консоли каждый день, стоит взять инструмент, где всё перечисленное уже сделано. Мы свой делали именно из этой боли: терминал живёт на компьютере, а не в приложении, поэтому переживает и потерю сети, и закрытие приложения. Esc, Ctrl и стрелки вынесены в ряд под экраном. История не теряется при повороте телефона.</p>
+
+  <div class="cta-box">
+    <h3>Попробовать</h3>
+    <p>Открывается в браузере, приложение ставить необязательно. Первые 7 дней бесплатно и без карты, дальше 900 ₽ в месяц.</p>
+    <a class="btn" href="/app/">Открыть веб-версию</a>
+  </div>
+
+  <h2>Про безопасность</h2>
+
+  <p>Проверьте у любого решения три вещи. Кто видит содержимое сессии, если трафик идёт через чужой сервер. Как отозвать доступ у потерянного телефона. Что произойдёт после перезагрузки компьютера: вернётся ли доступ сам.</p>
+
+  <h2>Сколько стоит</h2>
+
+  <p>Работа с компьютером в своей домашней сети у нас бесплатна навсегда. Подключение через интернет входит в подписку, 900 рублей в месяц, первые семь дней бесплатно и без карты.</p>
+
+  <p>Если консоль нужна не для домашнего компьютера, а для сервера, который работает круглосуточно, посмотрите разбор сценария <a href="/blog/claude-code-iz-rossii.html">агент на своём сервере</a>.</p>
+</article>
+</div>
+
+<footer>
+  <div class="wrap">
+    <p>ИП Ваулин Евгений Николаевич · ИНН 773461030140 · ОГРНИП 325774600620214</p>
+    <p><a href="/">Главная</a> · <a href="/blog/">Блог</a> · <a href="/server.html">Агент на сервере</a>
+      <a href="/uslugi.html">Под ключ</a> · <a href="/offer.html">Оферта</a></p>
+  </div>
+</footer>
+
+<script>
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym(111692890,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+(function(){
+  var SLUG = "terminal-s-telefona";
+  try{
+    // Метка внешней рекламы важнее: если человек пришёл по объявлению, источником
+    // остаётся оно, а не страница блога, на которую он потом забрёл.
+    var q=new URLSearchParams(location.search),utm={};
+    ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","yclid"].forEach(function(k){var v=q.get(k);if(v)utm[k]=v.slice(0,200);});
+    if(Object.keys(utm).length&&!localStorage.getItem("utm")){
+      localStorage.setItem("utm",JSON.stringify(utm));
+    }else if(!localStorage.getItem("utm")){
+      // Пришёл из поиска прямо в блог: запоминаем статью как источник, чтобы в базе
+      // было видно, какая именно страница привела человека к регистрации и оплате.
+      localStorage.setItem("utm",JSON.stringify({utm_source:"blog",utm_medium:"article",utm_campaign:SLUG}));
+    }
+  }catch(e){}
+  // Цели: клик по кнопке в статье и уход в приложение или на страницу сценария.
+  document.querySelectorAll('a[href^="/app/"], a[href^="/server.html"], a[href^="/#pricing"]').forEach(function(a){
+    a.addEventListener("click",function(){
+      try{ ym(111692890,"reachGoal","blog_cta",{article:SLUG,to:a.getAttribute("href")}); }catch(e){}
+    });
+  });
+})();
+</script>
+</body>
+</html>

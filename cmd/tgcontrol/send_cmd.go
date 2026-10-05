@@ -20,6 +20,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"tgcontrol/internal/localize"
 	"time"
 
 	"tgcontrol/internal/config"
@@ -31,7 +32,7 @@ import (
 // telegramFileLimit на релее; проверяем ДО сети, чтобы не ждать таймаут).
 const sendFileLimit = 49 << 20
 
-const sendUsage = `Использование:
+var sendUsage = localize.Text(`Использование:
   remotai send "текст"                      сообщение владельцу в Telegram
   remotai send --file <путь>                файл (до 49 МБ)
   remotai send --file <путь> --text "подпись"   файл + отдельное сообщение
@@ -39,7 +40,7 @@ const sendUsage = `Использование:
 Примеры для агентов и скриптов:
   remotai send "Сборка готова: 0 ошибок"
   remotai send --file C:\logs\build.pdf
-  remotai send --file /tmp/report.html --text "Отчёт за ночь"`
+  remotai send --file /tmp/report.html --text "Отчёт за ночь"`)
 
 // sendArgs — разобранные флаги команды.
 type sendArgs struct {
@@ -54,13 +55,13 @@ func parseSendArgs(args []string) (sendArgs, error) {
 		switch args[i] {
 		case "--file", "-f":
 			if i+1 >= len(args) {
-				return out, fmt.Errorf("после %s нужен путь к файлу", args[i])
+				return out, fmt.Errorf(localize.Text("после %s нужен путь к файлу"), args[i])
 			}
 			i++
 			out.file = args[i]
 		case "--text", "-t":
 			if i+1 >= len(args) {
-				return out, fmt.Errorf("после %s нужен текст", args[i])
+				return out, fmt.Errorf(localize.Text("после %s нужен текст"), args[i])
 			}
 			i++
 			out.text = args[i]
@@ -68,16 +69,16 @@ func parseSendArgs(args []string) (sendArgs, error) {
 			return out, fmt.Errorf("help")
 		default:
 			if strings.HasPrefix(args[i], "-") {
-				return out, fmt.Errorf("неизвестный флаг %s", args[i])
+				return out, fmt.Errorf(localize.Text("неизвестный флаг %s"), args[i])
 			}
 			if out.text != "" {
-				return out, fmt.Errorf("текст уже задан — лишний аргумент %q", args[i])
+				return out, fmt.Errorf(localize.Text("текст уже задан — лишний аргумент %q"), args[i])
 			}
 			out.text = args[i]
 		}
 	}
 	if out.text == "" && out.file == "" {
-		return out, fmt.Errorf("нужен текст или --file")
+		return out, fmt.Errorf("%s", localize.Text("нужен текст или --file"))
 	}
 	return out, nil
 }
@@ -95,27 +96,27 @@ func runSend(args []string) int {
 
 	// Локальные проверки ДО сети: привязка и файл.
 	if !relay.Available() {
-		fmt.Fprintln(os.Stderr, "remotai: компьютер не привязан к аккаунту — сначала выполните: remotai pair")
+		fmt.Fprintln(os.Stderr, localize.Text("remotai: компьютер не привязан к аккаунту — сначала выполните: remotai pair"))
 		return 1
 	}
 	fileName := ""
 	if parsed.file != "" {
 		abs, err := filepath.Abs(parsed.file)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "remotai: путь %q не разобрать: %v\n", parsed.file, err)
+			fmt.Fprintf(os.Stderr, localize.Text("remotai: путь %q не разобрать: %v\n"), parsed.file, err)
 			return 1
 		}
 		st, err := os.Stat(abs)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "remotai: файл %q не найден: %v\n", parsed.file, err)
+			fmt.Fprintf(os.Stderr, localize.Text("remotai: файл %q не найден: %v\n"), parsed.file, err)
 			return 1
 		}
 		if st.IsDir() {
-			fmt.Fprintf(os.Stderr, "remotai: %q — это папка, а не файл\n", parsed.file)
+			fmt.Fprintf(os.Stderr, localize.Text("remotai: %q — это папка, а не файл\n"), parsed.file)
 			return 1
 		}
 		if st.Size() > sendFileLimit {
-			fmt.Fprintf(os.Stderr, "remotai: файл %d МБ — Telegram принимает не больше %d МБ\n",
+			fmt.Fprintf(os.Stderr, localize.Text("remotai: файл %d МБ — Telegram принимает не больше %d МБ\n"),
 				st.Size()>>20, sendFileLimit>>20)
 			return 1
 		}
@@ -128,7 +129,7 @@ func runSend(args []string) int {
 		jwt, _ = relay.LoadJWT()
 	}
 	if jwt == "" {
-		fmt.Fprintln(os.Stderr, "remotai: нет ключа устройства — перепривяжите: remotai pair")
+		fmt.Fprintln(os.Stderr, localize.Text("remotai: нет ключа устройства — перепривяжите: remotai pair"))
 		return 1
 	}
 
@@ -155,7 +156,7 @@ func runSend(args []string) int {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "remotai: релей недоступен: %v\n", err)
+		fmt.Fprintf(os.Stderr, localize.Text("remotai: релей недоступен: %v\n"), err)
 		return 1
 	}
 	defer resp.Body.Close()
@@ -172,14 +173,14 @@ func runSend(args []string) int {
 
 	switch {
 	case resp.StatusCode == http.StatusOK && parsedResp.Muted:
-		fmt.Println("⚠ Уведомления выключены в приложении — сообщение не доставлено.")
+		fmt.Println(localize.Text("⚠ Уведомления выключены в приложении — сообщение не доставлено."))
 		return 1
 	case resp.StatusCode == http.StatusOK && parsedResp.OK:
-		what := "сообщение"
+		what := localize.Text("сообщение")
 		if len(parsedResp.Sent) > 0 {
 			what = strings.Join(parsedResp.Sent, " + ")
 		}
-		fmt.Printf("✅ Отправлено в Telegram (%s).\n", what)
+		fmt.Printf(localize.Text("✅ Отправлено в Telegram (%s).\n"), what)
 		return 0
 	}
 
@@ -187,20 +188,20 @@ func runSend(args []string) int {
 	hint := ""
 	switch parsedResp.Code {
 	case "telegram_not_linked":
-		hint = "к аккаунту не привязан Telegram — откройте бота и нажмите /start"
+		hint = localize.Text("к аккаунту не привязан Telegram — откройте бота и нажмите /start")
 	case "pc_offline":
-		hint = "агент на этом компьютере не в сети — файл недоступен (текст дошёл бы и так)"
+		hint = localize.Text("агент на этом компьютере не в сети — файл недоступен (текст дошёл бы и так)")
 	case "rate_limited":
-		hint = "слишком много сообщений — подождите час"
+		hint = localize.Text("слишком много сообщений — подождите час")
 	case "too_large":
-		hint = "Telegram принимает файлы не больше 49 МБ"
+		hint = localize.Text("Telegram принимает файлы не больше 49 МБ")
 	case "device_not_found", "unauthorized":
-		hint = "ключ устройства не принят — перепривяжите: remotai pair"
+		hint = localize.Text("ключ устройства не принят — перепривяжите: remotai pair")
 	}
 	if hint != "" {
 		fmt.Fprintf(os.Stderr, "remotai: %s (%s)\n", hint, parsedResp.Error)
 	} else {
-		fmt.Fprintf(os.Stderr, "remotai: не отправлено (%d %s): %s\n", resp.StatusCode, parsedResp.Code, parsedResp.Error)
+		fmt.Fprintf(os.Stderr, localize.Text("remotai: не отправлено (%d %s): %s\n"), resp.StatusCode, parsedResp.Code, parsedResp.Error)
 	}
 	return 1
 }

@@ -20,6 +20,7 @@ import (
 	"runtime"
 	"strings"
 	"syscall"
+	"tgcontrol/internal/localize"
 	"time"
 
 	qrcode "github.com/skip2/go-qrcode"
@@ -61,7 +62,7 @@ func runPair(args []string) int {
 	resp, err := relay.RequestPairingCode(reqCtx, base, deviceID, hostname, deviceJWT)
 	reqCancel()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "remotai: не удалось получить код пейринга: %v\n", err)
+		fmt.Fprintf(os.Stderr, localize.Text("remotai: не удалось получить код пейринга: %v\n"), err)
 		return 1
 	}
 
@@ -73,13 +74,13 @@ func runPair(args []string) int {
 	for {
 		select {
 		case <-ctx.Done():
-			fmt.Fprintln(os.Stderr, "\nremotai: отменено")
+			fmt.Fprintln(os.Stderr, localize.Text("\nremotai: отменено"))
 			return 1
 		case <-ticker.C:
 		}
 
 		if !resp.ExpiresAt.IsZero() && time.Now().After(resp.ExpiresAt) {
-			fmt.Fprintln(os.Stderr, "\nremotai: код истёк — запустите `remotai pair` заново")
+			fmt.Fprintln(os.Stderr, localize.Text("\nremotai: код истёк — запустите `remotai pair` заново"))
 			return 1
 		}
 
@@ -92,15 +93,15 @@ func runPair(args []string) int {
 			continue
 		}
 		if status.Expired {
-			fmt.Fprintln(os.Stderr, "\nremotai: код истёк — запустите `remotai pair` заново")
+			fmt.Fprintln(os.Stderr, localize.Text("\nremotai: код истёк — запустите `remotai pair` заново"))
 			return 1
 		}
 		if status.Confirmed && status.JWT != "" {
 			if err := web.PersistPairedIdentity(deviceID, base, status.JWT, status.ExpiresAt); err != nil {
-				fmt.Fprintf(os.Stderr, "\nremotai: не удалось сохранить привязку: %v\n", err)
+				fmt.Fprintf(os.Stderr, localize.Text("\nremotai: не удалось сохранить привязку: %v\n"), err)
 				return 1
 			}
-			fmt.Println("\n\n✅ Сервер привязан!")
+			fmt.Println(localize.Text("\n\n✅ Сервер привязан!"))
 			if status.DeviceID != "" {
 				fmt.Printf("   device_id: %s\n", status.DeviceID)
 			}
@@ -114,14 +115,14 @@ func runPair(args []string) int {
 			// Поэтому перезапускаем службу сами.
 			switch restartServiceIfRunning() {
 			case serviceRestarted:
-				fmt.Println("   Служба перезапущена — сервер выйдет на связь через несколько секунд.")
+				fmt.Println(localize.Text("   Служба перезапущена — сервер выйдет на связь через несколько секунд."))
 			case serviceRestartFailed:
-				fmt.Println("   Служба уже работает со СТАРОЙ привязкой — перезапустите её:")
+				fmt.Println(localize.Text("   Служба уже работает со СТАРОЙ привязкой — перезапустите её:"))
 				fmt.Println("     " + serviceRestartHint())
 			default:
-				fmt.Println("   Дальше: запустите сервис —")
+				fmt.Println(localize.Text("   Дальше: запустите сервис —"))
 				fmt.Println("     " + serviceStartHint())
-				fmt.Println("   или просто `remotai` для запуска вручную.")
+				fmt.Println(localize.Text("   или просто `remotai` для запуска вручную."))
 			}
 			return 0
 		}
@@ -134,13 +135,13 @@ func printPairInstructions(resp *relay.PairingResponse, base, hostname, deviceID
 	const bar = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 	fmt.Println()
 	fmt.Println(bar)
-	fmt.Println("  Remotai — привязка сервера")
+	fmt.Println(localize.Text("  Remotai — привязка сервера"))
 	fmt.Println(bar)
 	fmt.Println()
-	fmt.Printf("  Сервер:   %s  (device %s)\n", hostname, deviceID)
-	fmt.Printf("  Код:      %s\n", resp.Code)
+	fmt.Printf(localize.Text("  Сервер:   %s  (device %s)\n"), hostname, deviceID)
+	fmt.Printf(localize.Text("  Код:      %s\n"), resp.Code)
 	if !resp.ExpiresAt.IsZero() {
-		fmt.Printf("  Годен до: %s\n", resp.ExpiresAt.Local().Format("15:04:05"))
+		fmt.Printf(localize.Text("  Годен до: %s\n"), resp.ExpiresAt.Local().Format("15:04:05"))
 	}
 	fmt.Println()
 	// Первым — способ для того, кто уже здесь. Эту команду чаще всего запускают
@@ -148,23 +149,23 @@ func printPairInstructions(resp *relay.PairingResponse, base, hostname, deviceID
 	// текст: «а я захожу с компьютера)»), и предлагать ему первым делом взять
 	// телефон и сканировать QR — значит не замечать, где человек находится.
 	// Клиент видит код в выводе и показывает кнопку «Привязать этот сервер».
-	fmt.Println("  Подтвердите привязку одним из способов:")
-	fmt.Println("   1) Прямо здесь: в Remotai нажмите «Привязать этот сервер»")
-	fmt.Println("      (кнопка появится над строкой ввода этого терминала).")
+	fmt.Println(localize.Text("  Подтвердите привязку одним из способов:"))
+	fmt.Println(localize.Text("   1) Прямо здесь: в Remotai нажмите «Привязать этот сервер»"))
+	fmt.Println(localize.Text("      (кнопка появится над строкой ввода этого терминала)."))
 	if resp.BotLink != "" {
-		fmt.Printf("   2) Откройте в Telegram:  %s\n", resp.BotLink)
+		fmt.Printf(localize.Text("   2) Откройте в Telegram:  %s\n"), resp.BotLink)
 	}
-	fmt.Println("   3) Отсканируйте QR приложением Remotai на телефоне:")
+	fmt.Println(localize.Text("   3) Отсканируйте QR приложением Remotai на телефоне:"))
 	fmt.Println()
 
 	payload := web.BuildCloudPairPayload(base, resp.Code)
 	if qr, err := qrcode.New(payload, qrcode.Low); err == nil {
 		fmt.Println(indent(qr.ToSmallString(false), "  "))
 	} else {
-		fmt.Printf("   (QR недоступен: %v)\n   Данные: %s\n", err, payload)
+		fmt.Printf(localize.Text("   (QR недоступен: %v)\n   Данные: %s\n"), err, payload)
 	}
 
-	fmt.Println("  Ожидаю подтверждения (Ctrl+C — отмена)…")
+	fmt.Println(localize.Text("  Ожидаю подтверждения (Ctrl+C — отмена)…"))
 }
 
 // indent добавляет префикс к каждой строке многострочного текста.
@@ -221,9 +222,9 @@ func userUnitInstalled() bool {
 func serviceStartHint() string {
 	switch runtime.GOOS {
 	case "darwin":
-		return "remotai install   (поставит и запустит LaunchAgent)"
+		return localize.Text("remotai install   (поставит и запустит LaunchAgent)")
 	case "windows":
-		return "запустите Remotai из меню «Пуск»"
+		return localize.Text("запустите Remotai из меню «Пуск»")
 	default:
 		return linuxStartHint(userUnitInstalled())
 	}
@@ -235,9 +236,9 @@ func serviceStartHint() string {
 // тесты гоняют на Windows.
 func linuxStartHint(userUnit bool) string {
 	if userUnit {
-		return "systemctl --user enable --now remotai   (служба стоит в вашем пользователе)"
+		return localize.Text("systemctl --user enable --now remotai   (служба стоит в вашем пользователе)")
 	}
-	return "sudo systemctl enable --now remotai   (если ставили через install.sh)"
+	return localize.Text("sudo systemctl enable --now remotai   (если ставили через install.sh)")
 }
 
 func linuxRestartHint(userUnit bool) string {
@@ -260,7 +261,7 @@ func serviceRestartHint() string {
 		// приглашение к опечатке.
 		return fmt.Sprintf("launchctl kickstart -k gui/%d/ru.remotai.agent", os.Getuid())
 	case "windows":
-		return "перезапустите Remotai из меню «Пуск»"
+		return localize.Text("перезапустите Remotai из меню «Пуск»")
 	default:
 		return linuxRestartHint(userUnitInstalled())
 	}

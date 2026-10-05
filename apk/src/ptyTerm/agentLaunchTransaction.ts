@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 /** Безопасная отметка аккаунта, которую можно хранить у PTY. */
 export interface PtyAccountMarker {
   id: string;
@@ -29,18 +30,18 @@ export async function commitAccountScopedLaunch(input: AccountScopedLaunch): Pro
   if (input.agentAlreadyRunning) return input.sendToExistingAgent();
 
   if (!(await input.persist(input.next))) {
-    throw new Error("Не удалось запомнить аккаунт терминала.");
+    throw new Error(t("ui.agentlaunchtransaction.m3d1ef5016e"));
   }
   try {
     if (input.sendToShell()) return true;
   } catch (error) {
     if (!(await input.persist(input.previous))) {
-      throw new Error("Команда не отправлена, а прежний аккаунт терминала не удалось восстановить.");
+      throw new Error(t("ui.agentlaunchtransaction.m6c71eadd41"));
     }
     throw error;
   }
   if (!(await input.persist(input.previous))) {
-    throw new Error("Команда не отправлена, а прежний аккаунт терминала не удалось восстановить.");
+    throw new Error(t("ui.agentlaunchtransaction.m6c71eadd41"));
   }
   return false;
 }

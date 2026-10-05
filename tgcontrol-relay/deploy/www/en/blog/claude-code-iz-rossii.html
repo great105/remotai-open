@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>Claude Code and Codex on your server: work from Russia without VPN and without risk to your account | Remotai</title>
+<meta content="How to run Claude Code or Codex CLI on your server, work from Russia without a VPN on your device and not get your account blocked. Installation, cost, control from your phone." name="description"/>
+<link href="https://remotai.ru/en/blog/claude-code-iz-rossii.html" rel="canonical"/>
+<meta content="article" property="og:type"/>
+<meta content="Claude Code and Codex on your server: no VPN and no risk to your account" property="og:title"/>
+<meta content="The agent lives on your server in a supported country and works around the clock. Your device doesn't bypass anything. The remote control is on the phone." property="og:description"/>
+<meta content="https://remotai.ru/en/blog/claude-code-iz-rossii.html" property="og:url"/>
+<link href="/favicon.ico" rel="icon"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Golos+Text:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="/blog/blog.css" rel="stylesheet"/>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Claude Code and Codex on your server: work from Russia without VPN and without risk to your account",
+  "datePublished": "2026-09-08",
+  "dateModified": "2026-09-08",
+  "author": {
+    "@type": "Person",
+    "name": "Evgeniy Vaulin"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Remotai"
+  },
+  "mainEntityOfPage": "https://remotai.ru/en/blog/claude-code-iz-rossii.html"
+}</script>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Do I need my computer for this to work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The agent and tools live on the server; you need a phone to watch and respond. You can work without a laptop at all."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is this a VPN?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. A VPN changes your network access, and it changes where work gets done. Your traffic remains yours, you connect to your own server."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What other agents work like this?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Any console: Claude Code, Codex CLI, Kimi, Gemini CLI, opencode. The scheme does not depend on a specific agent."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which server to choose?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Any Linux-VPS with a gigabyte of memory or more will do. What is more important is not the power, but what country it is located in and how stable the provider is."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if the server reboots?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "When autostart is configured, the service starts itself and restores communication. Terminals with history are returned, unfinished tasks are visible in the list."
+      }
+    }
+  ]
+}</script>
+<link href="https://remotai.ru/blog/claude-code-iz-rossii.html" hreflang="ru" rel="alternate"/><link href="https://remotai.ru/en/blog/claude-code-iz-rossii.html" hreflang="en" rel="alternate"/><link href="https://remotai.ru/blog/claude-code-iz-rossii.html" hreflang="x-default" rel="alternate"/></head>
+<body>
+<header class="top">
+<div class="wrap">
+<a class="logo" href="/en/">Remot<span>ai</span></a><a class="language-link" href="/blog/claude-code-iz-rossii.html" hreflang="ru" lang="ru" style="margin-left:auto;padding:8px;white-space:nowrap;font-size:13px">Русский</a>
+<nav class="nav">
+<a href="/en/blog/">Blog</a>
+<a href="/en/server.html">Agent on the server</a>
+<a href="/en/uslugi.html">Turnkey</a>
+<a href="/en/#pricing">Prices</a>
+<a href="/app/?lang=en">Web version</a>
+</nav>
+</div>
+</header>
+<div class="wrap">
+<article>
+<h1>Claude Code and Codex on your server: work from Russia without VPN and without risk to your account</h1>
+<div class="meta">September 8, 2026 · read 7 minutes</div>
+<p>Claude Code and Codex CLI are not available in all countries, and Russia is not included in the list of supported ones. The most annoying thing here is not that the service does not open, but that attempts to solve this on your computer often end in the loss of your account. Below is an analysis of a scheme in which your device does not bypass anything at all, and the agent works in the country where it is supposed to work.</p>
+<h2>Short answer</h2>
+<p>The agent runs on a rented server in a supported country. You connect to this server and work on it: terminal, files, launching tasks. Nothing is configured on your phone and laptop and no tunnel is raised.</p>
+<p>The difference is fundamental. In the first case, you are trying to look like a user from another country, and the service has every right to notice this. In the second, you literally work on a machine that is parked in this country.</p>
+<h2>Why are accounts blocked?</h2>
+<p>Judging by what people describe in discussions, it is not the fact of another country that triggers, but the discrepancies. The account was registered in one place, the payment was made from another, the session was opened from a third, and an hour later again from the first. Plus well-known address ranges of popular VPN services that have been marked for a long time.</p>
+<p>The server gives a different picture: the same address, the same machine, stable sessions without jumping between countries. This is not a guarantee, because we are not the ones who write the service rules, and you still have to read them. But this is fundamentally more honest behavior than disguise.</p>
+<p>Separately: your account in the service remains yours. No shared keys or resold access, the limits and subscription are yours.</p>
+<h2>What you will need</h2>
+<p><strong>Server.</strong> A regular VPS from any provider, Linux, from one gigabyte of memory. The agent is enough: it runs text and runs your commands, rather than rendering video. You choose the country.</p>
+<p><strong>Service account.</strong> Yours, with your subscription.</p>
+<p><strong>A way to reach the server.</strong> This is where the real work begins, because the SSH client on the phone is not good for this. More on this below.</p>
+<h2>Installing Claude Code on the server</h2>
+<p>If you already have a running agent on another machine, do not rewrite the commands manually. Give him access to an empty server and describe the task in words: install yourself, configure autostart, check that everything starts up after a reboot. He sees a specific system and will cope faster than you can according to someone else’s instructions.</p>
+<p>If you install it yourself, on a fresh Ubuntu it looks like this:</p>
+<pre><code>apt update &amp;&amp; apt install -y nodejs npm git
+npm i -g @anthropic-ai/claude-code
+claude</code></pre>
+<p>When you launch it for the first time, the agent will ask you to log in. Then it lives in your environment, with your keys and your repositories.</p>
+<h2>Installing Codex CLI</h2>
+<p>With Codex the scheme is the same, only the package is different:</p>
+<pre><code>npm i -g @openai/codex
+codex</code></pre>
+<p>Both agents live quietly on the same machine and do not interfere with each other: they are just console programs in your environment. Many people do this in order to compare them on the same task, and at the same time have a backup option when one of the services has limits or a failure.</p>
+<h2>How to do this if you are not an administrator</h2>
+<p>A separate console, keys, setting up autorun: this is usually where people give up. In Remotai, this path is collected in one window, and it looks like this.</p>
+<ol>
+<li>We rented a server from a provider, received an address, login and password. This is the only step that is not being taken by us.</li>
+<li>We opened Remotai in the browser and added the server via SSH. There is no need for a separate SSH client; the server console opens right here.</li>
+<li>Clicked “Install Remotai”. The application will show the installation command and open the server terminal in the same window, all you have to do is insert and run. The installer will install the service, configure autostart and immediately print the connection code.</li>
+<li>Enter this code in “My Computers”. The server will be included in the general list next to your computers: with its own terminals, files and system, without an intermediary machine.</li>
+<li>Next, install an agent. Either by command in the same terminal, or simply ask the agent you already have about it.</li>
+</ol>
+<p>From this point on, the server is no different from your home computer in the application. The only difference is that it does not turn off and is located in another country.</p>
+<h2>Is it possible to work without a VPN?</h2>
+<p>Yes, and this is the main advantage of the scheme. A VPN is needed when you are trying to access a service from your device. Here the server reaches out to the service, not you. Your phone connects only to your own server, and no special settings are needed for this.</p>
+<p>A useful side effect: the laptop is no longer part of the circuit. You can close it, discharge it, or even leave it at home, and the task will continue to be performed.</p>
+<h2>How to approach an agent from your phone</h2>
+<p>An agent on the server is useless if you can't respond to it at the right time. And he constantly asks: confirm the plan, select an option, allow writing to the file.</p>
+<p>A regular SSH client on your phone solves the problem halfway. The network breaks down and the session dies along with the process if you forgot about tmux. Esc and arrows live on a separate panel, which you access every once in a while, and the agent interfaces rest on them. Scrolling fights with the agent because it redraws the entire screen.</p>
+<p>We made a tool for this task. A small service is installed on the server next to the agent: it itself keeps the connection out, so public IP address and port forwarding are not needed. Your phone or browser works like a remote control. The task experiences a loss of connection: the application is closed, the network is lost, the phone is dead, but the process on the server continues to work and gives up its entire screen the next time it is connected.</p>
+<div class="cta-box">
+<h3>Install and try</h3>
+<p>Opens in the browser, no application required. The first 7 days are free and without a card, then 900 ₽ per month. Server rental is paid to its provider separately.</p>
+<a class="btn" href="/en/server.html">How it works</a>
+</div>
+<h2>How much does it cost per month</h2>
+<p>We count three expense items honestly.</p>
+<p>Server: approximately 300 to 800 rubles per machine, which is enough for an agent. Subscription to the service itself: at the rates of its owner, you have your own. Access tool: 900 rubles per month, while local work on your computer is free forever.</p>
+<p>The scheme is more predictable than trying to keep an agent on a laptop, which you close and take away with you.</p>
+<h2>If you don't want to bother</h2>
+<p>We set up and configure the server for a turnkey agent: we select a provider and country, install the system, deploy Claude Code or Codex, set up autostart and access from the phone, and check that everything starts up after a reboot. One-time 8,000 rubles, then you only pay for the server and subscriptions. You can write to us at <a href="https://t.me/Autocode1_bot">Telegram</a>.</p>
+<h2>What this circuit doesn't do</h2>
+<p>It doesn't change your Internet access and doesn't tunnel anything for you: you connect to your machine and work on it.</p>
+<p>It does not cancel the rules of services. The account is yours, the limits are yours, the responsibility is also yours, and the terms of use are worth reading yourself.</p>
+<p>And it's not free: the server charges money every month, even when you don't use it.</p>
+<h2>Frequently asked questions</h2>
+<h3>Do I need my computer for this to work?</h3>
+<p>No. The agent and tools live on the server; you need a phone to watch and respond. You can work without a laptop at all.</p>
+<h3>Is this a VPN?</h3>
+<p>No. A VPN changes your network access, and it changes where work gets done. Your traffic remains yours, you connect to your own server.</p>
+<h3>What other agents work like this?</h3>
+<p>Any console: Claude Code, Codex CLI, Kimi, Gemini CLI, opencode. The scheme does not depend on a specific agent.</p>
+<h3>Which server to choose?</h3>
+<p>Any Linux-VPS with a gigabyte of memory or more will do. What is more important is not the power, but what country it is located in and how stable the provider is.</p>
+<h3>What happens if the server reboots?</h3>
+<p>When autostart is configured, the service starts itself and restores communication. Terminals with history are returned, unfinished tasks are visible in the list.</p>
+</article>
+</div>
+<footer>
+<div class="wrap">
+<p>Individual entrepreneur Vaulin Evgeniy Nikolaevich · TIN 773461030140 · OGRNIP 325774600620214</p>
+<p><a href="/en/">Home</a> · <a href="/en/blog/">Blog</a> · <a href="/en/server.html">Agent on the server</a>
+<a href="/en/uslugi.html">Turnkey</a> · <a href="/en/offer.html">Offer</a></p>
+</div>
+</footer>
+<script>
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym(111692890,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+(function(){
+  try{
+    var q=new URLSearchParams(location.search),utm={};
+    ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","yclid"].forEach(function(k){var v=q.get(k);if(v)utm[k]=v.slice(0,200);});
+    if(Object.keys(utm).length&&!localStorage.getItem("utm"))localStorage.setItem("utm",JSON.stringify(utm));
+  }catch(e){}
+})();
+</script>
+<script>
+(function(){
+  var SLUG = "claude-code-iz-rossii";
+  try{
+    var q=new URLSearchParams(location.search),utm={};
+    ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","yclid"].forEach(function(k){var v=q.get(k);if(v)utm[k]=v.slice(0,200);});
+    if(Object.keys(utm).length&&!localStorage.getItem("utm")){
+      localStorage.setItem("utm",JSON.stringify(utm));
+    }else if(!localStorage.getItem("utm")){
+      localStorage.setItem("utm",JSON.stringify({utm_source:"blog",utm_medium:"article",utm_campaign:SLUG}));
+    }
+  }catch(e){}
+  document.querySelectorAll('a[href^="/app/"], a[href^="/server.html"], a[href^="/#pricing"]').forEach(function(a){
+    a.addEventListener("click",function(){
+      try{ ym(111692890,"reachGoal","blog_cta",{article:SLUG,to:a.getAttribute("href")}); }catch(e){}
+    });
+  });
+})();
+</script>
+</body>
+</html>

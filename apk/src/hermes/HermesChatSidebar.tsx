@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 import { useId, useState } from "react";
 import { SheetShell } from "@tgcontrol/shared";
 import {
@@ -37,26 +38,26 @@ export function HermesChatSidebar({
 
   const body = <>
     <div className="hermes-sidebar-top">
-      <h2 id={headingId}><IconRobot size={22} /><span>Беседы</span></h2>
-      {!desktop && <button type="button" className="hermes-icon-button" onClick={onClose} aria-label="Закрыть меню"><IconClose size={20} /></button>}
+      <h2 id={headingId}><IconRobot size={22} /><span>{t("agentSessions.title")}</span></h2>
+      {!desktop && <button type="button" className="hermes-icon-button" onClick={onClose} aria-label={t("ui.hermeschatsidebar.mbce1786a4a")}><IconClose size={20} /></button>}
     </div>
 
-    <nav className="hermes-sidebar-nav" aria-label="Действия чатов">
-      <button type="button" aria-label="Создать новый чат" className="btn btn-primary hermes-sidebar-new" disabled={disabled} onClick={onNewChat}><IconPlus size={18} /><span>Новый чат</span></button>
+    <nav className="hermes-sidebar-nav" aria-label={t("ui.hermeschatsidebar.m0636380c21")}>
+      <button type="button" aria-label={t("ui.hermeschatsidebar.m1e4d2a5212")} className="btn btn-primary hermes-sidebar-new" disabled={disabled} onClick={onNewChat}><IconPlus size={18} /><span>{t("ui.hermeschatsidebar.m88c78c9ee6")}</span></button>
 
     </nav>
 
     <label className="hermes-sidebar-search">
       <IconSearch size={18} />
-      <input id="hermes-chat-search" type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Найти чат" aria-label="Поиск чатов" />
+      <input id="hermes-chat-search" type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder={t("ui.hermeschatsidebar.m072e4fe370")} aria-label={t("ui.hermeschatsidebar.m255a9e6a2c")} />
     </label>
 
     <section className="hermes-sidebar-history" aria-labelledby={historyHeadingId}>
-      <h3 id={historyHeadingId}>Недавние</h3>
+      <h3 id={historyHeadingId}>{t("folder.tab.recent")}</h3>
       {historyError && <p className="hermes-sidebar-error" role="alert">{historyError}</p>}
       {visibleSessions.length ? <ul className="hermes-sidebar-list">
         {visibleSessions.map(session => {
-          const title = session.title?.trim() || session.preview?.trim() || "Чат Hermes";
+          const title = session.title?.trim() || session.preview?.trim() || t("ui.hermeschatsidebar.m376b62b78f");
           const folder = session.cwd?.trim() || session.git_repo_root?.trim();
           const current = selectedId === session.id;
           return <li key={session.id}>
@@ -66,11 +67,11 @@ export function HermesChatSidebar({
             </button>
           </li>;
         })}
-      </ul> : !(historyError && !sessions.length) && <p className="hermes-sidebar-empty">{search ? "Чаты не найдены. Попробуйте другое слово." : "Здесь появятся ваши чаты с Hermes."}</p>}
+      </ul> : !(historyError && !sessions.length) && <p className="hermes-sidebar-empty">{search ? t("ui.hermeschatsidebar.m7b4777676d") : t("ui.hermeschatsidebar.mcc129417d1")}</p>}
     </section>
 
     <footer className="hermes-sidebar-footer">
-      <small className="hermes-sidebar-device" title={deviceName}>{deviceName || "Компьютер"}</small>
+      <small className="hermes-sidebar-device" title={deviceName}>{deviceName || t("infra.local.thisPcName")}</small>
 
 
 
@@ -78,6 +79,6 @@ export function HermesChatSidebar({
   </>;
 
   return desktop
-    ? <aside className="hermes-chat-sidebar" aria-label="Чаты Hermes">{body}</aside>
+    ? <aside className="hermes-chat-sidebar" aria-label={t("ui.hermeschatsidebar.m69570bba3c")}>{body}</aside>
     : <SheetShell open={open} onClose={onClose} overlayClassName="hermes-drawer-overlay" className="hermes-drawer" labelledBy={headingId}>{body}</SheetShell>;
 }

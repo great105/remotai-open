@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>Turnkey server for Claude Code and Codex: setup and support | Remotai</title>
+<meta content="We will set up and configure the server for your AI agent: provider, country, installation of Claude Code or Codex, autostart, access from the phone. 8,000 ₽ one-time, support 1,500 ₽ per month." name="description"/>
+<link href="https://remotai.ru/en/uslugi.html" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="Turnkey server for Claude Code and Codex" property="og:title"/>
+<meta content="We rent and set up a server, install an agent, and connect your phone. You just use it." property="og:description"/>
+<meta content="https://remotai.ru/en/uslugi.html" property="og:url"/>
+<link href="/favicon.ico" rel="icon"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Golos+Text:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="/blog/blog.css" rel="stylesheet"/>
+<style>
+.wrap{max-width:860px}
+.hero{padding:48px 0 20px}
+.price-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:8px 0 32px}
+.price-cards>*{min-width:0}
+.pc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px}
+.pc.main{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent-dim)}
+.pc .tag{display:inline-block;font-family:var(--font-mono);font-size:12px;color:var(--accent);background:var(--accent-dim);border-radius:999px;padding:3px 10px;margin-bottom:12px}
+.pc .sum{font-family:var(--font-display);font-size:30px;margin:0 0 4px}
+.pc .per{color:var(--faint);font-size:14px;margin:0 0 14px}
+.pc ul{margin:0;padding-left:20px}
+.pc li{margin-bottom:7px;color:var(--muted);font-size:15px}
+.steps{counter-reset:s;display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-bottom:32px}
+.step{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px 18px 16px 58px;position:relative;min-width:0}
+.step:before{counter-increment:s;content:counter(s);position:absolute;left:18px;top:16px;width:26px;height:26px;border-radius:8px;background:var(--accent-dim);color:var(--accent);font-family:var(--font-mono);display:flex;align-items:center;justify-content:center;font-size:14px}
+.step b{display:block;margin-bottom:4px}
+.step span{color:var(--muted);font-size:15px}
+form{background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:24px;margin:8px 0 40px}
+form h2{margin-top:0}
+label{display:block;margin-bottom:14px}
+label span{display:block;font-size:14px;color:var(--muted);margin-bottom:6px}
+input,textarea,select{width:100%;background:var(--bg2);border:1px solid var(--line2);border-radius:10px;padding:12px 14px;color:var(--fg);font-family:var(--font-body);font-size:16px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
+textarea{min-height:90px;resize:vertical}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+button{background:var(--accent);color:#06251c;border:0;border-radius:11px;padding:14px 26px;font-family:var(--font-body);font-weight:600;font-size:16px;cursor:pointer}
+button:disabled{opacity:.6;cursor:default}
+.form-note{color:var(--faint);font-size:13px;margin-top:12px}
+.result{margin-top:14px;font-size:15px}
+.result.ok{color:var(--accent)}
+.result.err{color:#ff8a7a}
+</style>
+<link href="https://remotai.ru/uslugi.html" hreflang="ru" rel="alternate"/><link href="https://remotai.ru/en/uslugi.html" hreflang="en" rel="alternate"/><link href="https://remotai.ru/uslugi.html" hreflang="x-default" rel="alternate"/></head>
+<body>
+<header class="top">
+<div class="wrap">
+<a class="logo" href="/en/">Remot<span>ai</span></a><a class="language-link" href="/uslugi.html" hreflang="ru" lang="ru" style="margin-left:auto;padding:8px;white-space:nowrap;font-size:13px">Русский</a>
+<nav class="nav">
+<a href="/en/blog/">Blog</a>
+<a href="/en/server.html">Agent on the server</a>
+<a href="/en/#pricing">Prices</a>
+<a href="/app/?lang=en">Web version</a>
+</nav>
+</div>
+</header>
+<div class="wrap">
+<div class="hero">
+<h1>Turnkey server: we will set it up, you just use it</h1>
+<p class="lead">We rent a server in the desired country, install Claude Code or Codex on it, configure autostart and access from your phone. All you have to do is open the application and work.</p>
+</div>
+<div class="price-cards">
+<div class="pc main">
+<span class="tag">One-time</span>
+<div class="sum">8 000 ₽</div>
+<p class="per">turnkey setup</p>
+<ul>
+<li>We select a provider and country to suit your needs</li>
+<li>We rent and set up a server</li>
+<li>Install Claude Code, Codex or both at once</li>
+<li>Setting up autorun: survives reboot</li>
+<li>We connect your phone and check everything with you</li>
+</ul>
+</div>
+<div class="pc">
+<span class="tag">Monthly</span>
+<div class="sum">1 500 ₽</div>
+<p class="per">support, upon request</p>
+<ul>
+<li>We make sure that the server and agent are alive</li>
+<li>Updating the agent and system</li>
+<li>We fix it when something falls off</li>
+<li>We answer questions about work</li>
+<li>Can be turned off at any time</li>
+</ul>
+</div>
+</div>
+<h2>What do you pay separately</h2>
+<p>Renting the server itself to its provider: usually from 300 to 800 rubles per month. Subscribe to Claude or OpenAI at their rates, the account remains yours. And a Remotai subscription for access from a phone, 900 ₽ per month, the first 7 days are free.</p>
+<h2>How does the setup work?</h2>
+<div class="steps">
+<div class="step"><b>Call or text</b><span>We find out what you need: what agent, what tasks, whether you need access to your repositories.</span></div>
+<div class="step"><b>Let's take a server</b><span>We select a provider and country. It can be to your account with the provider, or it can be to ours with subsequent transfer.</span></div>
+<div class="step"><b>Setting it up</b><span>System, agent, autostart, access from phone. We check that everything rises after a reboot.</span></div>
+<div class="step"><b>We transmit and show</b><span>You open the application, see your server and work. We show you how to run tasks and what to do if something goes wrong.</span></div>
+</div>
+<form id="lead">
+<h2>Leave a request</h2>
+<p style="color:var(--muted);margin-top:0">Write what you need and how to contact you. We will answer and discuss the details.</p>
+<label>
+<span>What are you interested in?</span>
+<select name="service">
+<option>Turnkey server, 8,000 ₽</option>
+<option>Turnkey server and support, 8,000 ₽ and 1,500 ₽ per month</option>
+<option>Only support for my server, 1,500 ₽ per month</option>
+<option>Just a question for now</option>
+</select>
+</label>
+<label>
+<span>What's your name</span>
+<input autocomplete="name" name="name" placeholder="Optional"/>
+</label>
+<label>
+<span>How to contact you</span>
+<input name="contact" placeholder="Telegram, mail or phone" required=""/>
+</label>
+<label>
+<span>What to do</span>
+<textarea name="comment" placeholder="For example: I need Claude Code on the server, I work from my phone, I turn off my laptop"></textarea>
+</label>
+<label class="hp"><span>Leave this field blank</span><input autocomplete="off" name="website" tabindex="-1"/></label>
+<button type="submit">Send a request</button>
+<div class="result" id="result"></div>
+<p class="form-note">The data goes only to us and is used to respond to the application. Processing conditions are described in <a href="/en/privacy.html">privacy policy</a>.</p>
+</form>
+</div>
+<footer>
+<div class="wrap">
+<p>Individual entrepreneur Vaulin Evgeniy Nikolaevich · TIN 773461030140 · OGRNIP 325774600620214</p>
+<p><a href="/en/">Home</a> · <a href="/en/blog/">Blog</a> · <a href="/en/server.html">Agent on the server</a> · <a href="/en/offer.html">Offer</a></p>
+</div>
+</footer>
+<script>
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym(111692890,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+
+(function(){
+  try{
+    var q=new URLSearchParams(location.search),utm={};
+    ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","yclid"].forEach(function(k){var v=q.get(k);if(v)utm[k]=v.slice(0,200);});
+    if(Object.keys(utm).length&&!localStorage.getItem("utm"))localStorage.setItem("utm",JSON.stringify(utm));
+  }catch(e){}
+
+  var form=document.getElementById("lead"), result=document.getElementById("result");
+  form.addEventListener("submit",function(ev){
+    ev.preventDefault();
+    var btn=form.querySelector("button"), fd=new FormData(form), body={};
+    fd.forEach(function(v,k){ body[k]=v; });
+    // Откуда пришёл человек: рекламная метка или страница блога. Пусть заявка
+    // приходит сразу с источником, иначе потом не понять, что сработало.
+    try{ var u=localStorage.getItem("utm"); if(u) body.comment=(body.comment||"")+"\n\nSource: "+u; }catch(e){}
+    btn.disabled=true; result.className="result"; result.textContent="We send...";
+    fetch("/api/lead",{method:"POST",headers:{"Content-Type":"application/json; charset=utf-8"},body:JSON.stringify(body)})
+      .then(function(r){ return r.json().then(function(j){ return {code:r.status,j:j}; }); })
+      .then(function(res){
+        if(res.code===200&&res.j.ok){
+          result.className="result ok";
+          result.textContent="The application has been sent. We will answer within a day.";
+          form.reset();
+          try{ ym(111692890,"reachGoal","lead_sent",{service:body.service}); }catch(e){}
+        }else if(res.code===429){
+          result.className="result err";
+          result.textContent="Too often. Wait half a minute and try again.";
+          btn.disabled=false;
+        }else{
+          result.className="result err";
+          result.textContent="Didn't send. Write to us on Telegram: t.me/Autocode1_bot";
+          btn.disabled=false;
+        }
+      })
+      .catch(function(){
+        result.className="result err";
+        result.textContent="Didn't send. Write to us on Telegram: t.me/Autocode1_bot";
+        btn.disabled=false;
+      });
+  });
+})();
+</script>
+</body>
+</html>

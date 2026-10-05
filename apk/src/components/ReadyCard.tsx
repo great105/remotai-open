@@ -1,3 +1,4 @@
+import { getLocale } from "@tgcontrol/shared";
 import { useCallback, useEffect, useState } from "react";
 import { getHealthReport, getSystemStats, onConnectionChange, type HealthCheck, type HealthReport } from "../api";
 import type { SystemStats } from "../types";
@@ -501,7 +502,7 @@ export function ReadyCard({ onOpenSettings, onOpenPower, onOfflineChange }: Prop
             )}
           </ul>
           <div className="ready-card-foot">
-            <span>{t("health.checkedAt", { time: new Date(report.ran_at).toLocaleTimeString() })}</span>
+            <span>{t("health.checkedAt", { time: new Date(report.ran_at).toLocaleTimeString(getLocale()) })}</span>
             <button
               className="ready-card-refresh"
               onClick={() => refresh()}

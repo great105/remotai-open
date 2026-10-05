@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 /** Вход по email-коду: POST /v1/auth/email/start → письмо с 6 цифрами →
  * POST /v1/auth/email/verify → durable user-JWT. Синхронно, без опроса.
  * Текущий анонимный JWT шлём в verify: релей сольёт анонимный аккаунт,
@@ -24,10 +25,10 @@ export async function startEmailLogin(email: string): Promise<EmailLoginStart> {
   if (!r.ok) {
     const msg =
       r.status === 429
-        ? "Слишком много кодов. Подождите и попробуйте позже."
+        ? t("ui.emaillogin.mb2e135e36f")
         : r.status === 400
-          ? "Проверьте адрес почты."
-          : "Не удалось отправить код. Попробуйте позже.";
+          ? t("ui.emaillogin.mb4cf00c8ae")
+          : t("ui.emaillogin.m29ba974a87");
     throw new CloudError(r.status, msg);
   }
   const j = (await r.json()) as { login_token: string; expires_at: string };
@@ -46,7 +47,7 @@ export async function verifyEmailCode(loginToken: string, code: string): Promise
     body: JSON.stringify({ login_token: loginToken, code }),
   }, "cloud");
   if (!r.ok) {
-    throw new CloudError(r.status, r.status === 401 ? "Неверный или просроченный код." : "Ошибка входа. Попробуйте ещё раз.");
+    throw new CloudError(r.status, r.status === 401 ? t("ui.emaillogin.mf5efba364e") : t("ui.emaillogin.m3f7a92f22c"));
   }
   const j = (await r.json()) as { jwt: string; expires_at?: string };
   setNetworkContext({ route: "cloud" }); // дальше приложение работает через облако

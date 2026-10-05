@@ -6,7 +6,7 @@ import { FirstSteps } from "../components/FirstSteps";
 import { useGoBack } from "../navBack";
 import { isOnPCPanel } from "../config";
 import { haptic, hapticSuccess } from "../telegram";
-import { useToast } from "@tgcontrol/shared";
+import { useToast, getLanguage } from "@tgcontrol/shared";
 import { markHomeStep, type HomeStep } from "../homeProgress";
 import {
   GUIDE_GROUPS,
@@ -123,7 +123,7 @@ export function GuideView() {
     focusRef.current?.scrollIntoView({ block: "nearest" });
   }, [focus]);
 
-  const found = useMemo(() => searchGuide(GUIDE_SECTIONS, query, t), [query]);
+  const found = useMemo(() => searchGuide(GUIDE_SECTIONS, query, t), [query, getLanguage()]);
 
   // Во время поиска разделы раскрыты: искали текст внутри — прятать найденное
   // за вторым нажатием значит заставить искать дважды.
@@ -214,7 +214,7 @@ export function GuideView() {
       <div className="page-content home-page-content">
         <div className="guide-wrap">
           <p className="guide-subtitle">{t("guide.subtitle")}</p>
-          <button className="btn btn-secondary" style={{ minHeight: 44, marginBottom: 16 }} onClick={() => navigate("/start")}>С чего начать: компьютер, пульт или сервер</button>
+          <button className="btn btn-secondary" style={{ minHeight: 44, marginBottom: 16 }} onClick={() => navigate("/start")}>{t("ui.guideview.ma8b43b8b9e")}</button>
 
           <input
             className="guide-search"

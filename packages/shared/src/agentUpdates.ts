@@ -6,6 +6,7 @@
 // их можно было проверить тестом в node (agentUpdates.test.ts).
 
 import { transport } from "./api-transport";
+import { getLanguage, getLocale } from "./locale";
 import { t } from "./i18n";
 
 /** Один агент в ответе GET /api/agents/updates. */
@@ -161,7 +162,9 @@ export function versionEventText(e: CliAgentVersionEvent, now = new Date()): str
   const d = new Date(e.at);
   const sameYear = d.getFullYear() === now.getFullYear();
   const pad = (x: number) => String(x).padStart(2, "0");
-  const date = `${pad(d.getDate())}.${pad(d.getMonth() + 1)}${sameYear ? "" : "." + d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  const date = getLanguage() === "en"
+    ? d.toLocaleString(getLocale(), { month: "short", day: "numeric", ...(!sameYear ? { year: "numeric" as const } : {}), hour: "2-digit", minute: "2-digit", hour12: false })
+    : `${pad(d.getDate())}.${pad(d.getMonth() + 1)}${sameYear ? "" : "." + d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}`;
   const what = e.from
     ? t("agentUpdate.historyChange", { from: e.from, to: e.to })
     : t("agentUpdate.historyFirst", { to: e.to });

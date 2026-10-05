@@ -1,3 +1,4 @@
+import { getLocale } from "@tgcontrol/shared";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEscape, mapApiError } from "@tgcontrol/shared";
@@ -16,8 +17,8 @@ const fmtElapsed = (ms: number) => {
 const fmtAgo = (ms: number, justNow: string) => {
   const s = Math.max(0, Math.floor(ms / 1000));
   if (s < 3) return justNow;
-  if (s < 60) return `${s}с`;
-  return `${Math.floor(s / 60)}м ${s % 60}с`;
+  if (s < 60) return t("ui.ptytermview.mee89ed3363", { p0: (s) });
+  return t("ui.sessionview.mb273defe4d", { p0: (Math.floor(s / 60)), p1: (s % 60) });
 };
 
 export function SessionView() {
@@ -185,7 +186,7 @@ export function SessionView() {
 
   const formatTime = (ts: number) => {
     const d = new Date(ts * 1000);
-    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return d.toLocaleTimeString(getLocale(), { hour: "2-digit", minute: "2-digit" });
   };
 
   const openConfig = async () => {
@@ -326,7 +327,7 @@ export function SessionView() {
               {showSteps ? "\u25BC" : "\u25B6"} {t("generic.steps")} ({orchSteps.length})
               {orchSteps.filter(s => s.type === "api_call").length > 0 && (
                 <span className="orch-tokens">
-                  {orchSteps.filter(s => s.type === "api_call").reduce((a, s) => a + (s.tokens_in || 0) + (s.tokens_out || 0), 0).toLocaleString()} tok
+                  {orchSteps.filter(s => s.type === "api_call").reduce((a, s) => a + (s.tokens_in || 0) + (s.tokens_out || 0), 0).toLocaleString(getLocale())} tok
                 </span>
               )}
             </button>
@@ -597,7 +598,7 @@ export function SessionView() {
                   <div key={i} className="claude-history-item">
                     <div className="claude-history-text">{m.text}</div>
                     <div className="claude-history-time">
-                      {new Date(m.timestamp * 1000).toLocaleString()}
+                      {new Date(m.timestamp * 1000).toLocaleString(getLocale())}
                       {(m as any).source && <span className="claude-history-src">{(m as any).source}</span>}
                     </div>
                   </div>

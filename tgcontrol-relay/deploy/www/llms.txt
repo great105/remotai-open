@@ -1,0 +1,47 @@
+# Remotai
+
+> Remotai provides convenient remote access to your own CLI AI agents, including Claude Code and Codex, running on your computer or server. Start tasks, follow progress, and answer agents from Android, iPhone, a web browser, or Telegram. The application, website, setup wizard, and primary documentation are available in Russian and English. Change the application language in Settings; your preference is saved.
+
+The primary use case is remote work with Claude Code, Codex, Kimi, Gemini, Aider, and OpenCode in your own projects and environment. Agents run on your machine, which must remain powered on and connected. Agent installation and provider accounts are configured separately from the Remotai account.
+
+Persistent PTY sessions, SSH and SFTP, Remote Desktop, file access, and system monitoring support that workflow: continue an agent session, retrieve its output files, or inspect the result on screen.
+
+Remote Desktop adapts to the connection and streams up to 30 frames per second. On a headless Linux server, Remotai starts a virtual browser on a 1280x800 virtual display.
+
+The managed computer makes an outbound TLS connection to the Remotai cloud relay. Users do not need a public IP address, port forwarding, or router configuration. Add a computer using its short-lived QR code or one-time code, then sign into the same Remotai account on each control device.
+
+Supported managed systems: Windows 10/11, macOS 12+ on Apple Silicon or Intel, and Linux on amd64 or arm64. Remote Desktop is not yet available on macOS; terminals, files, SSH, monitoring, and AI agents are. Linux desktop control requires an X11 session; Wayland has not been verified. Supported control clients: Android 7+, the web app on iPhone, iPad, or desktop browsers (including Mac), and Telegram Mini App.
+
+Local work with terminals, AI agents, files and the screen of your own computer is free, including control on the same local network. Built-in server features (SSH, SFTP and port forwarding) and cloud access require a subscription or the same single 7-day trial (accounts registered before 2026-09-08 keep a 30-day trial), even when server connections start on a local network. The trial starts with the first server or cloud operation, not registration or a status check; no payment card is required. Pro costs 900 RUB per 30 days for 5 cloud devices; Fleet costs 1990 RUB per 30 days for 25 cloud devices. VPS hosting and AI-provider charges are separate.
+
+The cloud stores account and paired-device records, minimal product analytics events, and support messages submitted by the user. Terminal contents, commands, filenames, screen frames, keystrokes, clipboard contents, and transferred file contents are not retained as product analytics.
+
+## Product
+
+- [English website](https://remotai.ru/en/): Product overview, downloads, setup, articles, and legal pages in English.
+- [English application](https://remotai.ru/app/?lang=en): Browser client in English. Use lang=ru for Russian.
+- [Free source and self-hosting](https://github.com/great105/remotai-open): AGPL source code and deployment instructions in English and Russian. The hosted product remains available as a paid service. International payments are not available yet; this does not prevent using the free self-hosted version.
+- [Remotai landing page](https://remotai.ru/): Canonical product overview, capabilities, setup steps, downloads, and FAQ.
+- [Web application](https://remotai.ru/app/): Browser client for iPhone, iPad, Android, and desktop browsers.
+- [Telegram bot](https://t.me/Autocode1_bot): Pairing, support, and access to the Telegram Mini App.
+- [Privacy policy](https://remotai.ru/privacy): Data collection, relay processing, storage, and deletion details.
+- [Claude Code from a phone](https://remotai.ru/claude-code.html): What Claude Code needs to run, why it stops when the machine is unreachable, and how Remotai gives remote access to its terminal.
+- [Terms of service (offer)](https://remotai.ru/offer.html): Free local use, paid remote access plans, 30-day prepaid payments without auto-renewal, refunds, seller details.
+
+## Installation and downloads
+
+Start at the task chooser: control an existing computer, connect a new computer, or connect a server. Install Remotai on the machine where your AI agents run; the controller can use a browser without installing an application. Choose the target system for the correct instructions. On Windows, the installer opens the setup window. On macOS and Linux, the one-time code appears in the terminal during installation; leave the terminal open until pairing completes. Run the macOS installer without sudo. Add the machine by its code or QR from the Remotai account on the control device, then open its Terminals section to start an agent or continue its Remotai session. If the code expires, request another one on the managed machine using its platform instructions.
+
+- [Start with a task](https://remotai.ru/app/#/start): Choose what to do and get the matching instructions.
+- [Continue on the managed computer](https://remotai.ru/app/#/start?task=host): Handoff link that preserves the installation task.
+
+- [Windows installer](https://remotai.ru/download/remotai-setup.exe): Installer for Windows 10/11, for the computer being controlled.
+- [Windows portable executable](https://remotai.ru/download/remotai.exe): Portable Windows build.
+- [Android application](https://remotai.ru/download/remotai.apk): Direct APK for Android 7 and newer.
+- [macOS and Linux install script](https://remotai.ru/install.sh): Installer for macOS on Apple Silicon and Intel, and for Linux amd64 and arm64. Detects the operating system and architecture automatically.
+- [Current release manifest](https://remotai.ru/download/latest.json): Machine-readable version, checksums, sizes, and platform download URLs.
+
+## Support and service
+
+- [Support in Telegram](https://t.me/Autocode1_bot): Contact the Remotai support channel.
+- [Service health](https://remotai.ru/health): Current relay health endpoint.

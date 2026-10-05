@@ -1,3 +1,4 @@
+import { t } from "./i18n";
 // Транспортный реестр API — по образцу platform.ts. Общие endpoint-обёртки
 // (api-endpoints.ts) ходят в сеть ТОЛЬКО через зарегистрированный транспорт.
 // Каждое приложение регистрирует свою реализацию в начале своего api.ts:
@@ -40,7 +41,7 @@ export function setApiTransport(t: ApiTransport): void {
 export function transport(): ApiTransport {
   if (!current) {
     throw new Error(
-      "@tgcontrol/shared: ApiTransport не зарегистрирован — вызовите setApiTransport(...) в api.ts приложения",
+      t("ui.apitransport.mafc686b4ad"),
     );
   }
   return current;

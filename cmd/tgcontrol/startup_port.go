@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"tgcontrol/internal/localize"
 	"time"
 
 	gnet "github.com/shirou/gopsutil/v4/net"
@@ -86,7 +87,7 @@ func resolveStartupPort(requested int, silent bool) (int, *web.StartupBindError,
 	}
 
 	selected := freeStartupPort(requested + 1)
-	label := "другой программой"
+	label := localize.Text("другой программой")
 	if owner != "" {
 		label = owner
 	}
@@ -94,7 +95,7 @@ func resolveStartupPort(requested int, silent bool) (int, *web.StartupBindError,
 		Port:         requested,
 		Owner:        owner,
 		SelectedPort: selected,
-		Message:      fmt.Sprintf("Порт %d занят программой %s. Remotai выбрал свободный порт %d.", requested, label, selected),
+		Message:      fmt.Sprintf(localize.Text("Порт %d занят программой %s. Remotai выбрал свободный порт %d."), requested, label, selected),
 	}, false
 }
 

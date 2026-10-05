@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 /** Пейринг режима «По локальной сети»: разбор кода с экрана ПК и подключение
  *  по нему. Общий путь для LoginView (буфер/ручной ввод) и ScanView (QR). */
 import { getServerUrlSecurityError, normalizeServerUrl, saveConfig } from "./config";
@@ -115,13 +116,13 @@ export async function connectLan(serverUrl: string, serverToken: string): Promis
   try {
     cleanUrl = normalizeServerUrl(serverUrl);
   } catch {
-    throw new Error("Неверный адрес сервера");
+    throw new Error(t("ui.pairpayload.m00269cafc7"));
   }
   if (!cleanUrl || !serverToken) {
-    throw new Error("Заполните все поля");
+    throw new Error(t("ui.pairpayload.mfc01e1ca27"));
   }
   if (getServerUrlSecurityError(cleanUrl)) {
-    throw new Error("HTTP разрешён только для локальной сети. Для публичного адреса используйте HTTPS.");
+    throw new Error(t("ui.pairpayload.m839cb9e4c8"));
   }
 
   let res: Response;
@@ -132,14 +133,14 @@ export async function connectLan(serverUrl: string, serverToken: string): Promis
     });
   } catch (e) {
     if ((e as Error)?.name === "TimeoutError") {
-      throw new Error("Сервер не отвечает. Проверьте, что Remotai запущен и телефон в той же Wi-Fi сети.");
+      throw new Error(t("ui.pairpayload.m2a51dedde7"));
     }
-    throw new Error("Не удалось подключиться. Проверьте адрес и что телефон в одной сети с ПК.");
+    throw new Error(t("ui.pairpayload.m4cae6f355b"));
   }
   if (!res.ok) {
-    if (res.status === 401) throw new Error("Неверный токен");
-    if (res.status === 403) throw new Error("Доступ запрещён");
-    throw new Error(`Ошибка сервера: ${res.status}`);
+    if (res.status === 401) throw new Error(t("ui.pairpayload.m534c2d56cb"));
+    if (res.status === 403) throw new Error(t("ui.pairpayload.m83e66f823c"));
+    throw new Error(t("ui.pairpayload.mc91ba1a86d", { p0: (res.status) }));
   }
   saveConfig({
     mode: "self_hosted",

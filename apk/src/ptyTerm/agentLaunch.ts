@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 /**
  * Запуск агента с флагами: сборка команды и память выбора.
  *
@@ -49,14 +50,14 @@ const POSIX_ACCOUNT_ENV_SCOPE = [
   "socks_proxy", "socks5_proxy", "node_use_env_proxy",
 ] as const;
 
-const BLOCKED_PROXY_UPDATE = "Прокси аккаунта заблокирован: обновите Remotai на компьютере.";
-const BLOCKED_PROXY_FORMAT = "Прокси аккаунта заблокирован: разрешён только HTTP/HTTPS без логина и пароля.";
-const BLOCKED_PROXY_LEGACY = "Сохранённый прокси аккаунта больше не поддерживается. Замените или очистите его.";
-const BLOCKED_ACCOUNT_ENV = "Запуск аккаунта заблокирован: компьютер прислал недоверенное окружение.";
-const BLOCKED_ACCOUNTS_LOADING = "Запуск временно заблокирован: аккаунты на компьютере ещё не проверены.";
+const BLOCKED_PROXY_UPDATE = t("ui.agentlaunch.m64f917c9e5");
+const BLOCKED_PROXY_FORMAT = t("ui.agentlaunch.m8bf431d60e");
+const BLOCKED_PROXY_LEGACY = t("ui.agentlaunch.m2e43b27146");
+const BLOCKED_ACCOUNT_ENV = t("ui.agentlaunch.mc4b67f418b");
+const BLOCKED_ACCOUNTS_LOADING = t("ui.agentlaunch.m5faf82eb73");
 /** Экспортируется: шторка запуска показывает по этой причине объяснение и ход
  *  наверху, а не оставляет её сноской в погасшей строке (J03, 05.09.2026). */
-export const BLOCKED_ACCOUNTS_MISSING = "Запуск заблокирован: компьютер не вернул основной аккаунт агента.";
+export const BLOCKED_ACCOUNTS_MISSING = t("ui.agentlaunch.m38e8391e01");
 
 /** Что человек выбрал для конкретного агента. */
 export interface LaunchPrefs {
@@ -370,7 +371,7 @@ export function normalizeAccountProxyForClient(account: AgentAccount, contractVe
   else delete normalized.proxy;
   // Legacy-метка нужна UI, но старый agent мог прислать туда raw URL.
   if (normalized.proxy_legacy && /[:@/?#\\]/.test(normalized.proxy_legacy)) {
-    normalized.proxy_legacy = "устаревшая настройка";
+    normalized.proxy_legacy = t("ui.agentlaunch.md7ebeda500");
   }
   if (analyzed.blockedReason) {
     normalized.proxy_blocked = true;
@@ -747,7 +748,7 @@ export function composeRemoteLaunch(
   // Метка нужна детектору агента: у SSH-сессии он читает ТЕКСТ экрана, а в
   // сообщении об отказе стоит имя агента — без метки «агента здесь нет»
   // превращалось в «агент работает» (см. AgentMissingMarker в events.go).
-  const msg = (notFound || `Агент ${base} не установлен на сервере`).replace(/"/g, "'");
+  const msg = (notFound || t("ui.agentlaunch.m80870f3eb8", { p0: (base) })).replace(/"/g, "'");
   // Аккаунт на сервер НЕ едет, даже если он выбран на компьютере: каталог
   // профиля лежит на этом компьютере, а команда уходит в шелл сервера — там
   // такого пути нет, и агент встретил бы человека требованием войти заново.

@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 import { memo } from "react";
 import Markdown, { type Components, type UrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -36,7 +37,7 @@ const components: Components = {
   // requesting remote resources or attempting to render local/private files.
   img: ({ alt }) => <span className="hermes-markdown-image-description">{alt}</span>,
   table: ({ node: _node, children, ...props }) => (
-    <div className="hermes-markdown-table-scroll" tabIndex={0} role="region" aria-label="Таблица в ответе Hermes">
+    <div className="hermes-markdown-table-scroll" tabIndex={0} role="region" aria-label={t("ui.hermesmarkdown.m64d5ccc68a")}>
       <table {...props}>{children}</table>
     </div>
   ),

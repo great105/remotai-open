@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Статус Remotai</title>
+  <link rel="icon" type="image/svg+xml" href="/app/favicon.svg">
+  <meta name="description" content="Проверка доступности облака Remotai и помощь с подключением к ИИ-агентам.">
+  <style>
+    body{font-family:system-ui,sans-serif;max-width:660px;margin:0 auto;padding:24px;color:#252525;line-height:1.6;background:#fafafa}
+    a{color:#275639}h1{font-size:28px;line-height:1.2;margin-top:36px}h2{font-size:20px}
+    button{font:inherit;padding:10px 18px;min-height:44px;border:1px solid #777;border-radius:6px;background:white;cursor:pointer}
+    #result{font-size:20px;font-weight:600}#checked{color:#555}section{border-top:1px solid #ddd;margin-top:28px;padding-top:16px}
+  </style>
+
+<link rel="alternate" hreflang="ru" href="https://remotai.ru/status.html" />
+<link rel="alternate" hreflang="en" href="https://remotai.ru/en/status.html" />
+<link rel="alternate" hreflang="x-default" href="https://remotai.ru/status.html" />
+</head>
+<body><a class="language-link" href="/en/status.html" hreflang="en" lang="en" style="margin-left:auto;padding:8px;white-space:nowrap;font-size:13px">English</a>
+  <a href="/">← Remotai</a>
+  <h1>Статус облака</h1>
+  <p id="result" role="status" aria-live="polite">Проверяем доступность…</p>
+  <p id="checked"></p>
+  <button id="refresh" type="button">Проверить ещё раз</button>
+  <section>
+    <h2>Агент или машина недоступны?</h2>
+    <p>Эта проверка показывает доступность облака и его базы данных. Если они работают, убедитесь, что подключённая машина включена, Remotai запущен и интернет доступен с обеих сторон.</p>
+    <p>Если оплата прошла, а доступ не появился, нажмите «Проверить оплату» в личном кабинете. Повторять оплату не нужно.</p>
+    <p><a href="/app/#/account">Личный кабинет</a> · <a href="https://t.me/Autocode1_bot">Поддержка в Telegram</a></p>
+  </section>
+  <script>
+    const refresh = document.getElementById('refresh');
+    async function check() {
+      refresh.disabled = true;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+      try {
+        const response = await fetch('/health', { cache: 'no-store', signal: controller.signal });
+        const health = await response.json();
+        if (!response.ok || !health.ok || !health.db_ok) throw new Error('unavailable');
+        document.getElementById('result').textContent = 'Облако и база данных доступны';
+      } catch {
+        document.getElementById('result').textContent = 'Не удалось подтвердить доступность облака';
+      } finally {
+        clearTimeout(timeout);
+        document.getElementById('checked').textContent = 'Последняя проверка: ' + new Date().toLocaleString('ru-RU');
+        refresh.disabled = false;
+      }
+    }
+    refresh.addEventListener('click', check);
+    check();
+  </script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Codex CLI на своём сервере: установка и работа из России | Remotai</title>
+<meta name="description" content="Как поставить Codex CLI от OpenAI на арендованный сервер, работать с ним из России без VPN на своём устройстве и управлять с телефона. Установка, стоимость, отличия от Claude Code." />
+<link rel="canonical" href="https://remotai.ru/blog/codex-cli-na-servere.html" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Codex CLI на своём сервере: установка и работа из России" />
+<meta property="og:description" content="Как поставить Codex CLI от OpenAI на арендованный сервер, работать с ним из России без VPN на своём устройстве и управлять с телефона. Установка, стоимость, отличия от Claude Code." />
+<meta property="og:url" content="https://remotai.ru/blog/codex-cli-na-servere.html" />
+<link rel="icon" href="/favicon.ico" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/blog/blog.css" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","headline":"Codex CLI на своём сервере: установка и работа из России",
+"datePublished":"2026-09-09","dateModified":"2026-09-09",
+"author":{"@type":"Person","name":"Евгений Ваулин"},
+"publisher":{"@type":"Organization","name":"Remotai"},
+"mainEntityOfPage":"https://remotai.ru/blog/codex-cli-na-servere.html"}
+</script>
+
+<link rel="alternate" hreflang="ru" href="https://remotai.ru/blog/codex-cli-na-servere.html" />
+<link rel="alternate" hreflang="en" href="https://remotai.ru/en/blog/codex-cli-na-servere.html" />
+<link rel="alternate" hreflang="x-default" href="https://remotai.ru/blog/codex-cli-na-servere.html" />
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="/">Remot<span>ai</span></a><a class="language-link" href="/en/blog/codex-cli-na-servere.html" hreflang="en" lang="en" style="margin-left:auto;padding:8px;white-space:nowrap;font-size:13px">English</a>
+    <nav class="nav">
+      <a href="/blog/">Блог</a>
+      <a href="/server.html">Агент на сервере</a>
+      <a href="/uslugi.html">Под ключ</a>
+      <a href="/#pricing">Цены</a>
+      <a href="/app/">Веб-версия</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+<article>
+  <h1>Codex CLI на своём сервере: установка и работа из России</h1>
+  <div class="meta">9 сентября 2026 · читать 6 минут</div>
+
+  <p>Codex CLI это консольный агент OpenAI: он живёт в терминале, читает ваш репозиторий, правит файлы и запускает команды. Из России он напрямую не работает, а обходить это на своём компьютере рискованно для аккаунта. Ниже схема, при которой ваше устройство ничего не обходит.</p>
+
+  <h2>Идея в одном абзаце</h2>
+
+  <p>Агент запускается на арендованном сервере в стране, где сервис доступен. Вы подключаетесь к этому серверу и работаете на нём. Ваш телефон соединяется только с вашим же сервером, никаких туннелей на нём поднимать не нужно.</p>
+
+  <h2>Что понадобится</h2>
+
+  <p>Сервер: обычный VPS у любого провайдера, Linux, от одного гигабайта памяти. Агенту этого достаточно, он работает с текстом и запускает ваши команды.</p>
+
+  <p>Аккаунт OpenAI со своей подпиской. Он остаётся вашим, лимиты тоже.</p>
+
+  <p>Способ дотянуться до сервера с телефона. Об этом ниже.</p>
+
+  <h2>Установка</h2>
+
+  <p>На свежей Ubuntu хватает трёх строк:</p>
+
+  <pre><code>apt update &amp;&amp; apt install -y nodejs npm git
+npm i -g @openai/codex
+codex</code></pre>
+
+  <p>При первом запуске агент попросит авторизоваться. Дальше он работает в вашем окружении: видит ваши файлы, ваши переменные, ваши ключи.</p>
+
+  <p>Если у вас уже есть работающий агент на другой машине, не переписывайте команды руками. Дайте ему доступ к серверу и опишите задачу словами: поставить Codex, настроить автозапуск, проверить, что всё поднимается после перезагрузки.</p>
+
+  <h2>Как это выглядит без навыков администратора</h2>
+
+  <p>Отдельная консоль, ключи, автозапуск: обычно люди бросают затею именно здесь. В Remotai путь собран в одном окне.</p>
+
+  <ol><li>1. Арендовали сервер, получили адрес, логин и пароль.</li><li>2. Открыли Remotai в браузере, добавили сервер по SSH. Отдельный SSH-клиент не нужен, консоль открывается прямо здесь.</li><li>3. Нажали «Поставить Remotai». Приложение покажет команду и откроет терминал сервера в том же окне. Установщик поставит службу, настроит автозапуск и напечатает код подключения.</li><li>4. Ввели код в «Моих компьютерах». Сервер встал в общий список рядом с вашими компьютерами.</li><li>5. В том же терминале поставили Codex.</li></ol>
+
+  <p>С этого момента сервер ничем не отличается от домашнего компьютера в приложении, кроме того, что он не выключается.</p>
+
+  <div class="cta-box">
+    <h3>Попробовать</h3>
+    <p>Открывается в браузере, приложение ставить необязательно. Первые 7 дней бесплатно и без карты, дальше 900 ₽ в месяц.</p>
+    <a class="btn" href="/app/">Открыть веб-версию</a>
+  </div>
+
+  <h2>Чем Codex отличается от Claude Code в этой схеме</h2>
+
+  <p>Для схемы с сервером они одинаковы: оба консольные, оба живут в вашем окружении, оба требуют, чтобы кто-то отвечал на их вопросы.</p>
+
+  <p>Разница в поведении. Codex обычно охотнее правит сразу, Claude Code чаще предлагает план и ждёт подтверждения. На практике многие ставят обоих на одну машину: сравнивают на одной задаче и переключаются, когда у одного из сервисов лимиты или сбой. Мешать друг другу они не будут, это просто две программы в терминале.</p>
+
+  <h2>Как подойти к агенту с телефона</h2>
+
+  <p>Агент на сервере бесполезен, если вы не можете ответить ему в нужный момент. Спрашивает он постоянно: подтвердить план, выбрать вариант, разрешить запись в файл.</p>
+
+  <p>Обычный SSH-клиент решает задачу наполовину. Связь рвётся при переходе между сетями, и сессия умирает вместе с процессом, если вы забыли запустить <code>tmux</code>. Esc и стрелки живут на отдельной панели, по которой попадаешь пальцем через раз. Прокрутка воюет с агентом, потому что он перерисовывает экран целиком.</p>
+
+  <p>Мы сделали инструмент под эту задачу: служба на сервере сама держит соединение наружу, телефон работает как пульт. Задача переживает потерю связи, а при следующем подключении вы видите тот же экран.</p>
+
+  <h2>Сколько это стоит в месяц</h2>
+
+  <p>Сервер: примерно от 300 до 800 рублей. Подписка OpenAI: по их тарифам, у вас своя. Доступ с телефона: 900 рублей в месяц, локальная работа на своём компьютере бесплатна навсегда.</p>
+
+  <h2>Чего эта схема не делает</h2>
+
+  <p>Она не меняет ваш доступ в интернет и ничего за вас не туннелирует. Она не отменяет правила сервиса: аккаунт ваш, лимиты ваши, условия читать вам. И она не бесплатна, сервер списывает деньги каждый месяц.</p>
+
+  <h2>Частые вопросы</h2>
+
+  <h3>Нужен ли компьютер, если есть сервер?</h3>
+
+  <p>Нет. Агент и файлы живут на сервере, телефон нужен, чтобы смотреть и отвечать.</p>
+
+  <h3>Можно ли поставить рядом Claude Code?</h3>
+
+  <p>Да, они не конфликтуют. Разбор соседнего сценария есть в статье про <a href="/blog/claude-code-iz-rossii.html">Claude Code на своём сервере</a>.</p>
+
+  <h3>Что будет после перезагрузки сервера?</h3>
+
+  <p>При настроенном автозапуске служба поднимется сама, терминалы с историей вернутся.</p>
+</article>
+</div>
+
+<footer>
+  <div class="wrap">
+    <p>ИП Ваулин Евгений Николаевич · ИНН 773461030140 · ОГРНИП 325774600620214</p>
+    <p><a href="/">Главная</a> · <a href="/blog/">Блог</a> · <a href="/server.html">Агент на сервере</a>
+      <a href="/uslugi.html">Под ключ</a> · <a href="/offer.html">Оферта</a></p>
+  </div>
+</footer>
+
+<script>
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym(111692890,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+(function(){
+  var SLUG = "codex-cli-na-servere";
+  try{
+    // Метка внешней рекламы важнее: если человек пришёл по объявлению, источником
+    // остаётся оно, а не страница блога, на которую он потом забрёл.
+    var q=new URLSearchParams(location.search),utm={};
+    ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","yclid"].forEach(function(k){var v=q.get(k);if(v)utm[k]=v.slice(0,200);});
+    if(Object.keys(utm).length&&!localStorage.getItem("utm")){
+      localStorage.setItem("utm",JSON.stringify(utm));
+    }else if(!localStorage.getItem("utm")){
+      // Пришёл из поиска прямо в блог: запоминаем статью как источник, чтобы в базе
+      // было видно, какая именно страница привела человека к регистрации и оплате.
+      localStorage.setItem("utm",JSON.stringify({utm_source:"blog",utm_medium:"article",utm_campaign:SLUG}));
+    }
+  }catch(e){}
+  // Цели: клик по кнопке в статье и уход в приложение или на страницу сценария.
+  document.querySelectorAll('a[href^="/app/"], a[href^="/server.html"], a[href^="/#pricing"]').forEach(function(a){
+    a.addEventListener("click",function(){
+      try{ ym(111692890,"reachGoal","blog_cta",{article:SLUG,to:a.getAttribute("href")}); }catch(e){}
+    });
+  });
+})();
+</script>
+</body>
+</html>

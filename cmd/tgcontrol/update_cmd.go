@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"tgcontrol/internal/localize"
 
 	"tgcontrol/internal/update"
 	"tgcontrol/internal/version"
@@ -28,46 +29,46 @@ func runUpdate(args []string) int {
 		}
 	}
 
-	fmt.Printf("Установлена версия %s, смотрю обновления…\n", version.Version)
+	fmt.Printf(localize.Text("Установлена версия %s, смотрю обновления…\n"), version.Version)
 	info, err := version.CheckForUpdate("")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "remotai: не удалось проверить обновления: %v\n", err)
+		fmt.Fprintf(os.Stderr, localize.Text("remotai: не удалось проверить обновления: %v\n"), err)
 		return 1
 	}
 	if !info.Available {
-		fmt.Printf("✅ Это последняя версия (%s на сервере обновлений).\n", info.Version)
+		fmt.Printf(localize.Text("✅ Это последняя версия (%s на сервере обновлений).\n"), info.Version)
 		return 0
 	}
-	fmt.Printf("Доступна %s.\n", info.Version)
+	fmt.Printf(localize.Text("Доступна %s.\n"), info.Version)
 	if checkOnly {
 		return 0
 	}
 	// Пустой URL здесь означает ровно одно: под эту ОС и архитектуру сборки в
 	// манифесте нет (см. version.CheckForUpdate — чужой бинарь не подставляем).
 	if info.DownloadURL == "" {
-		fmt.Fprintln(os.Stderr, "remotai: для этой системы сборки пока нет — обновите вручную.")
+		fmt.Fprintln(os.Stderr, localize.Text("remotai: для этой системы сборки пока нет — обновите вручную."))
 		return 1
 	}
 
-	fmt.Println("Скачиваю и заменяю программу…")
+	fmt.Println(localize.Text("Скачиваю и заменяю программу…"))
 	if err := update.Apply(info.DownloadURL, info.SHA256); err != nil {
-		fmt.Fprintf(os.Stderr, "remotai: обновление не применилось: %v\n", err)
+		fmt.Fprintf(os.Stderr, localize.Text("remotai: обновление не применилось: %v\n"), err)
 		// Права — самая частая причина на сервере: бинарь лежит в /usr/local/bin.
 		if os.Geteuid() != 0 {
-			fmt.Fprintln(os.Stderr, "   Похоже, не хватило прав — повторите: sudo remotai update")
+			fmt.Fprintln(os.Stderr, localize.Text("   Похоже, не хватило прав — повторите: sudo remotai update"))
 		}
 		return 1
 	}
-	fmt.Printf("✅ Обновлено до %s.\n", info.Version)
+	fmt.Printf(localize.Text("✅ Обновлено до %s.\n"), info.Version)
 
 	// Новый бинарь на диске, а в памяти по-прежнему работает старый: без
 	// перезапуска службы версия в приложении не изменится, и человек решит,
 	// что обновление не сработало.
 	switch restartServiceIfRunning() {
 	case serviceRestarted:
-		fmt.Println("   Служба перезапущена — новая версия уже работает.")
+		fmt.Println(localize.Text("   Служба перезапущена — новая версия уже работает."))
 	case serviceRestartFailed:
-		fmt.Println("   Осталось перезапустить службу:")
+		fmt.Println(localize.Text("   Осталось перезапустить службу:"))
 		fmt.Println("     " + serviceRestartHint())
 	default:
 		// Совет даём тот, что работает НА ЭТОЙ системе: на маке про systemctl
@@ -76,7 +77,7 @@ func runUpdate(args []string) int {
 		if runtime.GOOS == "linux" || runtime.GOOS == "darwin" {
 			fmt.Println("   Служба не запущена. Запустить: " + serviceStartHint())
 		} else {
-			fmt.Println("   Перезапустите Remotai, чтобы новая версия заработала.")
+			fmt.Println(localize.Text("   Перезапустите Remotai, чтобы новая версия заработала."))
 		}
 	}
 	return 0

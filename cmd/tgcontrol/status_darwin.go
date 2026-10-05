@@ -2,7 +2,10 @@
 
 package main
 
-import "tgcontrol/internal/service"
+import (
+	"tgcontrol/internal/localize"
+	"tgcontrol/internal/service"
+)
 
 // cliAutostartState на macOS — это LaunchAgent, а не systemd.
 //
@@ -24,7 +27,7 @@ import "tgcontrol/internal/service"
 // launchd о живой службе — этого и достаточно.
 func cliAutostartState() (bool, string) {
 	if !service.IsInstalled() {
-		return false, "не настроен"
+		return false, localize.Text("не настроен")
 	}
 	if service.IsRunning() {
 		return true, "LaunchAgent ru.remotai.agent"
@@ -32,7 +35,7 @@ func cliAutostartState() (bool, string) {
 	// plist есть, но launchd службу не держит: для человека это всё ещё
 	// «автозапуск настроен», просто сейчас не работает — про сам процесс
 	// doctor говорит отдельной строкой.
-	return true, "LaunchAgent ru.remotai.agent (сейчас не запущен)"
+	return true, localize.Text("LaunchAgent ru.remotai.agent (сейчас не запущен)")
 }
 
 // cleanupInstalledArtifacts — на маке чистить нечего: бинарь лежит в

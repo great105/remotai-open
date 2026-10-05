@@ -15,6 +15,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"tgcontrol/internal/localize"
 
 	"tgcontrol/internal/atomicfile"
 	"tgcontrol/internal/paths"
@@ -396,41 +397,41 @@ type menuOption struct {
 }
 
 var modes = []menuOption{
-	{"central_bot", "Central Bot — через наш бот @TGControlBot (проще)"},
-	{"own_bot", "Own Bot — свой бот через BotFather (приватнее)"},
+	{"central_bot", localize.Text("Central Bot — через наш бот @TGControlBot (проще)")},
+	{"own_bot", localize.Text("Own Bot — свой бот через BotFather (приватнее)")},
 }
 
 var claudeModels = []menuOption{
-	{"sonnet", "Sonnet 4.5 — быстрая и умная (рекомендуется)"},
-	{"opus", "Opus 4.6 — самая умная, дороже"},
-	{"haiku", "Haiku 4.5 — самая быстрая и дешёвая"},
+	{"sonnet", localize.Text("Sonnet 4.5 — быстрая и умная (рекомендуется)")},
+	{"opus", localize.Text("Opus 4.6 — самая умная, дороже")},
+	{"haiku", localize.Text("Haiku 4.5 — самая быстрая и дешёвая")},
 }
 
 var claudePermissionModes = []menuOption{
-	{"bypassPermissions", "Полный автомат — без подтверждений (рекомендуется)"},
-	{"default", "Стандартный — спрашивает подтверждение"},
-	{"plan", "Plan — только планирование, без выполнения"},
+	{"bypassPermissions", localize.Text("Полный автомат — без подтверждений (рекомендуется)")},
+	{"default", localize.Text("Стандартный — спрашивает подтверждение")},
+	{"plan", localize.Text("Plan — только планирование, без выполнения")},
 }
 
 var codexModels = []menuOption{
-	{"gpt-5.3-codex", "GPT-5.3-Codex — самая умная (рекомендуется)"},
-	{"gpt-5.3-codex-spark", "GPT-5.3-Codex-Spark — быстрая, 1000+ tok/s"},
-	{"gpt-5.2-codex", "GPT-5.2-Codex — предыдущее поколение, дешевле"},
+	{"gpt-5.3-codex", localize.Text("GPT-5.3-Codex — самая умная (рекомендуется)")},
+	{"gpt-5.3-codex-spark", localize.Text("GPT-5.3-Codex-Spark — быстрая, 1000+ tok/s")},
+	{"gpt-5.2-codex", localize.Text("GPT-5.2-Codex — предыдущее поколение, дешевле")},
 }
 
 var codexReasoningOptions = []menuOption{
-	{"xhigh", "Максимум — самый умный, медленный"},
-	{"high", "Высокий — для сложных задач (рекомендуется)"},
-	{"medium", "Средний — баланс скорости и качества"},
-	{"low", "Низкий — быстрее, проще"},
-	{"minimal", "Минимальный — самый быстрый"},
+	{"xhigh", localize.Text("Максимум — самый умный, медленный")},
+	{"high", localize.Text("Высокий — для сложных задач (рекомендуется)")},
+	{"medium", localize.Text("Средний — баланс скорости и качества")},
+	{"low", localize.Text("Низкий — быстрее, проще")},
+	{"minimal", localize.Text("Минимальный — самый быстрый")},
 }
 
 var codexApprovalModes = []menuOption{
-	{"full-auto", "Автомат с песочницей (рекомендуется)"},
-	{"bypass", "Полный автомат без песочницы (опасно!)"},
-	{"suggest", "Спрашивает перед незнакомыми командами"},
-	{"auto", "Не спрашивает, ошибки возвращает модели"},
+	{"full-auto", localize.Text("Автомат с песочницей (рекомендуется)")},
+	{"bypass", localize.Text("Полный автомат без песочницы (опасно!)")},
+	{"suggest", localize.Text("Спрашивает перед незнакомыми командами")},
+	{"auto", localize.Text("Не спрашивает, ошибки возвращает модели")},
 }
 
 // ── Interactive helpers ──────────────────────────────────────────────
@@ -454,7 +455,7 @@ func pick(prompt string, options []menuOption, defaultKey string) string {
 				}
 			}
 		}
-		fmt.Printf("  Выбор%s: ", defaultHint)
+		fmt.Printf(localize.Text("  Выбор%s: "), defaultHint)
 		var choice string
 		if _, err := fmt.Scanln(&choice); errors.Is(err, io.EOF) {
 			stdinClosed = true
@@ -476,7 +477,7 @@ func pick(prompt string, options []menuOption, defaultKey string) string {
 				return opt.Key
 			}
 		}
-		fmt.Println("    Неверный выбор, попробуйте ещё раз.")
+		fmt.Println(localize.Text("    Неверный выбор, попробуйте ещё раз."))
 	}
 }
 
@@ -514,54 +515,54 @@ func RunSetup(force bool) *Config {
 
 	fmt.Println()
 	fmt.Println(strings.Repeat("=", 52))
-	fmt.Println("   TGControl — Настройка")
+	fmt.Println(localize.Text("   TGControl — Настройка"))
 	fmt.Println(strings.Repeat("=", 52))
 
 	// 0. Mode
-	fmt.Println("\n  [0/4] Режим работы")
-	cfg.Mode = pick("Как подключаться к Telegram:", modes, "central_bot")
+	fmt.Println(localize.Text("\n  [0/4] Режим работы"))
+	cfg.Mode = pick(localize.Text("Как подключаться к Telegram:"), modes, "central_bot")
 
 	// 1. CLI agents
-	fmt.Println("\n  [1/4] CLI-агенты")
+	fmt.Println(localize.Text("\n  [1/4] CLI-агенты"))
 	if found := FindCLI("claude"); found != "" {
 		fmt.Printf("    Claude CLI: %s\n", found)
-		use := input("Использовать? (y/n)", "y")
+		use := input(localize.Text("Использовать? (y/n)"), "y")
 		if strings.ToLower(use) == "y" || use == "" || strings.ToLower(use) == "д" {
 			cfg.ClaudePath = found
 		} else {
-			cfg.ClaudePath = input("Путь к claude", "claude")
+			cfg.ClaudePath = input(localize.Text("Путь к claude"), "claude")
 		}
 	} else {
-		fmt.Println("    Claude CLI: не найден в PATH")
-		cfg.ClaudePath = input("Путь к claude (или Enter = 'claude')", "claude")
+		fmt.Println(localize.Text("    Claude CLI: не найден в PATH"))
+		cfg.ClaudePath = input(localize.Text("Путь к claude (или Enter = 'claude')"), "claude")
 	}
 
 	if found := FindCLI("codex"); found != "" {
 		fmt.Printf("    Codex CLI:  %s\n", found)
-		use := input("Использовать? (y/n)", "y")
+		use := input(localize.Text("Использовать? (y/n)"), "y")
 		if strings.ToLower(use) == "y" || use == "" || strings.ToLower(use) == "д" {
 			cfg.CodexPath = found
 		} else {
-			cfg.CodexPath = input("Путь к codex (или Enter = пропустить)", "")
+			cfg.CodexPath = input(localize.Text("Путь к codex (или Enter = пропустить)"), "")
 		}
 	} else {
-		fmt.Println("    Codex CLI:  не найден (необязательно)")
-		cfg.CodexPath = input("Путь к codex (или Enter = пропустить)", "")
+		fmt.Println(localize.Text("    Codex CLI:  не найден (необязательно)"))
+		cfg.CodexPath = input(localize.Text("Путь к codex (или Enter = пропустить)"), "")
 	}
 
 	// 2. Claude settings
-	fmt.Println("\n  [2/4] Настройки Claude")
-	cfg.ClaudeModel = pick("Модель:", claudeModels, "sonnet")
-	cfg.ClaudePermissionMode = pick("Режим разрешений:", claudePermissionModes, "bypassPermissions")
+	fmt.Println(localize.Text("\n  [2/4] Настройки Claude"))
+	cfg.ClaudeModel = pick(localize.Text("Модель:"), claudeModels, "sonnet")
+	cfg.ClaudePermissionMode = pick(localize.Text("Режим разрешений:"), claudePermissionModes, "bypassPermissions")
 
 	// 3. Codex settings
 	if cfg.CodexPath != "" {
-		fmt.Println("\n  [3/4] Настройки Codex")
-		cfg.CodexModel = pick("Модель:", codexModels, "gpt-5.3-codex")
+		fmt.Println(localize.Text("\n  [3/4] Настройки Codex"))
+		cfg.CodexModel = pick(localize.Text("Модель:"), codexModels, "gpt-5.3-codex")
 		cfg.CodexReasoning = pick("Reasoning effort:", codexReasoningOptions, "high")
-		cfg.CodexApprovalMode = pick("Режим работы:", codexApprovalModes, "full-auto")
+		cfg.CodexApprovalMode = pick(localize.Text("Режим работы:"), codexApprovalModes, "full-auto")
 	} else {
-		fmt.Println("\n  [3/4] Настройки Codex — пропущено (CLI не настроен)")
+		fmt.Println(localize.Text("\n  [3/4] Настройки Codex — пропущено (CLI не настроен)"))
 	}
 
 	// 4. Connection
@@ -577,17 +578,17 @@ func RunSetup(force bool) *Config {
 
 func setupCentralBot(cfg *Config) {
 	fmt.Println("\n  [4/4] Central Bot")
-	fmt.Println("    Используется наш бот @TGControlBot")
-	fmt.Println("    Вам нужен только ваш Telegram User ID.")
-	fmt.Println("    Узнать: отправьте /start боту @userinfobot")
+	fmt.Println(localize.Text("    Используется наш бот @TGControlBot"))
+	fmt.Println(localize.Text("    Вам нужен только ваш Telegram User ID."))
+	fmt.Println(localize.Text("    Узнать: отправьте /start боту @userinfobot"))
 
-	userID := input("Ваш Telegram User ID", "")
+	userID := input(localize.Text("Ваш Telegram User ID"), "")
 	for !stdinClosed {
 		if _, err := strconv.ParseInt(userID, 10, 64); err == nil {
 			break
 		}
-		fmt.Println("    ID должен быть числом!")
-		userID = input("Ваш Telegram User ID", "")
+		fmt.Println(localize.Text("    ID должен быть числом!"))
+		userID = input(localize.Text("Ваш Telegram User ID"), "")
 	}
 
 	cfg.TelegramUserID = userID
@@ -602,34 +603,34 @@ func setupOwnBot(cfg *Config) {
 
 	ep := envPath()
 	if _, err := os.Stat(ep); err == nil {
-		fmt.Printf("    .env найден: %s\n", ep)
-		reconf := input("Перенастроить .env? (y/n)", "n")
+		fmt.Printf(localize.Text("    .env найден: %s\n"), ep)
+		reconf := input(localize.Text("Перенастроить .env? (y/n)"), "n")
 		if strings.ToLower(reconf) != "y" && strings.ToLower(reconf) != "д" {
 			return
 		}
 	} else {
-		fmt.Println("    .env не найден — создаём.")
+		fmt.Println(localize.Text("    .env не найден — создаём."))
 	}
 
 	token := input("Bot Token (@BotFather)", "")
 	for token == "" && !stdinClosed {
-		fmt.Println("    Токен обязателен!")
+		fmt.Println(localize.Text("    Токен обязателен!"))
 		token = input("Bot Token (@BotFather)", "")
 	}
 
-	users := input("Allowed User IDs (через запятую, Enter = все)", "")
+	users := input(localize.Text("Allowed User IDs (через запятую, Enter = все)"), "")
 
 	lines := []string{fmt.Sprintf("TELEGRAM_BOT_TOKEN=%s", token)}
 	if users != "" {
 		lines = append(lines, fmt.Sprintf("ALLOWED_USERS=%s", users))
 	}
 	os.WriteFile(ep, []byte(strings.Join(lines, "\n")+"\n"), 0600)
-	fmt.Printf("    Сохранено: %s\n", ep)
+	fmt.Printf(localize.Text("    Сохранено: %s\n"), ep)
 }
 
 func finishSetup(cfg *Config) {
 	if err := cfg.Save(); err != nil {
-		fmt.Printf("  Ошибка сохранения: %v\n", err)
+		fmt.Printf(localize.Text("  Ошибка сохранения: %v\n"), err)
 		return
 	}
 
@@ -639,22 +640,22 @@ func finishSetup(cfg *Config) {
 	if cfg.IsCentralBot() {
 		modeName = "Central Bot"
 	}
-	fmt.Printf("  Режим: %s\n", modeName)
+	fmt.Printf(localize.Text("  Режим: %s\n"), modeName)
 	fmt.Printf("  Claude:  %s\n", cfg.ClaudePath)
-	fmt.Printf("  Модель:  %s | Режим: %s\n", cfg.ClaudeModel, cfg.ClaudePermissionMode)
+	fmt.Printf(localize.Text("  Модель:  %s | Режим: %s\n"), cfg.ClaudeModel, cfg.ClaudePermissionMode)
 	if cfg.CodexPath != "" {
 		fmt.Printf("  Codex:   %s\n", cfg.CodexPath)
-		fmt.Printf("  Модель:  %s | Reasoning: %s | Режим: %s\n",
+		fmt.Printf(localize.Text("  Модель:  %s | Reasoning: %s | Режим: %s\n"),
 			cfg.CodexModel, cfg.CodexReasoning, cfg.CodexApprovalMode)
 	} else {
-		fmt.Println("  Codex:   (не настроен)")
+		fmt.Println(localize.Text("  Codex:   (не настроен)"))
 	}
 	if cfg.IsCentralBot() {
 		fmt.Printf("  User ID: %s\n", cfg.TelegramUserID)
 	}
-	fmt.Printf("  Конфиг:  %s\n", configPath())
+	fmt.Printf(localize.Text("  Конфиг:  %s\n"), configPath())
 	fmt.Println(strings.Repeat("-", 52))
-	fmt.Println("  Готово! Запуск бота...")
+	fmt.Println(localize.Text("  Готово! Запуск бота..."))
 	fmt.Println()
 }
 

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>Claude Code from the phone: agent on his computer, remote control in his pocket | Remotai</title>
+<meta content="Claude Code and Codex CLI run on your computer, and the terminal opens from your phone: you can see who is waiting for an answer, and you can continue the task from anywhere. Free at home, via the Internet for 7 days without a card." name="description"/>
+<link href="https://remotai.ru/en/claude-code.html" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="Claude Code from phone: agent on your computer" property="og:title"/>
+<meta content="The agent lives on your machine with your files and keys. The terminal is in the phone." property="og:description"/>
+<meta content="https://remotai.ru/en/claude-code.html" property="og:url"/>
+<link href="/favicon.ico" rel="icon"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Golos+Text:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#06080b; --bg2:#0a0e13; --panel:#0d1218; --panel2:#10161e;
+  --line:#1c2530; --line2:#28333f;
+  --fg:#e8eef4; --muted:#91a0ae; --faint:#72818f;
+  --accent:#2ee6b0; --accent-deep:#0c8f6c; --accent-dim:rgba(46,230,176,.12);
+  --amber:#ffb454;
+  --font-display:"Unbounded","Arial Black",sans-serif;
+  --font-body:"Golos Text","Segoe UI",sans-serif;
+  --font-mono:"JetBrains Mono","Cascadia Code",Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:940px;margin:0 auto;padding:0 20px}
+header.top{border-bottom:1px solid var(--line);background:rgba(6,8,11,.9);position:sticky;top:0;z-index:10;backdrop-filter:blur(8px)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--fg)}
+.logo span{color:var(--accent)}
+.nav a{color:var(--muted);font-size:15px;margin-left:22px}
+.hero{padding:64px 0 40px}
+.eyebrow{font-family:var(--font-mono);font-size:13px;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
+h1{font-family:var(--font-display);font-weight:700;font-size:clamp(30px,5vw,46px);line-height:1.15;margin:0 0 18px}
+.lead{font-size:20px;color:var(--muted);max-width:720px;margin:0 0 28px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.btn{display:inline-block;padding:14px 24px;border-radius:12px;font-weight:600;font-size:16px}
+.btn-main{background:var(--accent);color:#06251c}
+.btn-main:hover{background:#3ff0bd;text-decoration:none}
+.btn-ghost{border:1px solid var(--line2);color:var(--fg)}
+.btn-ghost:hover{border-color:var(--accent);text-decoration:none}
+.note{font-size:14px;color:var(--faint)}
+section{padding:44px 0;border-top:1px solid var(--line)}
+h2{font-family:var(--font-display);font-weight:500;font-size:clamp(22px,3.4vw,30px);margin:0 0 10px}
+.sub{color:var(--muted);margin:0 0 26px;max-width:760px}
+.grid{display:grid;gap:16px}
+.grid>*{min-width:0}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:760px){.g3,.g2{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;min-width:0}
+.card h3{font-size:17px;margin:0 0 8px;font-weight:600}
+.card p{margin:0;color:var(--muted);font-size:15px}
+/* minmax(0,1fr) и min-width:0 обязательны: иначе длинная команда в <pre>
+   распирает колонку grid и на телефоне появляется горизонтальная прокрутка. */
+.steps{counter-reset:s;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.step{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:18px 20px 18px 62px;position:relative;min-width:0}
+.step:before{counter-increment:s;content:counter(s);position:absolute;left:20px;top:18px;width:28px;height:28px;border-radius:9px;background:var(--accent-dim);color:var(--accent);font-family:var(--font-mono);font-weight:500;display:flex;align-items:center;justify-content:center;font-size:15px}
+.step h3{margin:0 0 6px;font-size:17px}
+.step p{margin:0;color:var(--muted);font-size:15px}
+code,.mono{font-family:var(--font-mono);font-size:14px}
+pre{background:#05070a;border:1px solid var(--line);border-radius:12px;padding:16px;overflow-x:auto;margin:12px 0 0;max-width:100%}
+pre code{color:var(--accent)}
+.price{display:flex;gap:14px;flex-wrap:wrap;align-items:stretch}
+.price .card{flex:1 1 240px}
+.price .sum{font-family:var(--font-display);font-size:26px;margin:6px 0}
+.faq{display:grid;gap:12px}
+.faq details{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+.faq summary{cursor:pointer;font-weight:600;font-size:16px}
+.faq p{color:var(--muted);margin:10px 0 0;font-size:15px}
+footer{border-top:1px solid var(--line);padding:28px 0 44px;color:var(--faint);font-size:14px}
+footer a{color:var(--muted)}
+.tag{display:inline-block;font-family:var(--font-mono);font-size:12px;color:var(--accent);background:var(--accent-dim);border-radius:999px;padding:3px 10px;margin-bottom:10px}
+</style>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is Remotai an access to Claude Code?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Claude Code you install and pay for yourself, from Anthropic. Remotai is a remote control for it: it shows the terminal of your computer and transmits there what you typed."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do my files and keys go to you?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The agent runs on your machine, files and keys remain there. What you see on the terminal screen and what you type goes through the cloud. The contents of terminals, commands, file names and screen frames are not stored in analytics."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What if I don’t have my own server?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It is not needed: the agent can run on a regular computer as long as it is turned on. If you want to work around the clock and without your computer, there is a scenario with a server."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it work from Russia?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Remotai - yes: it has nothing to do with your machine or the agent's network. The availability of Claude Code itself depends on the network of the machine where it is running; analysis - in the article “Claude Code and Codex from Russia”."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What other agents are supported?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Any console: Codex CLI, Kimi, Gemini CLI, Aider, opencode, Grok. The application knows their installation commands and can keep multiple accounts for each."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if the computer turns off?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The agent will stop with him - he works on this machine. After turning on, Remotai rises by itself, terminals with history return."
+      }
+    }
+  ]
+}</script>
+<link href="https://remotai.ru/claude-code.html" hreflang="ru" rel="alternate"/><link href="https://remotai.ru/en/claude-code.html" hreflang="en" rel="alternate"/><link href="https://remotai.ru/claude-code.html" hreflang="x-default" rel="alternate"/></head>
+<body>
+<header class="top">
+<div class="wrap">
+<a class="logo" href="/en/">Remot<span>ai</span></a><a class="language-link" href="/claude-code.html" hreflang="ru" lang="ru" style="margin-left:auto;padding:8px;white-space:nowrap;font-size:13px">Русский</a>
+<nav class="nav">
+<a href="/en/#pricing">Prices</a>
+<a href="/en/#download">Download</a>
+<a href="/en/blog/">Blog</a>
+<a href="/app/?lang=en">Web version</a>
+</nav>
+</div>
+</header>
+<div class="wrap">
+<div class="hero">
+<div class="eyebrow">Claude Code and Codex CLI</div>
+<h1>Claude Code runs on your computer. And you are anywhere.</h1>
+<p class="lead">Claude Code is a console AI agent from Anthropic: it lives on your machine and sees your files, keys and environment. Hence its main limitation - they closed the laptop, work stopped. Remotai gives him a remote control: the agent’s terminal in his phone or browser, with history and answers to his questions.</p>
+<div class="cta">
+<a class="btn btn-main" href="/app/?lang=en#/start">Start</a>
+<a class="btn btn-ghost" href="#what">What is it and what is needed</a>
+</div>
+<p class="note">On your computer on your home network - free forever. Access via the Internet - 7 days without a card, then 900 ₽ for 30 days. A Claude or OpenAI subscription is purchased from them and is not included in this price.</p>
+</div>
+<section id="what">
+<h2>What is it and what is needed</h2>
+<p class="sub">Honestly and straight away: Remotai does not replace Claude Code and does not give access to it. Your agent, your account, your computer - we’re talking about how to reach them outside of your workplace.</p>
+<div class="grid g3">
+<div class="card"><h3>Computer or server</h3><p>Windows, macOS or Linux, where the agent is located and the projects are located. The machine must remain turned on: the agent works on it, not on us.</p></div>
+<div class="card"><h3>Your agent account</h3><p>Anthropic, OpenAI, Moonshot, Google - whoever. Remotai doesn't include their subscriptions and doesn't store your keys: they stay on your machine.</p></div>
+<div class="card"><h3>Phone or browser</h3><p>Android, iPhone, iPad, any browser, Telegram. There is nothing to configure in the router: the computer communicates itself.</p></div>
+</div>
+</section>
+<section>
+<h2>Why would someone who already has an agent need this?</h2>
+<p class="sub">Claude Code doesn't know how to wait for you at the monitor. Four situations from which the product grew.</p>
+<div class="grid g2">
+<div class="card"><h3>He asks - but you are not there</h3><p>The agent stops at the question “apply the edit?” and stands there for hours. From the phone you can see who is waiting for an answer, and you can answer with one button.</p></div>
+<div class="card"><h3>The task is for an hour, and you have to go</h3><p>They set the task and left. The terminal lives on the computer: when we return, the story is in place, nothing is broken.</p></div>
+<div class="card"><h3>Projects on the machine, not in the cloud</h3><p>The cloud agent works in someone else's sandbox without your files, keys, or running services. Yours works for you.</p></div>
+<div class="card"><h3>Several agents at once</h3><p>Claude Code, Codex, Kimi, Gemini, Aider, opencode - each in its own folder. You can see who is working, who is waiting, who has finished.</p></div>
+</div>
+</section>
+<section>
+<h2>What does it look like</h2>
+<p class="sub">Four steps, then you simply write to the agent in the terminal.</p>
+<div class="steps">
+<div class="step"><h3>Install Remotai on a machine with an agent</h3><p>One installer for Windows, macOS and Linux. Placed in a user profile, no administrator rights required.</p></div>
+<div class="step"><h3>Link it to your account</h3><p>Code or QR directly from this machine. White IP, VPN and router settings are not needed - the connection is outgoing.</p></div>
+<div class="step"><h3>Open terminal from phone</h3><p>Select the project and agent folder. If the CLI is not yet installed, the application will show the installation command and help you select an account.</p></div>
+<div class="step"><h3>Give the task and leave</h3><p>The answer will come to the same terminal. A notification will tell you when the agent has finished or asked.</p></div>
+</div>
+</section>
+<section id="pricing">
+<h2>How much does it cost</h2>
+<p class="sub">The border is simple: at home - free, via the Internet - by subscription.</p>
+<div class="price">
+<div class="card"><h3>Local</h3><p class="sum">0 ₽</p><p>Your computer on your home network: terminals, agents, files, screen. Forever and without limits.</p></div>
+<div class="card"><h3>Pro</h3><p class="sum">900 ₽ / 30 days</p><p>Access via the Internet, servers, SSH and SFTP, up to 5 cloud devices. The first 7 days are free, no card required.</p></div>
+<div class="card"><h3>Fleet</h3><p class="sum">1,990 ₽ / 30 days</p><p>The same, but up to 25 cloud devices - when there are a lot of machines and servers.</p></div>
+</div>
+<p class="note">Manual renewal, no automatic debits. <a href="/en/#pricing">All tariffs</a></p>
+</section>
+<section>
+<h2>Questions to ask before installation</h2>
+<div class="faq">
+<details><summary>Is Remotai an access to Claude Code?</summary><p>No. Claude Code you install and pay for yourself, from Anthropic. Remotai is a remote control for it: it shows the terminal of your computer and transmits there what you typed.</p></details>
+<details><summary>Do my files and keys go to you?</summary><p>No. The agent runs on your machine, files and keys remain there. What you see on the terminal screen and what you type goes through the cloud. The contents of terminals, commands, file names and screen frames are not stored in analytics.</p></details>
+<details><summary>What if I don’t have my own server?</summary><p>It is not needed: the agent can run on a regular computer as long as it is turned on. If you want around the clock and without your computer - there is <a href="/en/server.html">server scenario</a>.</p></details>
+<details><summary>Does it work from Russia?</summary><p>Remotai - yes: it has nothing to do with your machine or the agent's network. The availability of Claude Code itself depends on the network of the machine where it is running; analysis - in the article <a href="/en/blog/claude-code-iz-rossii.html">"Claude Code and Codex from Russia"</a>.</p></details>
+<details><summary>What other agents are supported?</summary><p>Any console: Codex CLI, Kimi, Gemini CLI, Aider, opencode, Grok. The application knows their installation commands and can keep multiple accounts for each.</p></details>
+<details><summary>What happens if the computer turns off?</summary><p>The agent will stop with him - he works on this machine. After turning on, Remotai rises by itself, terminals with history return.</p></details>
+</div>
+</section>
+<section>
+<h2>Next</h2>
+<p class="sub">You can install it right away, or you can read it first.</p>
+<div class="cta">
+<a class="btn btn-main" href="/app/?lang=en#/start">Start</a>
+<a class="btn btn-ghost" href="/en/blog/">Read blog</a>
+<a class="btn btn-ghost" href="/en/">About the product in full</a>
+</div>
+</section>
+</div>
+<footer>
+<div class="wrap">
+<p>Individual entrepreneur Vaulin Evgeniy Nikolaevich · TIN 773461030140 · OGRNIP 325774600620214</p>
+<p><a href="/en/">Home</a> · <a href="/en/offer.html">Offer</a> · <a href="/en/privacy.html">Privacy</a></p>
+</div>
+</footer>
+<script>
+// Метрика: тот же счётчик, что на лендинге и в приложении, — путь человека не рвётся.
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym(111692890,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+
+// UTM с рекламы кладём туда же, откуда их читает веб-приложение (тот же origin).
+(function(){
+  try{
+    var q=new URLSearchParams(location.search),utm={};
+    ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","yclid"].forEach(function(k){var v=q.get(k);if(v)utm[k]=v.slice(0,200);});
+    if(Object.keys(utm).length&&!localStorage.getItem("utm"))localStorage.setItem("utm",JSON.stringify(utm));
+  }catch(e){}
+  document.querySelectorAll('a[href="/app/?lang=en"]').forEach(function(a){
+    a.addEventListener("click",function(){try{ym(111692890,"reachGoal","open_web")}catch(e){}});
+  });
+})();
+</script>
+</body>
+</html>

@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"tgcontrol/internal/localize"
 	"time"
 
 	"tgcontrol/internal/config"
@@ -30,7 +31,7 @@ func launchPackagedDesktop() bool {
 	}
 	home, err := os.UserHomeDir()
 	if err == nil && os.Geteuid() == 0 {
-		err = fmt.Errorf("Откройте Remotai из меню приложений обычного пользователя")
+		err = fmt.Errorf("%s", localize.Text("Откройте Remotai из меню приложений обычного пользователя"))
 	}
 	if err == nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
@@ -40,9 +41,9 @@ func launchPackagedDesktop() bool {
 		if err == nil {
 			if pending := desktopinstall.PendingActivation(ctx, installed, config.GetNoSetup().Port()); pending != nil {
 				openBrowser(pending.PanelURL)
-				message := fmt.Sprintf("Установлена версия %s, но сейчас работает прежняя версия %s.\n\nВ открытой панели прокрутите вниз до строки «Версия», нажмите «проверить» → «Обновить». Remotai обновится и перезапустится сам.\n\nТакже можно нажать «Завершить Remotai на этом компьютере…», затем снова открыть приложение. Закрытие вкладки браузера не завершает Remotai.", pending.InstalledVersion, pending.RunningVersion)
+				message := fmt.Sprintf(localize.Text("Установлена версия %s, но сейчас работает прежняя версия %s.\n\nВ открытой панели прокрутите вниз до строки «Версия», нажмите «проверить» → «Обновить». Remotai обновится и перезапустится сам.\n\nТакже можно нажать «Завершить Remotai на этом компьютере…», затем снова открыть приложение. Закрытие вкладки браузера не завершает Remotai."), pending.InstalledVersion, pending.RunningVersion)
 				fmt.Fprintln(os.Stderr, "Remotai:", message)
-				showDesktopDialog("Обновление Remotai ещё не запущено", message, false)
+				showDesktopDialog(localize.Text("Обновление Remotai ещё не запущено"), message, false)
 				return true
 			}
 			err = desktopinstall.Start(installed)
@@ -68,7 +69,7 @@ func prepareDesktopWindow() map[string]string {
 		return fail(err)
 	}
 	if os.Geteuid() == 0 {
-		return fail(fmt.Errorf("Откройте Remotai из «Программ» обычного пользователя"))
+		return fail(fmt.Errorf("%s", localize.Text("Откройте Remotai из «Программ» обычного пользователя")))
 	}
 	installed, err := desktopinstall.Install(ctx, exe, home, version.Version)
 	if err != nil {
@@ -88,7 +89,7 @@ func prepareDesktopWindow() map[string]string {
 			result := map[string]string{"url": url}
 			if pending != nil {
 				result["url"] = pending.PanelURL
-				result["notice"] = fmt.Sprintf("Установлена версия %s, но работает %s. Внизу панели нажмите «проверить» → «Обновить». Если обновление не завершится, выберите «Завершить Remotai на этом компьютере…» и снова откройте приложение. Закрытие окна сохраняет фоновую работу Remotai.", pending.InstalledVersion, pending.RunningVersion)
+				result["notice"] = fmt.Sprintf(localize.Text("Установлена версия %s, но работает %s. Внизу панели нажмите «проверить» → «Обновить». Если обновление не завершится, выберите «Завершить Remotai на этом компьютере…» и снова откройте приложение. Закрытие окна сохраняет фоновую работу Remotai."), pending.InstalledVersion, pending.RunningVersion)
 			}
 			return result
 		}
@@ -97,11 +98,11 @@ func prepareDesktopWindow() map[string]string {
 		case <-time.After(250 * time.Millisecond):
 		}
 	}
-	return fail(fmt.Errorf("Remotai не успел запуститься. Нажмите «Повторить»; работающие терминалы сохранятся"))
+	return fail(fmt.Errorf("%s", localize.Text("Remotai не успел запуститься. Нажмите «Повторить»; работающие терминалы сохранятся")))
 }
 
 func showDesktopInstallError(message string) {
-	showDesktopDialog("Не удалось открыть Remotai", message, true)
+	showDesktopDialog(localize.Text("Не удалось открыть Remotai"), message, true)
 }
 
 func showDesktopDialog(title, message string, isError bool) {

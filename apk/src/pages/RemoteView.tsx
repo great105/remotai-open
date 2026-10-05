@@ -589,9 +589,9 @@ function isBlankPage(url?: string): boolean {
  * же имена, что понимает эмуляция; их и раньше слал клиент.
  */
 const FALLBACK_DEVICES: BrowserDevice[] = [
-  { id: "android", title: "Телефон", mobile: true, width: 412, height: 915 },
+  { id: "android", title: t("remote.profilePhone"), mobile: true, width: 412, height: 915 },
   { id: "ios", title: "iPhone", mobile: true, width: 393, height: 852 },
-  { id: "desktop", title: "Компьютер", mobile: false, width: 1280, height: 800 },
+  { id: "desktop", title: t("infra.local.thisPcName"), mobile: false, width: 1280, height: 800 },
 ];
 
 /** Имя сайта для адресной строки: полный URL в неё не влезает, а человеку

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>Accessing a computer from a phone: methods and what to choose | Remotai</title>
+<meta content="We look at ways to reach your computer from your phone: remote desktop, SSH, cloud services. What works without a public IP address, what to do with connection interruptions and what it costs." name="description"/>
+<link href="https://remotai.ru/en/blog/dostup-k-kompyuteru-s-telefona.html" rel="canonical"/>
+<meta content="article" property="og:type"/>
+<meta content="Accessing a computer from a phone: methods and what to choose" property="og:title"/>
+<meta content="We look at ways to reach your computer from your phone: remote desktop, SSH, cloud services. What works without a public IP address, what to do with connection interruptions and what it costs." property="og:description"/>
+<meta content="https://remotai.ru/en/blog/dostup-k-kompyuteru-s-telefona.html" property="og:url"/>
+<link href="/favicon.ico" rel="icon"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Golos+Text:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="/blog/blog.css" rel="stylesheet"/>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Accessing a computer from a phone: methods and what to choose",
+  "datePublished": "2026-09-09",
+  "dateModified": "2026-09-09",
+  "author": {
+    "@type": "Person",
+    "name": "Evgeniy Vaulin"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Remotai"
+  },
+  "mainEntityOfPage": "https://remotai.ru/en/blog/dostup-k-kompyuteru-s-telefona.html"
+}</script>
+<link href="https://remotai.ru/blog/dostup-k-kompyuteru-s-telefona.html" hreflang="ru" rel="alternate"/><link href="https://remotai.ru/en/blog/dostup-k-kompyuteru-s-telefona.html" hreflang="en" rel="alternate"/><link href="https://remotai.ru/blog/dostup-k-kompyuteru-s-telefona.html" hreflang="x-default" rel="alternate"/></head>
+<body>
+<header class="top">
+<div class="wrap">
+<a class="logo" href="/en/">Remot<span>ai</span></a><a class="language-link" href="/blog/dostup-k-kompyuteru-s-telefona.html" hreflang="ru" lang="ru" style="margin-left:auto;padding:8px;white-space:nowrap;font-size:13px">Русский</a>
+<nav class="nav">
+<a href="/en/blog/">Blog</a>
+<a href="/en/server.html">Agent on the server</a>
+<a href="/en/#pricing">Prices</a>
+<a href="/app/?lang=en">Web version</a>
+</nav>
+</div>
+</header>
+<div class="wrap">
+<article>
+<h1>Accessing a computer from a phone: methods and what to choose</h1>
+<div class="meta">September 9, 2026 · read 6 minutes</div>
+<p>The task sounds simple: you are not sitting at your computer, but you need it. I forgot the file, I need to restart the program and see how the long process ended. There are several ways to reach the computer, and they differ not so much in convenience as in what breaks in real life.</p>
+<h2>Three approaches to choose between</h2>
+<p><strong>Remote desktop.</strong> You see the entire computer screen and move your finger across it. It’s good when you need graphics: a program with windows, a browser, an editor. It’s bad on a phone: the interface is designed for a mouse, it’s hard to get into small elements, and the image eats up traffic.</p>
+<p><strong>Console.</strong> You are working with the command line, there are no graphics. Economical in terms of traffic, accurate and fast, but you need to know the commands. For running processes, viewing logs and working with files, this is often the best option.</p>
+<p><strong>A separate application for the task.</strong> Something narrow: a file manager, a control panel, a remote control for a specific program. It’s convenient until the task goes beyond the scope for which the application is designed.</p>
+<p>Most people want the second option with pieces of the first: a console to work with plus the ability to occasionally look at the screen.</p>
+<h2>What breaks in practice</h2>
+<p><strong>White IP and port forwarding.</strong> The classic scheme requires that your computer can be connected from outside. The home Internet usually has a gray address, and the router needs to be configured. Half the people stay here.</p>
+<p><strong>Communication interruptions.</strong> The phone switches between towers and Wi-Fi, the address changes, the connection breaks. If the process was started inside your session, it dies with it.</p>
+<p><strong>Keyboard.</strong> The console requires Esc, Ctrl, Tab and arrows. There are no them on the mobile keyboard; applications put them on a separate panel, and it’s inconvenient to touch it with your finger.</p>
+<p><strong>Scroll.</strong> Programs that draw the screen themselves take the gestures for themselves. You try to scroll through the output, but instead you click on a menu item.</p>
+<h2>How to do without a public IP address</h2>
+<p>There is only one working method: the connection is initiated by the computer itself. It connects to the intermediate server and keeps in touch, and the phone connects there too. Your computer is not listening to anything from the outside, so neither port forwarding nor router configuration is needed.</p>
+<p>This is how all cloud remote access options work, the only difference is who owns the intermediate server and what it sees.</p>
+<h2>What to do with cliffs</h2>
+<p>The answer is where the process lives. If a task is running inside your session, breaking the connection kills it. If it is running on the computer itself as a separate process, and you are only looking at its output, then the loss of connection does not spoil anything: you returned, connected, and saw the same screen.</p>
+<p>In the console this is done via <code>tmux</code> or <code>screen</code>. You have to remember to start them in advance, and this is their main drawback.</p>
+<h2>About safety</h2>
+<p>Three things to check with any solution.</p>
+<p>Who sees the content? If the intermediate server decrypts your traffic, it sees everything: passwords, keys, files.</p>
+<p>How access is revoked. Lost your phone, what next? It should be possible to disable a specific device, rather than changing passwords everywhere.</p>
+<p>What happens when you reboot. If the computer has rebooted, access should return on its own, otherwise there is little point in remote work.</p>
+<h2>How much does it cost</h2>
+<p>Free options exist and are usually sufficient for home tasks. You have to pay for two things: for the stability of the intermediate server when you are far away, and for not having to configure it yourself.</p>
+<p>For us, the border goes like this: working with a computer on your home network is free forever, and connecting via the Internet is included in the subscription for 900 rubles per month. For the first seven days, everything is available, no card is needed.</p>
+<div class="cta-box">
+<h3>Try it</h3>
+<p>Opens in the browser, no application required. The first 7 days are free and without a card, then 900 ₽ per month.</p>
+<a class="btn" href="/app/?lang=en">Open web version</a>
+</div>
+<h2>If you don’t have a computer at hand at all</h2>
+<p>A separate case: the machine is needed not to look at a file, but for something to constantly work on it. Then the home computer is a bad choice because it sleeps and turns off. It’s more logical to take a server, put something on it that should work around the clock, and connect to it. We examined this scenario separately in the article about <a href="/en/blog/claude-code-iz-rossii.html">agent on your server</a>.</p>
+<h2>Briefly</h2>
+<p>If you need graphics, look towards the remote desktop and endure the inconvenience of management. If you need work, take the console. In both cases, check three things: whether the solution requires a public IP address, whether the task survives a connection loss, and how quickly access is revoked from the lost phone.</p>
+</article>
+</div>
+<footer>
+<div class="wrap">
+<p>Individual entrepreneur Vaulin Evgeniy Nikolaevich · TIN 773461030140 · OGRNIP 325774600620214</p>
+<p><a href="/en/">Home</a> · <a href="/en/blog/">Blog</a> · <a href="/en/server.html">Agent on the server</a> · <a href="/en/offer.html">Offer</a></p>
+</div>
+</footer>
+<script>
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym(111692890,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+(function(){
+  var SLUG = "dostup-k-kompyuteru-s-telefona";
+  try{
+    // Метка внешней рекламы важнее: если человек пришёл по объявлению, источником
+    // остаётся оно, а не страница блога, на которую он потом забрёл.
+    var q=new URLSearchParams(location.search),utm={};
+    ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","yclid"].forEach(function(k){var v=q.get(k);if(v)utm[k]=v.slice(0,200);});
+    if(Object.keys(utm).length&&!localStorage.getItem("utm")){
+      localStorage.setItem("utm",JSON.stringify(utm));
+    }else if(!localStorage.getItem("utm")){
+      // Пришёл из поиска прямо в блог: запоминаем статью как источник, чтобы в базе
+      // было видно, какая именно страница привела человека к регистрации и оплате.
+      localStorage.setItem("utm",JSON.stringify({utm_source:"blog",utm_medium:"article",utm_campaign:SLUG}));
+    }
+  }catch(e){}
+  // Цели: клик по кнопке в статье и уход в приложение или на страницу сценария.
+  document.querySelectorAll('a[href^="/app/?lang=en"], a[href^="/server.html"], a[href^="/#pricing"]').forEach(function(a){
+    a.addEventListener("click",function(){
+      try{ ym(111692890,"reachGoal","blog_cta",{article:SLUG,to:a.getAttribute("href")}); }catch(e){}
+    });
+  });
+})();
+</script>
+</body>
+</html>

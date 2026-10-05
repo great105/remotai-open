@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"tgcontrol/internal/localize"
 	"time"
 
 	"tgcontrol/internal/config"
@@ -50,7 +51,7 @@ func runConfig(args []string) int {
 }
 
 func printConfigHelp() {
-	fmt.Println(`Настройки Remotai на этом компьютере.
+	fmt.Println(localize.Text(`Настройки Remotai на этом компьютере.
 
   remotai config list [--json]     все настройки: что это, значение, что можно поставить
   remotai config get <ключ>        одно значение
@@ -59,7 +60,7 @@ func printConfigHelp() {
 
 Настройки с пометкой «только владелец» изменить нельзя: команда отправит
 человеку просьбу и дождётся ответа. Опишите причину в --reason — человек
-решает по ней.`)
+решает по ней.`))
 }
 
 type settingItem struct {
@@ -81,6 +82,11 @@ func configList(args []string) int {
 	if code := localGET("/api/settings/catalog", &out); code != 0 {
 		return code
 	}
+	for i := range out.Settings {
+		out.Settings[i].Title = localize.Text(out.Settings[i].Title)
+		out.Settings[i].Hint = localize.Text(out.Settings[i].Hint)
+	}
+	out.RiskNote = localize.Text(out.RiskNote)
 	if asJSON {
 		// Агенту — целиком и без украшений: он разберёт сам.
 		data, _ := json.MarshalIndent(out, "", "  ")
@@ -90,11 +96,11 @@ func configList(args []string) int {
 	for _, s := range out.Settings {
 		mark := ""
 		if s.Risk == "dangerous" {
-			mark = "  [только владелец]"
+			mark = localize.Text("  [только владелец]")
 		}
 		fmt.Printf("%s = %v%s\n    %s\n", s.Key, formatValue(s.Value), mark, s.Hint)
 		if len(s.Options) > 0 {
-			fmt.Printf("    допустимо: %s\n", strings.Join(s.Options, ", "))
+			fmt.Printf(localize.Text("    допустимо: %s\n"), strings.Join(s.Options, ", "))
 		}
 	}
 	return 0
@@ -102,7 +108,7 @@ func configList(args []string) int {
 
 func configGet(args []string) int {
 	if len(args) != 1 {
-		fmt.Fprintln(os.Stderr, "Использование: remotai config get <ключ>")
+		fmt.Fprintln(os.Stderr, localize.Text("Использование: remotai config get <ключ>"))
 		return 2
 	}
 	var out struct {
@@ -117,7 +123,7 @@ func configGet(args []string) int {
 			return 0
 		}
 	}
-	fmt.Fprintf(os.Stderr, "нет такой настройки: %s (список — remotai config list)\n", args[0])
+	fmt.Fprintf(os.Stderr, localize.Text("нет такой настройки: %s (список — remotai config list)\n"), args[0])
 	return 1
 }
 
@@ -127,7 +133,7 @@ func configGet(args []string) int {
 // агента с «попробуйте позже» бессмысленно, он всё равно спросит снова.
 func configSet(args []string) int {
 	if len(args) < 2 {
-		fmt.Fprintln(os.Stderr, `Использование: remotai config set <ключ> <значение> [--reason "зачем"]`)
+		fmt.Fprintln(os.Stderr, localize.Text(`Использование: remotai config set <ключ> <значение> [--reason "зачем"]`))
 		return 2
 	}
 	key, value := args[0], args[1]
@@ -176,10 +182,10 @@ func askOwner(key, value, reason string) int {
 		}
 		return 1
 	}
-	fmt.Printf("🔐 «%s» меняет только владелец. Отправил ему просьбу, жду ответа…\n", created.Request.Title)
+	fmt.Printf(localize.Text("🔐 «%s» меняет только владелец. Отправил ему просьбу, жду ответа…\n"), created.Request.Title)
 	if reason == "" {
 		// Без причины человеку решать не по чему — говорим агенту прямо.
-		fmt.Println("   (в следующий раз добавьте --reason \"зачем это нужно\" — человек решает по причине)")
+		fmt.Println(localize.Text("   (в следующий раз добавьте --reason \"зачем это нужно\" — человек решает по причине)"))
 	}
 
 	deadline := time.Now().Add(10 * time.Minute)
@@ -197,20 +203,20 @@ func askOwner(key, value, reason string) int {
 		switch got.Request.Status {
 		case "approved":
 			if got.Request.Error != "" {
-				fmt.Fprintf(os.Stderr, "⚠️ Владелец разрешил, но применить не удалось: %s\n", got.Request.Error)
+				fmt.Fprintf(os.Stderr, localize.Text("⚠️ Владелец разрешил, но применить не удалось: %s\n"), got.Request.Error)
 				return 1
 			}
-			fmt.Println("✅ Владелец подтвердил, настройка изменена")
+			fmt.Println(localize.Text("✅ Владелец подтвердил, настройка изменена"))
 			return 0
 		case "rejected":
-			fmt.Println("🚫 Владелец отклонил изменение")
+			fmt.Println(localize.Text("🚫 Владелец отклонил изменение"))
 			return 1
 		case "expired":
-			fmt.Println("⌛ Владелец не ответил — изменение не сделано")
+			fmt.Println(localize.Text("⌛ Владелец не ответил — изменение не сделано"))
 			return 1
 		}
 	}
-	fmt.Println("⌛ Ответа пока нет. Продолжайте работу; проверить — remotai config requests")
+	fmt.Println(localize.Text("⌛ Ответа пока нет. Продолжайте работу; проверить — remotai config requests"))
 	return 1
 }
 
@@ -228,7 +234,7 @@ func configRequests(args []string) int {
 		return code
 	}
 	if len(out.Requests) == 0 {
-		fmt.Println("Просьб не было")
+		fmt.Println(localize.Text("Просьб не было"))
 		return 0
 	}
 	for _, r := range out.Requests {
@@ -244,13 +250,13 @@ func configRequests(args []string) int {
 func requestStatusText(status string) string {
 	switch status {
 	case "pending":
-		return "ждёт ответа"
+		return localize.Text("ждёт ответа")
 	case "approved":
-		return "разрешено"
+		return localize.Text("разрешено")
 	case "rejected":
-		return "отклонено"
+		return localize.Text("отклонено")
 	case "expired":
-		return "просрочено"
+		return localize.Text("просрочено")
 	}
 	return status
 }
@@ -261,9 +267,9 @@ func formatValue(v any) string {
 		return "—"
 	case bool:
 		if value {
-			return "да"
+			return localize.Text("да")
 		}
-		return "нет"
+		return localize.Text("нет")
 	case float64: // JSON-числа
 		return strconv.FormatFloat(value, 'f', -1, 64)
 	case string:
@@ -297,7 +303,7 @@ func localGET(path string, out any) int {
 	req.Header.Set("X-Api-Token", localToken())
 	resp, err := (&http.Client{Timeout: 10 * time.Second}).Do(req)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "remotai: приложение не отвечает на этом компьютере — запустите Remotai")
+		fmt.Fprintln(os.Stderr, localize.Text("remotai: приложение не отвечает на этом компьютере — запустите Remotai"))
 		return 1
 	}
 	defer resp.Body.Close()
@@ -306,7 +312,7 @@ func localGET(path string, out any) int {
 		return 1
 	}
 	if err := json.NewDecoder(io.LimitReader(resp.Body, 1<<20)).Decode(out); err != nil {
-		fmt.Fprintf(os.Stderr, "remotai: непонятный ответ: %v\n", err)
+		fmt.Fprintf(os.Stderr, localize.Text("remotai: непонятный ответ: %v\n"), err)
 		return 1
 	}
 	return 0
@@ -324,7 +330,7 @@ func localPOST(path string, body any, out any) (int, error) {
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := (&http.Client{Timeout: 30 * time.Second}).Do(req)
 	if err != nil {
-		return 0, fmt.Errorf("приложение не отвечает на этом компьютере — запустите Remotai")
+		return 0, fmt.Errorf("%s", localize.Text("приложение не отвечает на этом компьютере — запустите Remotai"))
 	}
 	defer resp.Body.Close()
 	data, _ := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
@@ -355,7 +361,7 @@ func errorTextFrom(data []byte, status int) string {
 		return e.Error
 	}
 	if status == http.StatusUnauthorized {
-		return "нет доступа к локальному API (проверьте, что Remotai запущен от вашего пользователя)"
+		return localize.Text("нет доступа к локальному API (проверьте, что Remotai запущен от вашего пользователя)")
 	}
-	return fmt.Sprintf("ошибка %d", status)
+	return fmt.Sprintf(localize.Text("ошибка %d"), status)
 }

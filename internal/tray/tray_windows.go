@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"syscall"
+	"tgcontrol/internal/localize"
 	"time"
 
 	"fyne.io/systray"
@@ -35,40 +36,40 @@ func Run(ctx context.Context, opts Options) {
 	onReady := func() {
 		systray.SetIcon(IconICO())
 		systray.SetTitle("Remotai")
-		systray.SetTooltip(fmt.Sprintf("Remotai запущен на :%d", opts.Port))
+		systray.SetTooltip(fmt.Sprintf(localize.Text("Remotai запущен на :%d"), opts.Port))
 
 		// Статус отражает реальное состояние облака (relay), а не просто
 		// «процесс жив»: телефон видит ПК только при connected.
 		statusText := func() string {
 			if opts.BindError != "" {
-				return fmt.Sprintf("⛔ Порт занят  •  :%d", opts.Port)
+				return fmt.Sprintf(localize.Text("⛔ Порт занят  •  :%d"), opts.Port)
 			}
 			if opts.SetupMode {
-				return fmt.Sprintf("🟡 Требуется настройка  •  :%d", opts.Port)
+				return fmt.Sprintf(localize.Text("🟡 Требуется настройка  •  :%d"), opts.Port)
 			}
 			if opts.RelayStatus != nil {
 				configured, connected := opts.RelayStatus()
 				if configured && connected {
-					return fmt.Sprintf("🟢 В сети  •  :%d", opts.Port)
+					return fmt.Sprintf(localize.Text("🟢 В сети  •  :%d"), opts.Port)
 				}
 				if configured {
-					return fmt.Sprintf("🟡 Нет связи с облаком  •  :%d", opts.Port)
+					return fmt.Sprintf(localize.Text("🟡 Нет связи с облаком  •  :%d"), opts.Port)
 				}
 			}
-			return fmt.Sprintf("🟡 Нет облака  •  :%d", opts.Port)
+			return fmt.Sprintf(localize.Text("🟡 Нет облака  •  :%d"), opts.Port)
 		}
 
 		mStatus := systray.AddMenuItem(statusText(), "")
 		mStatus.Disable()
 		systray.AddSeparator()
-		mOpen := systray.AddMenuItem("Открыть окно", "Открыть Remotai")
-		mTerm := systray.AddMenuItem("Терминалы", "Терминалы, файлы и экран этого компьютера")
-		mHostTerm := systray.AddMenuItem("Новый терминал на ПК", "Окно терминала, сразу видное с телефона")
-		mFolder := systray.AddMenuItem("Папка проекта", "Открыть в проводнике")
-		mLog := systray.AddMenuItem("Открыть лог", "remotai.log")
+		mOpen := systray.AddMenuItem(localize.Text("Открыть окно"), localize.Text("Открыть Remotai"))
+		mTerm := systray.AddMenuItem(localize.Text("Терминалы"), localize.Text("Терминалы, файлы и экран этого компьютера"))
+		mHostTerm := systray.AddMenuItem(localize.Text("Новый терминал на ПК"), localize.Text("Окно терминала, сразу видное с телефона"))
+		mFolder := systray.AddMenuItem(localize.Text("Папка проекта"), localize.Text("Открыть в проводнике"))
+		mLog := systray.AddMenuItem(localize.Text("Открыть лог"), "remotai.log")
 		systray.AddSeparator()
-		mRestart := systray.AddMenuItem("Перезапустить", "")
-		mQuit := systray.AddMenuItem("Выйти", "Завершить Remotai")
+		mRestart := systray.AddMenuItem(localize.Text("Перезапустить"), "")
+		mQuit := systray.AddMenuItem(localize.Text("Выйти"), localize.Text("Завершить Remotai"))
 		if opts.SetupMode {
 			mTerm.Disable()
 			mHostTerm.Disable()

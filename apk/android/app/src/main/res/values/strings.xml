@@ -4,4 +4,7 @@
     <string name="title_activity_main">Remotai</string>
     <string name="package_name">com.tgcontrol.app</string>
     <string name="custom_url_scheme">com.tgcontrol.app</string>
+    <string name="download_started">Downloading: %1$s</string>
+    <string name="download_unavailable">Download manager unavailable</string>
+    <string name="download_failed">Download failed. Please try again.</string>
 </resources>

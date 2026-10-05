@@ -16,6 +16,7 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"tgcontrol/internal/localize"
 	"time"
 
 	"tgcontrol/internal/config"
@@ -66,7 +67,7 @@ const maxDeferral = 2 * time.Hour
 // человек не видел нигде.
 func deferredRestartReason(windowOpen bool, liveSessions int, waited time.Duration) string {
 	if !windowOpen && liveSessions <= 0 {
-		return "окно закрыто, живых сеансов нет"
+		return localize.Text("окно закрыто, живых сеансов нет")
 	}
 	if waited >= maxDeferral {
 		return "лимит ожидания истёк — " + waitCause(windowOpen, liveSessions)
@@ -78,11 +79,11 @@ func deferredRestartReason(windowOpen bool, liveSessions int, waited time.Durati
 func waitCause(windowOpen bool, liveSessions int) string {
 	switch {
 	case windowOpen && liveSessions > 0:
-		return fmt.Sprintf("окно панели открыто, живых сеансов: %d", liveSessions)
+		return fmt.Sprintf(localize.Text("окно панели открыто, живых сеансов: %d"), liveSessions)
 	case windowOpen:
-		return "окно панели открыто"
+		return localize.Text("окно панели открыто")
 	default:
-		return fmt.Sprintf("живых сеансов: %d", liveSessions)
+		return fmt.Sprintf(localize.Text("живых сеансов: %d"), liveSessions)
 	}
 }
 
@@ -158,7 +159,7 @@ func runAutoUpdate(ctx context.Context, notify updateNotifier) {
 	// пишется ЗДЕСЬ, а не в момент подмены бинарника: иначе панель показывала
 	// «Обновлён до v2.25.0», пока процесс ещё работал на v2.24.0.
 	restartNow := func(reason string) {
-		log.Printf("[UPDATE] %s — перезапуск на v%s", reason, pending.version)
+		log.Printf(localize.Text("[UPDATE] %s — перезапуск на v%s"), reason, pending.version)
 		// Кого рестарт всё-таки задевает (сработал лимит ожидания) — тот должен
 		// увидеть «ПК обновляется», а не безликое «Переподключение…».
 		if warned := warnLiveSessions(notify, pending.version); warned > 0 {
@@ -170,14 +171,14 @@ func runAutoUpdate(ctx context.Context, notify updateNotifier) {
 		// владельца сообщением (см. internal/selfheal).
 		selfheal.MarkStop("update")
 		if pending.viaManager {
-			log.Printf("[UPDATE] прошу сервис-менеджер перезапустить агента на v%s", pending.version)
+			log.Printf(localize.Text("[UPDATE] прошу сервис-менеджер перезапустить агента на v%s"), pending.version)
 			if err := service.RestartByManager(); err != nil {
-				log.Printf("[UPDATE] перезапуск менеджером не удался: %v", err)
+				log.Printf(localize.Text("[UPDATE] перезапуск менеджером не удался: %v"), err)
 			}
 			return
 		}
 		if pending.viaSystemd {
-			log.Printf("[UPDATE] выхожу — systemd поднимет сервис на v%s", pending.version)
+			log.Printf(localize.Text("[UPDATE] выхожу — systemd поднимет сервис на v%s"), pending.version)
 			os.Exit(0)
 		}
 		args := slices.Clone(pending.args)
@@ -187,7 +188,7 @@ func runAutoUpdate(ctx context.Context, notify updateNotifier) {
 			args = append(args, "--background")
 		}
 		if err := update.Restart(args); err != nil {
-			log.Printf("[UPDATE] перезапуск не удался: %v", err)
+			log.Printf(localize.Text("[UPDATE] перезапуск не удался: %v"), err)
 		}
 	}
 
@@ -221,15 +222,15 @@ func runAutoUpdate(ctx context.Context, notify updateNotifier) {
 			switch {
 			case err != nil:
 				// Нет сети/манифест битый — просто логируем и ждём следующий цикл.
-				log.Printf("[UPDATE] проверка не удалась: %v", err)
+				log.Printf(localize.Text("[UPDATE] проверка не удалась: %v"), err)
 			case info != nil && info.Available && info.DownloadURL != "":
 				if pending != nil && !version.IsNewer(info.Version, pending.version) {
 					// Эта (или более старая) версия уже применена — ждём тишины.
 					break
 				}
-				log.Printf("[UPDATE] доступна v%s (текущая v%s) — скачиваю…", info.Version, version.Version)
+				log.Printf(localize.Text("[UPDATE] доступна v%s (текущая v%s) — скачиваю…"), info.Version, version.Version)
 				if err := update.Apply(info.DownloadURL, info.SHA256); err != nil {
-					log.Printf("[UPDATE] не удалось применить: %v", err)
+					log.Printf(localize.Text("[UPDATE] не удалось применить: %v"), err)
 					break
 				}
 				managed := service.RunAsService()
@@ -237,7 +238,7 @@ func runAutoUpdate(ctx context.Context, notify updateNotifier) {
 					// SCM сам перезапустит / применится при следующем старте.
 					// Маркер «обновлено» здесь не пишем: новый бинарник вступит в
 					// силу неизвестно когда, а баннер врёт уже сейчас.
-					log.Printf("[UPDATE] v%s применена — вступит в силу после перезапуска сервиса", info.Version)
+					log.Printf(localize.Text("[UPDATE] v%s применена — вступит в силу после перезапуска сервиса"), info.Version)
 					return
 				}
 				// launchd перезапуск умеет — значит и под ним обновление проходит
@@ -262,7 +263,7 @@ func runAutoUpdate(ctx context.Context, notify updateNotifier) {
 					since:      since,
 					viaSystemd: service.UnderSystemd(),
 				}
-				log.Printf("[UPDATE] v%s применена", info.Version)
+				log.Printf(localize.Text("[UPDATE] v%s применена"), info.Version)
 
 				windowOpen, live := desktopui.WindowOpen(), liveClientSessions()
 				if deferredRestartReason(windowOpen, live, time.Since(pending.since)) == "" {
@@ -271,9 +272,9 @@ func runAutoUpdate(ctx context.Context, notify updateNotifier) {
 					// показывает плашку «обновление готово» и кнопку рестарта —
 					// иначе о готовом обновлении знает только лог.
 					update.SetPending(info.Version, func() {
-						restartNow("перезапуск по кнопке в панели")
+						restartNow(localize.Text("перезапуск по кнопке в панели"))
 					})
-					log.Printf("[UPDATE] перезапуск отложен: %s (не дольше %s)", waitCause(windowOpen, live), maxDeferral)
+					log.Printf(localize.Text("[UPDATE] перезапуск отложен: %s (не дольше %s)"), waitCause(windowOpen, live), maxDeferral)
 				}
 			}
 		}
@@ -353,7 +354,7 @@ func readUpdateMarker(name string) string {
 func writeUpdateMarker(name, version string) {
 	p := filepath.Join(paths.Base(), name)
 	if err := os.WriteFile(p, []byte(version), 0o600); err != nil {
-		log.Printf("[UPDATE] маркер %s не записан: %v", name, err)
+		log.Printf(localize.Text("[UPDATE] маркер %s не записан: %v"), name, err)
 	}
 }
 

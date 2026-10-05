@@ -1,3 +1,4 @@
+import { getLocale } from "../locale";
 import { useState } from "react";
 import { t } from "../i18n";
 import { useLicense } from "../hooks/useLicense";
@@ -31,7 +32,7 @@ export interface AccountLicenseInfo {
 /** Цена человеку: из копеек/центов — в «349 ₽/мес», без хвоста «,00». */
 function formatPrice(minor: number, currency: string): string {
   try {
-    return new Intl.NumberFormat("ru-RU", {
+    return new Intl.NumberFormat(getLocale(), {
       style: "currency",
       currency,
       maximumFractionDigits: 0,
@@ -98,7 +99,7 @@ export function LicenseSection({ versionLabel, cloud = false, account, ai = fals
    * всегда — человек не мог отличить свежий план от устаревшего (N171).
    */
   const cachedLabel = account?.cached_at
-    ? new Date(account.cached_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    ? new Date(account.cached_at).toLocaleTimeString(getLocale(), { hour: "2-digit", minute: "2-digit" })
     : "";
 
   /**
@@ -196,8 +197,8 @@ export function LicenseSection({ versionLabel, cloud = false, account, ai = fals
               <div className="settings-info-row">
                 <span className="settings-info-label">
                   {localLicense.cancelled_at
-                    ? t("license.cancelled", { date: new Date(localLicense.valid_until).toLocaleDateString() })
-                    : t("license.validUntil", { date: new Date(localLicense.valid_until).toLocaleDateString() })}
+                    ? t("license.cancelled", { date: new Date(localLicense.valid_until).toLocaleDateString(getLocale()) })
+                    : t("license.validUntil", { date: new Date(localLicense.valid_until).toLocaleDateString(getLocale()) })}
                 </span>
               </div>
             )}

@@ -15,9 +15,9 @@ import { isRemoteOffline } from "./transport";
 import { t } from "../i18n";
 
 export function formatTraffic(bytes: number): string {
-  if (bytes < 1024) return `${Math.round(bytes)} Б`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} КБ`;
-  return `${(bytes / 1024 / 1024).toFixed(1)} МБ`;
+  if (bytes < 1024) return t("ui.messages.mfc7867d93f", { p0: (Math.round(bytes)) });
+  if (bytes < 1024 * 1024) return t("ui.messages.mefbf1bb049", { p0: ((bytes / 1024).toFixed(1)) });
+  return t("ui.messages.m3fac5a808d", { p0: ((bytes / 1024 / 1024).toFixed(1)) });
 }
 
 export function remoteErrorMessage(error: unknown): string {

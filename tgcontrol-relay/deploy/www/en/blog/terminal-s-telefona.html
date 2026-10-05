@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>Terminal from your phone: how to open the console of your computer | Remotai</title>
+<meta content="How to get a full-fledged computer or server terminal on your phone: what’s wrong with regular SSH clients, how to survive a connection loss, what to do with Esc and arrows, and why scrolling breaks." name="description"/>
+<link href="https://remotai.ru/en/blog/terminal-s-telefona.html" rel="canonical"/>
+<meta content="article" property="og:type"/>
+<meta content="Terminal from your phone: how to open the console of your computer" property="og:title"/>
+<meta content="How to get a full-fledged computer or server terminal on your phone: what’s wrong with regular SSH clients, how to survive a connection loss, what to do with Esc and arrows, and why scrolling breaks." property="og:description"/>
+<meta content="https://remotai.ru/en/blog/terminal-s-telefona.html" property="og:url"/>
+<link href="/favicon.ico" rel="icon"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Golos+Text:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="/blog/blog.css" rel="stylesheet"/>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Terminal from your phone: how to open the console of your computer",
+  "datePublished": "2026-09-10",
+  "dateModified": "2026-09-10",
+  "author": {
+    "@type": "Person",
+    "name": "Evgeniy Vaulin"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Remotai"
+  },
+  "mainEntityOfPage": "https://remotai.ru/en/blog/terminal-s-telefona.html"
+}</script>
+<link href="https://remotai.ru/blog/terminal-s-telefona.html" hreflang="ru" rel="alternate"/><link href="https://remotai.ru/en/blog/terminal-s-telefona.html" hreflang="en" rel="alternate"/><link href="https://remotai.ru/blog/terminal-s-telefona.html" hreflang="x-default" rel="alternate"/></head>
+<body>
+<header class="top">
+<div class="wrap">
+<a class="logo" href="/en/">Remot<span>ai</span></a><a class="language-link" href="/blog/terminal-s-telefona.html" hreflang="ru" lang="ru" style="margin-left:auto;padding:8px;white-space:nowrap;font-size:13px">Русский</a>
+<nav class="nav">
+<a href="/en/blog/">Blog</a>
+<a href="/en/server.html">Agent on the server</a>
+<a href="/en/uslugi.html">Turnkey</a>
+<a href="/en/#pricing">Prices</a>
+<a href="/app/?lang=en">Web version</a>
+</nav>
+</div>
+</header>
+<div class="wrap">
+<article>
+<h1>Terminal from your phone: how to open the console of your computer</h1>
+<div class="meta">September 10, 2026 · read 5 minutes</div>
+<p>The console on the phone is not needed for beauty. Run the build, look at the logs of the failed service, restart the process, respond to the agent who is waiting for confirmation. All this is done in two lines, for which it would be stupid to return home.</p>
+<p>There is a way, and it has been known for a long time: an SSH client. The problem is that it doesn't work as well as you'd expect on a phone, and here's why.</p>
+<h2>What breaks</h2>
+<p><strong>The connection breaks, and the work dies with it.</strong> You left the subway, the phone changed the network, the connection was closed. Everything that was performed inside the session died along with it. Under treatment <code>tmux</code> or <code>screen</code>, but they need to be launched in advance, and they are usually remembered after the first loss.</p>
+<p><strong>There are not enough keys.</strong> The console constantly needs Esc, Ctrl, Tab and arrows. The mobile keyboard does not show them, applications bring out an additional panel, and it is inconvenient to hit small buttons with your finger. This is especially noticeable in programs with a text interface: editors, file managers, console agents.</p>
+<p><strong>You don't get the scrolling.</strong> The program that draws the screen itself intercepts gestures. You try to scroll through the output, but you end up in a menu item. The history lives in the scroll buffer, which still needs to be reached.</p>
+<p><strong>The screen jumps when turning.</strong> Changing the window size causes the program to redraw itself. Part of the story may be lost, and you will end up at the beginning of the output instead of where you read.</p>
+<h2>How to fix it</h2>
+<p><strong>The process must live separately from your session.</strong> Then the connection breakdown ceases to be an event: they returned, connected, and saw the same screen. This is exactly what does <code>tmux</code>, and this is what should be the default, not a user exploit.</p>
+<p><strong>The connection must be initiated by the computer.</strong> Then you don’t need a public IP address or port forwarding on the router. The machine itself communicates with the intermediate server, and you connect there too.</p>
+<p><strong>The keys should be under your thumb.</strong> Esc, Ctrl, Tab and arrow keys are not hidden in submenus. This is a little thing that decides whether you will use the console on your phone or not.</p>
+<p><strong>Window size changes need to be filtered.</strong> Small jumps in height caused by the keyboard and browser address bar should not force the program to redraw everything. Otherwise, every opening of the keyboard will cost you your place in history.</p>
+<h2>What to choose</h2>
+<p>If the task is one-time, any SSH client and the habit of running it will suffice <code>tmux</code> first team.</p>
+<p>If you return to the console every day, it's worth picking up a tool that already does everything listed above. We made ours precisely because of this pain: the terminal lives on the computer, and not in the application, so it survives both the loss of the network and the closing of the application. Esc, Ctrl and arrows are placed in a row below the screen. The history is not lost when you turn the phone.</p>
+<div class="cta-box">
+<h3>Try it</h3>
+<p>Opens in the browser, no application required. The first 7 days are free and without a card, then 900 ₽ per month.</p>
+<a class="btn" href="/app/?lang=en">Open web version</a>
+</div>
+<h2>About safety</h2>
+<p>Check three things for any solution. Who sees the contents of the session if the traffic goes through someone else's server. How to revoke access from a lost phone. What happens after rebooting the computer: will access return on its own?</p>
+<h2>How much does it cost</h2>
+<p>Working with a computer on your home network is free forever. Internet connection is included in the subscription, 900 rubles per month, the first seven days are free and without a card.</p>
+<p>If the console is needed not for a home computer, but for a server that works around the clock, look at the script analysis <a href="/en/blog/claude-code-iz-rossii.html">agent on your server</a>.</p>
+</article>
+</div>
+<footer>
+<div class="wrap">
+<p>Individual entrepreneur Vaulin Evgeniy Nikolaevich · TIN 773461030140 · OGRNIP 325774600620214</p>
+<p><a href="/en/">Home</a> · <a href="/en/blog/">Blog</a> · <a href="/en/server.html">Agent on the server</a>
+<a href="/en/uslugi.html">Turnkey</a> · <a href="/en/offer.html">Offer</a></p>
+</div>
+</footer>
+<script>
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym(111692890,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+(function(){
+  var SLUG = "terminal-s-telefona";
+  try{
+    // Метка внешней рекламы важнее: если человек пришёл по объявлению, источником
+    // остаётся оно, а не страница блога, на которую он потом забрёл.
+    var q=new URLSearchParams(location.search),utm={};
+    ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","yclid"].forEach(function(k){var v=q.get(k);if(v)utm[k]=v.slice(0,200);});
+    if(Object.keys(utm).length&&!localStorage.getItem("utm")){
+      localStorage.setItem("utm",JSON.stringify(utm));
+    }else if(!localStorage.getItem("utm")){
+      // Пришёл из поиска прямо в блог: запоминаем статью как источник, чтобы в базе
+      // было видно, какая именно страница привела человека к регистрации и оплате.
+      localStorage.setItem("utm",JSON.stringify({utm_source:"blog",utm_medium:"article",utm_campaign:SLUG}));
+    }
+  }catch(e){}
+  // Цели: клик по кнопке в статье и уход в приложение или на страницу сценария.
+  document.querySelectorAll('a[href^="/app/?lang=en"], a[href^="/server.html"], a[href^="/#pricing"]').forEach(function(a){
+    a.addEventListener("click",function(){
+      try{ ym(111692890,"reachGoal","blog_cta",{article:SLUG,to:a.getAttribute("href")}); }catch(e){}
+    });
+  });
+})();
+</script>
+</body>
+</html>

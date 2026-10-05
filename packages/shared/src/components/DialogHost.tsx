@@ -4,6 +4,7 @@ import { setDialogEmitter, type DialogRequest } from "../dialog";
 import { useEscape } from "../hooks/useEscape";
 import { platform } from "../platform";
 import { t } from "../i18n";
+import { useLanguage } from "../locale";
 
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])';
@@ -49,6 +50,7 @@ export function trapTab(root: HTMLElement | null, e: ReactKeyboardEvent): boolea
  * фокус возвращается на кнопку, из которой диалог вызвали.
  */
 export function DialogHost() {
+  useLanguage();
   const [queue, setQueue] = useState<DialogRequest[]>([]);
   const [value, setValue] = useState("");
   const cur = queue[0] ?? null;

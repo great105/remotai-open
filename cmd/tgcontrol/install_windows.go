@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
+	"tgcontrol/internal/localize"
 	"unsafe"
 
 	"golang.org/x/sys/windows/registry"
@@ -70,7 +71,7 @@ func ensureInstalled() {
 	// Папка ~/Remotai (files + встроенные скиллы) — при каждом старте, чтобы
 	// она появилась и у давних установок после автообновления.
 	if err := bundle.Ensure(); err != nil {
-		log.Printf("[INSTALL] папка ~/Remotai: %v", err)
+		log.Printf(localize.Text("[INSTALL] папка ~/Remotai: %v"), err)
 	}
 }
 
@@ -162,6 +163,6 @@ func addUserPath(dir string) error {
 	user32.NewProc("SendMessageTimeoutW").Call(
 		HWND_BROADCAST, WM_SETTINGCHANGE, 0,
 		uintptr(unsafe.Pointer(env)), SMTO_ABORTIFHUNG, 3000, 0)
-	log.Printf("[INSTALL] %s добавлен в user PATH", dir)
+	log.Printf(localize.Text("[INSTALL] %s добавлен в user PATH"), dir)
 	return nil
 }

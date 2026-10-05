@@ -1,3 +1,5 @@
+import { getLocale } from "@tgcontrol/shared";
+import { t } from "@tgcontrol/shared";
 // Состояние тарифа Remotai для показа в интерфейсе.
 //
 // Чистая функция, вынесенная из экрана, чтобы правила показа тарифа можно было
@@ -38,7 +40,7 @@ export type PlanKind = "founder" | "beta" | "trial" | "pro" | "free";
 export interface PlanState {
   kind: PlanKind;
   /** Имя полки, как на витрине: «Локально», «Про» или «Флит». */
-  planName: "Локально" | "Про" | "Флит";
+  planName: string;
   /** Показывать ли кнопку оформления подписки. */
   showUpgrade: boolean;
   /**
@@ -91,7 +93,7 @@ export function planState(me: PlanMe): PlanState {
   // даже если релей не проставил effective_tier явно. «Флит» показываем только
   // тому, кто реально на нём: это другая полка, а не «Про побольше».
   const planName: PlanState["planName"] =
-    kind === "free" ? "Локально" : fleet ? "Флит" : "Про";
+    kind === "free" ? t("license.free") : fleet ? t("license.fleet") : t("license.pro");
 
   // Доверяем серверу, если он ответил; иначе выводим сами — но так же, как он.
   const cloudAllowed = me.cloud_allowed ?? kind !== "free";
@@ -180,6 +182,6 @@ export function trialLine(me: PlanMe & { trial_end?: string }, paidUntil: string
   const state = planState(me);
   if (state.kind !== "trial" || paidUntil) return null;
   const end = me.trial_end ? new Date(me.trial_end) : null;
-  const date = end && !Number.isNaN(end.getTime()) ? end.toLocaleDateString("ru-RU") : "";
+  const date = end && !Number.isNaN(end.getTime()) ? end.toLocaleDateString(getLocale()) : "";
   return { days: state.trialDaysLeft, date };
 }

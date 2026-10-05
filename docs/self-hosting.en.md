@@ -5,7 +5,11 @@
 Run Remotai on your own infrastructure without a subscription to our service.
 Self-hosted access includes terminals, AI agents, server tools and device
 management through your own relay. You pay your infrastructure and chosen AI
-providers directly. The application interface is currently in Russian.
+providers directly. The application supports English and Russian. Choose a
+language on the sign-in screen or in Settings → Help and privacy; the choice is
+saved on your device. Terminal output and your own file/project names are
+preserved. For CLI help and the Windows tray, set `REMOTAI_LANGUAGE=en` or
+`REMOTAI_LANGUAGE=ru`; otherwise they use the operating system's language.
 
 If you prefer a ready-made service with maintenance, use
 [official Remotai](https://remotai.ru). Its managed cloud requires a subscription

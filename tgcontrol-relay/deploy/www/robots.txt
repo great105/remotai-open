@@ -1,0 +1,17 @@
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /v1/
+Disallow: /admin
+Disallow: /metrics
+Disallow: /grafana/
+Disallow: /health
+
+User-agent: *
+Allow: /
+Disallow: /v1/
+Disallow: /admin
+Disallow: /metrics
+Disallow: /grafana/
+Disallow: /health
+
+Sitemap: https://remotai.ru/sitemap.xml

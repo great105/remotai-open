@@ -1,3 +1,4 @@
+import { t } from "../i18n";
 import { useEffect, useState } from "react";
 import { useEscape } from "../hooks/useEscape";
 import { AGENT_INSTALL_ORDER } from "../agentInstall";
@@ -81,36 +82,36 @@ const ALL: Snippet[] = [
   //
   // Почему это отдельная группа, а не «Установка»: там соседствуют Node.js и
   // браузер, среди которых шаги сценария терялись, а порядок был не виден.
-  { label: "1 · Установить Remotai", cmd: REMOTAI_SERVER_INSTALL_COMMAND, group: "remotai", platform: "posix" },
-  { label: "2 · Привязать к аккаунту", cmd: REMOTAI_PAIR_COMMAND, group: "remotai", platform: "posix" },
-  { label: "3 · Запустить службу", cmd: REMOTAI_SERVICE_START_COMMAND, group: "remotai", platform: "posix" },
-  { label: "Проверить: работает ли", cmd: REMOTAI_SERVICE_STATUS_COMMAND, group: "remotai", platform: "posix" },
-  { label: "Не в сети? Перезапустить службу", cmd: REMOTAI_SERVICE_RESTART_COMMAND, group: "remotai", platform: "posix" },
-  { label: "Если не поднялась: журнал", cmd: REMOTAI_SERVICE_LOGS_COMMAND, group: "remotai", platform: "posix" },
-  { label: "Обновить Remotai", cmd: REMOTAI_UPDATE_COMMAND, group: "remotai", platform: "posix" },
-  { label: "Отправить в Telegram 💬", cmd: 'remotai send ""', group: "remotai" },
-  { label: "Файл в Telegram 📎", cmd: "remotai send --file ", group: "remotai" },
-  { label: "Сколько памяти свободно", cmd: "free -h", group: "remotai", platform: "posix" },
+  { get label() { return t("ui.snippetssheet.m5c3c1262a3"); }, cmd: REMOTAI_SERVER_INSTALL_COMMAND, group: "remotai", platform: "posix" },
+  { get label() { return t("ui.snippetssheet.m4782130023"); }, cmd: REMOTAI_PAIR_COMMAND, group: "remotai", platform: "posix" },
+  { get label() { return t("guide.ssh.ex3"); }, cmd: REMOTAI_SERVICE_START_COMMAND, group: "remotai", platform: "posix" },
+  { get label() { return t("ui.snippetssheet.md6ef026425"); }, cmd: REMOTAI_SERVICE_STATUS_COMMAND, group: "remotai", platform: "posix" },
+  { get label() { return t("ui.snippetssheet.m28d838a220"); }, cmd: REMOTAI_SERVICE_RESTART_COMMAND, group: "remotai", platform: "posix" },
+  { get label() { return t("ui.snippetssheet.mb765356360"); }, cmd: REMOTAI_SERVICE_LOGS_COMMAND, group: "remotai", platform: "posix" },
+  { get label() { return t("ui.snippetssheet.m2a56f265a7"); }, cmd: REMOTAI_UPDATE_COMMAND, group: "remotai", platform: "posix" },
+  { get label() { return t("ui.snippetssheet.m6ccaf963b5"); }, cmd: 'remotai send ""', group: "remotai" },
+  { get label() { return t("ui.snippetssheet.mb2401afbe5"); }, cmd: "remotai send --file ", group: "remotai" },
+  { get label() { return t("ui.snippetssheet.mfa36b4e689"); }, cmd: "free -h", group: "remotai", platform: "posix" },
   // Дешёвые VPS идут с 1 ГБ и БЕЗ подкачки, а установка любого npm-агента там
   // съедает больше: у владельца `npm i @anthropic-ai/claude-code` убил
   // oom-killer прямо во время работы виртуального браузера, и с телефона это
   // выглядело как «всё вылетело» — команда пропала, машина перестала отвечать.
   // Подкачка эту грань убирает; команда идемпотентна — повторное нажатие
   // ничего не ломает.
-  { label: "Мало памяти? Включить подкачку 2 ГБ", cmd: SWAP_SETUP_COMMAND, group: "remotai", platform: "posix" },
+  { get label() { return t("ui.snippetssheet.mda8eb0bd27"); }, cmd: SWAP_SETUP_COMMAND, group: "remotai", platform: "posix" },
   { label: "Node.js LTS (Ubuntu/Debian)", cmd: NODE_INSTALL_POSIX_COMMAND, group: "install", platform: "posix" },
   { label: "Node.js LTS (Windows, winget)", cmd: NODE_INSTALL_WINDOWS_COMMAND, group: "install", platform: "windows" },
   // Без winget (старая Windows 10 / выключенный App Installer) остаётся только
   // офлайн-установщик: страница загрузки открывается в браузере ПК.
-  { label: "Node.js: открыть страницу загрузки", cmd: "start https://nodejs.org/en/download", group: "install", platform: "windows" },
-  { label: "Remotai на сервер", cmd: REMOTAI_SERVER_INSTALL_COMMAND, group: "install", platform: "posix" },
-  { label: "Виртуальный браузер (Xvfb+Chrome)", cmd: VIRTUAL_BROWSER_INSTALL_COMMAND, group: "install", platform: "posix" },
+  { get label() { return t("ui.snippetssheet.m46eb28589b"); }, cmd: "start https://nodejs.org/en/download", group: "install", platform: "windows" },
+  { get label() { return t("ui.snippetssheet.m7f7303d5e0"); }, cmd: REMOTAI_SERVER_INSTALL_COMMAND, group: "install", platform: "posix" },
+  { get label() { return t("ui.snippetssheet.m51c3dbb0f8"); }, cmd: VIRTUAL_BROWSER_INSTALL_COMMAND, group: "install", platform: "posix" },
   // Запуск агентов живёт в отдельной кнопке «Агент» рядом с ⚡: там видно, что
   // установлено, а что нужно поставить (см. AgentLaunchSheet). Дубли-сниппеты
   // «Запустить Claude/Codex/…» убраны, чтобы не было двух разных путей.
   // ── Git ──
   { label: "git status", cmd: "git status", group: "git" },
-  { label: "git log короткий", cmd: "git log --oneline -20", group: "git" },
+  { get label() { return t("ui.snippetssheet.m6b2fc41183"); }, cmd: "git log --oneline -20", group: "git" },
   { label: "git diff", cmd: "git diff", group: "git" },
   { label: "git pull", cmd: "git pull", group: "git" },
   { label: "git push", cmd: "git push", group: "git" },
@@ -122,25 +123,25 @@ const ALL: Snippet[] = [
   { label: "go test ./...", cmd: "go test ./...", group: "go" },
   { label: "go vet ./...", cmd: "go vet ./...", group: "go" },
   // ── Shell / Система ──
-  { label: "ls детально", cmd: "ls -la", group: "shell", platform: "posix" },
-  { label: "Где я", cmd: "pwd", group: "shell", platform: "posix" },
-  { label: "Процессы", cmd: "ps aux", group: "system", platform: "posix" },
-  { label: "Диски", cmd: "df -h", group: "system", platform: "posix" },
-  { label: "Журнал systemd", cmd: "journalctl -n 100 --no-pager", group: "system", platform: "posix" },
-  { label: "Что тут?", cmd: "dir", group: "shell", platform: "windows" },
-  { label: "Запущенные процессы", cmd: "tasklist | findstr /i node", group: "system", platform: "windows" },
+  { get label() { return t("ui.snippetssheet.me52be1b0d1"); }, cmd: "ls -la", group: "shell", platform: "posix" },
+  { get label() { return t("ui.snippetssheet.m00682e3960"); }, cmd: "pwd", group: "shell", platform: "posix" },
+  { get label() { return t("sys.processes"); }, cmd: "ps aux", group: "system", platform: "posix" },
+  { get label() { return t("ui.snippetssheet.m5f08362b02"); }, cmd: "df -h", group: "system", platform: "posix" },
+  { get label() { return t("ui.snippetssheet.mcd8def8f4a"); }, cmd: "journalctl -n 100 --no-pager", group: "system", platform: "posix" },
+  { get label() { return t("ui.snippetssheet.m465d6b53db"); }, cmd: "dir", group: "shell", platform: "windows" },
+  { get label() { return t("ui.snippetssheet.m62366ba492"); }, cmd: "tasklist | findstr /i node", group: "system", platform: "windows" },
 ];
 
 const GROUP_LABEL: Record<Snippet["group"], string> = {
-  custom: "⭐ Мои команды",
-  remotai: "🖥 Remotai на этом сервере (по шагам)",
-  install: "📦 Установка",
-  agent: "AI агенты",
+  get custom() { return t("ui.snippetssheet.m927448b7ab"); },
+  get remotai() { return t("ui.snippetssheet.m87d112155d"); },
+  get install() { return t("ui.snippetssheet.m118b738ef5"); },
+  get agent() { return t("ui.snippetssheet.m1881167c12"); },
   git: "Git",
   node: "Node / npm",
   go: "Go",
   shell: "Shell",
-  system: "Система",
+  get system() { return t("guide.action.openSystem"); },
 };
 
 // Порядок групп в шите (свои и установка — сверху).
@@ -236,7 +237,7 @@ export function SnippetsSheet({
   const registryInstalls: Snippet[] = agentInstalls
     .filter((a) => !!a.install)
     .sort((a, b) => (installOrder.get(a.id) ?? 999) - (installOrder.get(b.id) ?? 999))
-    .map((a) => ({ label: `Установить ${a.name}`, cmd: a.install!, group: "install" }));
+    .map((a) => ({ label: t("ui.snippetssheet.m07600d3b73", { p0: (a.name) }), cmd: a.install!, group: "install" }));
   const sharedCustom: Snippet[] = (userCommands || [])
     .filter((c) => !!c.cmd)
     .map((c) => ({ label: (c.label || "").trim() || c.cmd, cmd: c.cmd, group: "custom" as const }));
@@ -261,12 +262,12 @@ export function SnippetsSheet({
       labelledBy="snippets-title"
     >
         <div className="snippets-head">
-          <h3 id="snippets-title">⚡ Команды</h3>
-          <button onClick={onClose} className="snippets-close" aria-label="Закрыть">×</button>
+          <h3 id="snippets-title">{t("ui.snippetssheet.m49352125df")}</h3>
+          <button onClick={onClose} className="snippets-close" aria-label={t("pty.searchClose")}>×</button>
         </div>
         <input
           className="snippets-search"
-          placeholder="Поиск…"
+          placeholder={t("folder.searchPlaceholder")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           autoFocus
@@ -276,13 +277,13 @@ export function SnippetsSheet({
           <div className="snippets-add">
             <input
               className="snippets-add-input"
-              placeholder="Название кнопки"
+              placeholder={t("ui.snippetssheet.m0042b79cb9")}
               value={newLabel}
               onChange={(e) => setNewLabel(e.target.value)}
             />
             <input
               className="snippets-add-input"
-              placeholder="Команда (напр. docker compose up -d)"
+              placeholder={t("ui.snippetssheet.m49f3da222a")}
               value={newCmd}
               onChange={(e) => setNewCmd(e.target.value)}
               autoCapitalize="off"
@@ -290,16 +291,14 @@ export function SnippetsSheet({
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustom(); } }}
             />
             <div className="snippets-add-actions">
-              <button className="btn btn-secondary" onClick={() => setAddOpen(false)}>Отмена</button>
+              <button className="btn btn-secondary" onClick={() => setAddOpen(false)}>{t("agentSessions.cancel")}</button>
               <button className="btn btn-primary" onClick={addCustom} disabled={!newLabel.trim() || !newCmd.trim()}>
-                Сохранить
-              </button>
+                {t("generic.save")}</button>
             </div>
           </div>
         ) : (
           <button className="snippets-add-btn" onClick={() => setAddOpen(true)}>
-            ＋ Своя команда
-          </button>
+            {t("ui.snippetssheet.m21dcb51950")}</button>
         )}
 
         <div className="snippets-list">
@@ -322,8 +321,8 @@ export function SnippetsSheet({
                       <button
                         className={`snippets-pin${own.pinned ? " on" : ""}`}
                         onClick={() => onTogglePin?.(own.id, !own.pinned)}
-                        title={own.pinned ? "Убрать из ряда под терминалом" : "Закрепить в ряду под терминалом"}
-                        aria-label={own.pinned ? "Убрать из ряда" : "Закрепить в ряду"}
+                        title={own.pinned ? t("ui.snippetssheet.m0323f98b7a") : t("ui.snippetssheet.me2cd828886")}
+                        aria-label={own.pinned ? t("ui.snippetssheet.md5ea7403b0") : t("ui.snippetssheet.m200fcc10ff")}
                         aria-pressed={Boolean(own.pinned)}
                       >📌</button>
                     );
@@ -332,16 +331,16 @@ export function SnippetsSheet({
                     <button
                       className="snippets-del"
                       onClick={() => removeCustom(s.cmd)}
-                      title="Удалить"
-                      aria-label={`Удалить ${s.label}`}
+                      title={t("mcp.delete")}
+                      aria-label={t("ui.hermesview.m4128c5d0a7", { p0: (s.label) })}
                     >×</button>
                   )}
-                  <button className="snippets-run" onClick={() => { onRun(s.cmd); onClose(); }} title="Выполнить">↵</button>
+                  <button className="snippets-run" onClick={() => { onRun(s.cmd); onClose(); }} title={t("ui.snippetssheet.m224c8e93c8")}>↵</button>
                 </div>
               ))}
             </div>
           ))}
-          {filtered.length === 0 && <div className="snippets-empty">Ничего не найдено</div>}
+          {filtered.length === 0 && <div className="snippets-empty">{t("folder.noMatches")}</div>}
         </div>
     </SheetShell>
   );

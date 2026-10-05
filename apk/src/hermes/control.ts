@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 export interface CommandAvailability { version:number; without_arguments:string[] }
 /** HTTP policy is authoritative; upstream desktop command hints are not permission. */
 export function availableReadCommand(metadata: CommandAvailability | null | undefined, command: string): boolean {
@@ -70,7 +71,7 @@ export function submissionIdentity(storage: AdmissionStorage | null, device: str
  if (previous) return previous.id;
  const record = { id: create(), session, text, queued };
  if (records.length >= admissionLimit || JSON.stringify([...records, record]).length > admissionBytesLimit) {
-  throw Object.assign(new Error("Слишком много задач с неподтверждённым исходом. Откройте журнал задач и проверьте беседы; повтор исходного текста сохраняет прежний ID. Новая задача не отправлена, черновик сохранён."), { code: "hermes_backend_error" });
+  throw Object.assign(new Error(t("ui.control.m2951aa7e4e")), { code: "hermes_backend_error" });
  }
  persistAdmissions(storage, device, [...records, record]);
  return record.id;

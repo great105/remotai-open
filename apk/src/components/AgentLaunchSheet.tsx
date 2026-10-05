@@ -379,7 +379,7 @@ export function AgentLaunchSheet({ open, onClose, onRun, onRunAgent, onLaunchReq
       ? composeRemoteLaunch(a.cli || "", prefs, launchCtx(a), t("agentLaunch.notOnServer", { name: a.cli || "" }), a.cli_names)
       : cmd;
     const blockedReason = !remote && action === "run"
-      ? (launchAccount?.blockedReason || (!cmd ? "Запуск заблокирован: окружение аккаунта не прошло проверку." : ""))
+      ? (launchAccount?.blockedReason || (!cmd ? t("ui.agentlaunchsheet.m458f285310") : ""))
       : "";
     const resumeCmd = !remote && a.resume_cli
       ? composeLaunch(a.resume_cli, EMPTY_PREFS, launchCtx(a, launchAccount))
@@ -401,7 +401,7 @@ export function AgentLaunchSheet({ open, onClose, onRun, onRunAgent, onLaunchReq
           <span className="agent-launch-name">{a.name}</span>
           <span className="agent-launch-meta">
             {remote && action === "run"
-              ? "Проверить наличие на удалённом сервере и запустить"
+              ? t("ui.agentlaunchsheet.m75c5a47abd")
               : action === "run"
                 ? blockedReason === BLOCKED_ACCOUNTS_MISSING ? t("agentLaunch.chooseAccountHint")
                   : blockedReason || t("agentLaunch.readyToRun")
@@ -523,8 +523,8 @@ export function AgentLaunchSheet({ open, onClose, onRun, onRunAgent, onLaunchReq
                 >
                   <span className="agent-flag-box" aria-hidden>{on ? "✓" : ""}</span>
                   <span className="agent-flag-body">
-                    <span className="agent-flag-title">{f.title}</span>
-                    {f.hint && <span className="agent-flag-hint">{f.hint}</span>}
+                    <span className="agent-flag-title">{ownedText(f.title)}</span>
+                    {f.hint && <span className="agent-flag-hint">{ownedText(f.hint)}</span>}
                   </span>
                   <code className="agent-flag-code">{f.flag}</code>
                 </button>
@@ -716,10 +716,11 @@ export function AgentLaunchSheet({ open, onClose, onRun, onRunAgent, onLaunchReq
 
         <div className="agent-launch-hint">
           {remote
-            ? "Проверка выполняется на SSH-сервере; список установки с компьютера-бастиона здесь не используется."
+            ? t("ui.agentlaunchsheet.mfef107edc9")
             : t("agentLaunch.hint")}
         </div>
       </div>
     </div>
   );
 }
+import { ownedText } from "@tgcontrol/shared";

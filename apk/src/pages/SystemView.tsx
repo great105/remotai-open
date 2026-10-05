@@ -1,3 +1,4 @@
+import { getLocale } from "@tgcontrol/shared";
 import { useEffect, useState, useCallback, useRef } from "react";
 import type { CSSProperties, PointerEvent as ReactPointerEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -39,9 +40,9 @@ function formatUptime(seconds: number): string {
   const d = Math.floor(seconds / 86400);
   const h = Math.floor((seconds % 86400) / 3600);
   const m = Math.floor((seconds % 3600) / 60);
-  if (d > 0) return `${d} д ${h} ч`;
-  if (h > 0) return `${h} ч ${m} м`;
-  return `${m} м`;
+  if (d > 0) return t("ui.systemview.m427d0f027d", { p0: (d), p1: (h) });
+  if (h > 0) return t("ui.settingsview.m2e7d50d6e2", { p0: (h), p1: (m) });
+  return t("ui.settingsview.mc3327909f9", { p0: (m) });
 }
 
 /**
@@ -1085,7 +1086,7 @@ export function SystemView() {
             решение (например, «памяти хватает, запущу ещё агента»). */}
         {tab === "monitor" && stats && offline && statsAt && (
           <div className="sys-stale-banner">
-            {t("sys.statsStale", { time: new Date(statsAt).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }) })}
+            {t("sys.statsStale", { time: new Date(statsAt).toLocaleTimeString(getLocale(), { hour: "2-digit", minute: "2-digit" }) })}
           </div>
         )}
         {tab === "monitor" && stats && (
@@ -1242,7 +1243,7 @@ export function SystemView() {
                 выдавать за текущее состояние (по нему решают, что «прибить»). */}
             {offline && procsAt && (
               <div className="sys-stale-banner">
-                {t("sys.statsStale", { time: new Date(procsAt).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }) })}
+                {t("sys.statsStale", { time: new Date(procsAt).toLocaleTimeString(getLocale(), { hour: "2-digit", minute: "2-digit" }) })}
               </div>
             )}
             <div className="sys-proc-header">

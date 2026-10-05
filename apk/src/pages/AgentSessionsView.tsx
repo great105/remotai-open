@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
+import { getLanguage,
   ApiError, getAgentSessions, mapApiError, t,
   type AgentSessionItem, type AgentSessionsPage,
 } from "@tgcontrol/shared";
@@ -178,7 +178,7 @@ export function AgentSessionsView() {
 
   const groups = useMemo(
     () => groupByDay(items, Date.now(), t("agentSessions.today"), t("agentSessions.yesterday")),
-    [items],
+    [items, getLanguage()],
   );
 
   const onPick = (item: AgentSessionItem) => {

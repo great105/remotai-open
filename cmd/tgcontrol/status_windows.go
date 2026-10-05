@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
+	"tgcontrol/internal/localize"
 	"unsafe"
 
 	"golang.org/x/sys/windows/registry"
@@ -20,7 +21,7 @@ import (
 // только код возврата, а вывод schtasks человеку не нужен (при запуске из
 // оконного процесса он превращался бы в мигающее чёрное окно).
 func cliAutostartState() (bool, string) {
-	return web.AutostartEnabled(), "Планировщик задач Windows"
+	return web.AutostartEnabled(), localize.Text("Планировщик задач Windows")
 }
 
 func cleanupInstalledArtifacts() error {
@@ -31,13 +32,13 @@ func cleanupInstalledArtifacts() error {
 	}
 	_ = removeUserPath(base)
 	if err := os.Remove(filepath.Join(base, "remotai.com")); err != nil && !os.IsNotExist(err) {
-		return fmt.Errorf("удалить CLI launcher: %w", err)
+		return fmt.Errorf(localize.Text("удалить CLI launcher: %w"), err)
 	}
 	selfCopy := filepath.Join(base, "remotai.exe")
 	current, _ := os.Executable()
 	if !strings.EqualFold(filepath.Clean(current), filepath.Clean(selfCopy)) {
 		if err := os.Remove(selfCopy); err != nil && !os.IsNotExist(err) {
-			return fmt.Errorf("удалить %s: %w", selfCopy, err)
+			return fmt.Errorf(localize.Text("удалить %s: %w"), selfCopy, err)
 		}
 	}
 	return nil

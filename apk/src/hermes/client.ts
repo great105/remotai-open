@@ -1,3 +1,4 @@
+import { t } from "@tgcontrol/shared";
 /** Hermes uses the same authenticated transport as every Remotai device feature. */
 import { transport } from "@tgcontrol/shared";
 import type { ControlSnapshot, ControlCapabilities, SubmitTask, TaskReceipt } from "./control";
@@ -136,7 +137,7 @@ export class HermesUserError extends Error {}
 export function scheduledTaskTime(repeat: string, when: string, now = Date.now()): string {
   if (repeat !== "once") return repeat;
   const date = new Date(when);
-  if (!when || Number.isNaN(date.valueOf()) || date.valueOf() <= now) throw new HermesUserError("Выберите время в будущем.");
+  if (!when || Number.isNaN(date.valueOf()) || date.valueOf() <= now) throw new HermesUserError(t("ui.client.mc9f0a455a4"));
   return date.toISOString();
 }
 
@@ -159,15 +160,15 @@ export function runtimeBusy(status: HermesStatus | null): boolean {
 }
 
 export function runtimeLabel(status: HermesStatus | null): string {
-  if (!status) return "Проверяем Hermes на компьютере";
-  if (status.last_error && !status.ready) return "Нужна помощь с запуском";
-  if (status.state === "installing") return "Устанавливаем Hermes";
-  if (status.state === "updating") return "Обновляем Hermes";
-  if (status.state === "starting") return "Запускаем Hermes";
-  if (["checking", "checking_update"].includes(status.state)) return "Проверяем обновление";
-  if (!status.installed) return "Hermes еще не установлен";
-  if (!status.running || !status.ready) return "Hermes готов к запуску";
-  return "Hermes запущен";
+  if (!status) return t("ui.client.mc4ec82ece3");
+  if (status.last_error && !status.ready) return t("ui.client.m3561553bb4");
+  if (status.state === "installing") return t("ui.client.ma957a75478");
+  if (status.state === "updating") return t("ui.client.m9ae25dfad4");
+  if (status.state === "starting") return t("ui.client.m697979637a");
+  if (["checking", "checking_update"].includes(status.state)) return t("ui.client.mc599bae5fe");
+  if (!status.installed) return t("ui.client.mf07f9a6d25");
+  if (!status.running || !status.ready) return t("ui.client.m25ca8dc196");
+  return t("ui.client.m100f25f044");
 }
 
 export interface DraftStorage { getItem(key: string): string | null; setItem(key: string, value: string): void }

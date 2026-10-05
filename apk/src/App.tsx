@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type ComponentType } from "react";
 import { Routes, Route, Navigate, useNavigate, useLocation, useParams } from "react-router-dom";
 import { App as CapApp } from "@capacitor/app";
-import { APP_NAME, ConnectionBanner, ErrorBoundary, setAgentRegistry } from "@tgcontrol/shared";
+import { APP_NAME, ConnectionBanner, ErrorBoundary, setAgentRegistry, useLanguage } from "@tgcontrol/shared";
 import { useToast } from "@tgcontrol/shared";
 import { hasServerConfig, getMode, getSelectedDeviceId, getSelectedDeviceName, isNativeApp, isOnPCPanel, restoreLocalControl, saveConfig } from "./config";
 import { resetCapabilities } from "./capabilities";
@@ -586,6 +586,7 @@ function RouteFallback() {
 }
 
 export function App() {
+  useLanguage();
   const { platform, hasDisplay } = useCapabilities();
   const connectionEntity = platform === "linux" && !hasDisplay ? "server" : "computer";
   // Аналитика: app_open — один раз за запуск. register_source — разово и для уже

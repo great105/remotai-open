@@ -1,3 +1,4 @@
+import { getLocale } from "@tgcontrol/shared";
 import { useCallback, useState } from "react";
 import { getTokenUsage, mapApiError, t } from "@tgcontrol/shared";
 import { usePolling } from "../hooks/usePolling";
@@ -61,9 +62,9 @@ function when(unix: number): string {
   if (!unix) return "";
   const d = new Date(unix * 1000);
   const today = new Date();
-  const hm = d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+  const hm = d.toLocaleTimeString(getLocale(), { hour: "2-digit", minute: "2-digit" });
   if (d.toDateString() === today.toDateString()) return hm;
-  return `${d.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}, ${hm}`;
+  return `${d.toLocaleDateString(getLocale(), { day: "numeric", month: "short" })}, ${hm}`;
 }
 
 function Bars({ rows }: { rows: TokenUsageReport["by_day"] }) {
@@ -162,7 +163,7 @@ export function TokenUsagePanel() {
             {r.total.total > 0 && (
               <span>{t("tokens.split", { io: compactTokens(io), cache: compactTokens(r.total.cache_read) })}</span>
             )}
-            {r.total.calls > 0 && <small>{t("tokens.calls", { n: r.total.calls, count: r.total.calls.toLocaleString("ru-RU") })}</small>}
+            {r.total.calls > 0 && <small>{t("tokens.calls", { n: r.total.calls, count: r.total.calls.toLocaleString(getLocale()) })}</small>}
           </div>
           {r.total.total === 0 && !scanning && <p className="tokens-note">{t("tokens.empty")}</p>}
           {r.total.total > 0 && (

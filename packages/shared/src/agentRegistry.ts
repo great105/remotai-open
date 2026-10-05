@@ -1,3 +1,5 @@
+import { t } from "./i18n";
+import { ownedText } from "./ownedText";
 import type { AgentInfo } from "./types";
 
 const names = new Map<string, string>();
@@ -82,17 +84,17 @@ export function agentHistoryChannel(id: string | null | undefined): { key: strin
   if (!id) return null;
   const rec = history.get(id);
   // Без клавиши предлагать нечего: канал "page" листается жестом, а не кнопкой.
-  return rec?.key ? { key: rec.key, label: rec.label } : null;
+  return rec?.key ? { key: rec.key, label: ownedText(rec.label) } : null;
 }
 
 /** Canonical display name, with a readable fallback for a newer backend id. */
 export function agentDisplayName(id: string | null | undefined): string {
-  if (!id) return "Терминал";
+  if (!id) return t("sys.busyTerminal");
   const known = names.get(id);
   if (known) return known;
   return id
     .split(/[-_]+/)
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ") || "Терминал";
+    .join(" ") || t("sys.busyTerminal");
 }

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>Controlling your computer from your phone: what you can actually do | Remotai</title>
+<meta content="What you can and cannot do with your computer via your phone: launching programs, files, screen, turning off and on. We analyze it by task, without public IP address and port forwarding." name="description"/>
+<link href="https://remotai.ru/en/blog/upravlenie-kompyuterom-s-telefona.html" rel="canonical"/>
+<meta content="article" property="og:type"/>
+<meta content="Controlling your computer from your phone: what you can really do" property="og:title"/>
+<meta content="What you can and cannot do with your computer via your phone: launching programs, files, screen, turning off and on. We analyze it by task, without public IP address and port forwarding." property="og:description"/>
+<meta content="https://remotai.ru/en/blog/upravlenie-kompyuterom-s-telefona.html" property="og:url"/>
+<link href="/favicon.ico" rel="icon"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Golos+Text:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="/blog/blog.css" rel="stylesheet"/>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Controlling your computer from your phone: what you can really do",
+  "datePublished": "2026-09-11",
+  "dateModified": "2026-09-11",
+  "author": {
+    "@type": "Person",
+    "name": "Evgeniy Vaulin"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Remotai"
+  },
+  "mainEntityOfPage": "https://remotai.ru/en/blog/upravlenie-kompyuterom-s-telefona.html"
+}</script>
+<link href="https://remotai.ru/blog/upravlenie-kompyuterom-s-telefona.html" hreflang="ru" rel="alternate"/><link href="https://remotai.ru/en/blog/upravlenie-kompyuterom-s-telefona.html" hreflang="en" rel="alternate"/><link href="https://remotai.ru/blog/upravlenie-kompyuterom-s-telefona.html" hreflang="x-default" rel="alternate"/></head>
+<body>
+<header class="top">
+<div class="wrap">
+<a class="logo" href="/en/">Remot<span>ai</span></a><a class="language-link" href="/blog/upravlenie-kompyuterom-s-telefona.html" hreflang="ru" lang="ru" style="margin-left:auto;padding:8px;white-space:nowrap;font-size:13px">Русский</a>
+<nav class="nav">
+<a href="/en/blog/">Blog</a>
+<a href="/en/server.html">Agent on the server</a>
+<a href="/en/uslugi.html">Turnkey</a>
+<a href="/en/#pricing">Prices</a>
+<a href="/app/?lang=en">Web version</a>
+</nav>
+</div>
+</header>
+<div class="wrap">
+<article>
+<h1>Controlling your computer from your phone: what you can really do</h1>
+<div class="meta">September 11, 2026 · read 5 minutes</div>
+<p>People want to control their computer from their phone for various reasons, and which method is suitable depends on the reason. Someone needs to pick up a forgotten file, someone needs to restart a frozen program, someone needs to keep track of a long task. Let's look at what really works, task by task.</p>
+<h2>Pick up a file or view a folder</h2>
+<p>The most common task and the simplest. Any method that has a file manager will do: cloud services, if the file is placed there in advance, or remote access, if not.</p>
+<p>A nuance that is forgotten: the file must not only be seen, but also opened. The phone will show the document or picture itself, but it’s more convenient to read the source code or log directly on the computer without downloading.</p>
+<h2>Start or restart the program</h2>
+<p>This is where the differences begin. Through a remote desktop, you move the mouse and press buttons in a foreign interface, which is inconvenient on a phone, but sometimes the only option for programs with windows.</p>
+<p>If the program is a console program, everything is much better: one command and it’s launched. The logs are visible immediately, the output is read as text, there is almost no traffic.</p>
+<p>It is important that the running one continues to work after you close the application. If the process lives inside your session, breaking the connection will kill it. That's right, when it lives on the computer itself, and you just watch.</p>
+<h2>See what's on the screen</h2>
+<p>Sometimes you just need to see a picture: whether the render is frozen, what the program shows, whether the process has reached the end. The screen over the Internet eats up traffic, so it’s not worth looking at it all the time, but it’s useful to look at it for a minute.</p>
+<h2>Turn off, reboot, wake up</h2>
+<p>Shutdown and reboot are done with one command. But you won’t be able to turn on a switched off computer remotely via the Internet: it cannot accept commands when it’s not working. To do this, you need Wake-on-LAN and a device on the same network, or simply do not turn off the machine if you need it around the clock.</p>
+<p>This is one of the reasons why they use a server rather than a home computer for regular tasks. There is a separate analysis of this scenario: <a href="/en/blog/claude-code-iz-rossii.html">agent on your server</a>.</p>
+<h2>What prevents almost everyone</h2>
+<p><strong>Gray IP.</strong> Home Internet usually does not provide an address where you can be connected from outside. Classic schemes require a public IP address or router setup, and half the people stop here. The solution is simple: the connection must be established by the computer itself, not the phone. Then neither a router nor port forwarding is needed.</p>
+<p><strong>Communication interruptions.</strong> The phone changes networks constantly. A good solution survives this: they returned, connected, saw what was there.</p>
+<p><strong>Finger control.</strong> An interface designed for a mouse does not translate well to a small screen. Therefore, a console is more convenient for work, and leave the screen for cases when you can’t do without graphics.</p>
+<div class="cta-box">
+<h3>Try it</h3>
+<p>Opens in the browser, no application required. The first 7 days are free and without a card, then 900 ₽ per month.</p>
+<a class="btn" href="/app/?lang=en">Open web version</a>
+</div>
+<h2>About safety</h2>
+<p>Three questions to ask any decision.</p>
+<p>Who sees the contents of the session if the traffic goes through someone else's server.</p>
+<p>How to revoke access if your phone is lost. It should be possible to disable a specific device, and not change everything.</p>
+<p>What will happen after rebooting the computer: will access return on its own or will you have to go to the machine manually.</p>
+<h2>What to choose</h2>
+<p>If the task is one-time and you need graphics, use a remote desktop and endure the inconvenience of management.</p>
+<p>If you return to your computer regularly, the console plus files is more convenient, and the screen as an addition. We made our tool exactly like this: terminals and files as the main one, screen on demand. Working with a computer on your home network is free forever, connecting via the Internet is included in the subscription, 900 rubles per month, the first 7 days are free and without a card.</p>
+<p>If the task is not “to reach your machine”, but “to ensure that something always works”, look towards the server: it does not sleep, does not turn off and does not leave with you.</p>
+</article>
+</div>
+<footer>
+<div class="wrap">
+<p>Individual entrepreneur Vaulin Evgeniy Nikolaevich · TIN 773461030140 · OGRNIP 325774600620214</p>
+<p><a href="/en/">Home</a> · <a href="/en/blog/">Blog</a> · <a href="/en/server.html">Agent on the server</a>
+<a href="/en/uslugi.html">Turnkey</a> · <a href="/en/offer.html">Offer</a></p>
+</div>
+</footer>
+<script>
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym(111692890,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+(function(){
+  var SLUG = "upravlenie-kompyuterom-s-telefona";
+  try{
+    // Метка внешней рекламы важнее: если человек пришёл по объявлению, источником
+    // остаётся оно, а не страница блога, на которую он потом забрёл.
+    var q=new URLSearchParams(location.search),utm={};
+    ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","yclid"].forEach(function(k){var v=q.get(k);if(v)utm[k]=v.slice(0,200);});
+    if(Object.keys(utm).length&&!localStorage.getItem("utm")){
+      localStorage.setItem("utm",JSON.stringify(utm));
+    }else if(!localStorage.getItem("utm")){
+      // Пришёл из поиска прямо в блог: запоминаем статью как источник, чтобы в базе
+      // было видно, какая именно страница привела человека к регистрации и оплате.
+      localStorage.setItem("utm",JSON.stringify({utm_source:"blog",utm_medium:"article",utm_campaign:SLUG}));
+    }
+  }catch(e){}
+  // Цели: клик по кнопке в статье и уход в приложение или на страницу сценария.
+  document.querySelectorAll('a[href^="/app/?lang=en"], a[href^="/server.html"], a[href^="/#pricing"]').forEach(function(a){
+    a.addEventListener("click",function(){
+      try{ ym(111692890,"reachGoal","blog_cta",{article:SLUG,to:a.getAttribute("href")}); }catch(e){}
+    });
+  });
+})();
+</script>
+</body>
+</html>

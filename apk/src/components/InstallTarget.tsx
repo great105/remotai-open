@@ -30,22 +30,22 @@ export function InstallTarget({ server = false, os: selectedOS, onOSChange }: {
   const copy = async (value: string) => {
     try {
       await navigator.clipboard.writeText(value);
-      toastSuccess("Скопировано");
+      toastSuccess(t("guide.copied"));
     } catch {
-      toastError("Не удалось скопировать. Выделите текст и скопируйте вручную.");
+      toastError(t("ui.installtarget.m5356b97f3d"));
     }
   };
   const bridge = <>
-    <p>Откройте этот адрес на компьютере, которым будете управлять. Установка выполняется на нём.</p>
+    <p>{t("ui.installtarget.mb293f26e6c")}</p>
     <code>{RELAY_BASE}/app/#/start?task=host</code>
-    <button className="btn btn-secondary" onClick={() => void copy(`${RELAY_BASE}/app/#/start?task=host`)}>Скопировать ссылку для компьютера</button>
+    <button className="btn btn-secondary" onClick={() => void copy(`${RELAY_BASE}/app/#/start?task=host`)}>{t("ui.installtarget.m4a2525fda3")}</button>
   </>;
-  const help = <p className="onb-hint">Не получается установить? <Link to={`/support?topic=installation&os=${server ? "linux" : os}`}>Написать в поддержку</Link>. Ответ будет в чате на сайте; установленное приложение не требуется.</p>;
+  const help = <p className="onb-hint">{t("ui.installtarget.m573ab6d3c1")}<Link to={`/support?topic=installation&os=${server ? "linux" : os}`}>{t("guide.supportRow")}</Link>{t("ui.installtarget.mb369f46431")}</p>;
   if (handheld && !server) return <div className="start-install">{bridge}{help}</div>;
   return (
     <div className="start-install">
       {!server && <label className="login-field">
-        <span>Система компьютера, которым будете управлять</span>
+        <span>{t("ui.installtarget.m0270353439")}</span>
         <select value={os} onChange={e => {
           const nextOS = e.target.value as InstallOS;
           setLocalOS(nextOS);
@@ -57,41 +57,40 @@ export function InstallTarget({ server = false, os: selectedOS, onOSChange }: {
         </select>
       </label>}
       {server ? <>
-        <p>Выполните в SSH-терминале нужного сервера:</p>
+        <p>{t("ui.installtarget.m80e3a11a1e")}</p>
         <code>{REMOTAI_SERVER_INSTALL_COMMAND}</code>
-        <button className="btn btn-secondary" onClick={() => void copy(REMOTAI_SERVER_INSTALL_COMMAND)}>Скопировать команду установки</button>
-        <p>Установщик покажет состояние фонового запуска. Если он сообщает о ручном режиме, выполните команду запуска из его вывода перед закрытием терминала.</p>
+        <button className="btn btn-secondary" onClick={() => void copy(REMOTAI_SERVER_INSTALL_COMMAND)}>{t("ui.installtarget.m8b6e724d3a")}</button>
+        <p>{t("ui.installtarget.m411583e051")}</p>
       </> : os === "windows" ? <>
         <button className="btn btn-secondary" onClick={() => void openExternalLink(`${RELAY_BASE}/download/remotai-setup.exe`)}>
-          Скачать Remotai для Windows
-        </button>
-        <p>Установщик пока без цифровой подписи. Windows может показать «Неизвестный издатель». Проверьте, что файл скачан с remotai.ru; затем «Подробнее» → «Выполнить в любом случае». В Edge: «⋯» → «Сохранить» → «Всё равно сохранить».</p>
+          {t("ui.installtarget.m2254aa6696")}</button>
+        <p>{t("ui.installtarget.m46bf281b54")}</p>
       </> : <>
         {os === "linux" && <label className="login-field">
-          <span>Процессор компьютера</span>
+          <span>{t("ui.installtarget.m8c350cfbe1")}</span>
           <select value={arch} onChange={e => setArch(e.target.value as LinuxArch)}>
-            <option value="amd64">Intel / AMD — большинство компьютеров</option>
-            <option value="arm64">ARM64 — например, Raspberry Pi 64-bit</option>
+            <option value="amd64">{t("ui.installtarget.mf8c9e1a6d5")}</option>
+            <option value="arm64">{t("ui.installtarget.mf5d5b46b84")}</option>
           </select>
         </label>}
         <button className="btn btn-secondary" onClick={() => void openExternalLink(download.url)}>{download.label}</button>
         {download.altUrl && <button className="btn btn-secondary" onClick={() => void openExternalLink(download.altUrl!)}>{download.altLabel}</button>}
         <p className="onb-hint">{t("install.previousNativePackage")}</p>
         {os === "macos" ? <>
-          <p>Для macOS 12 и новее, Intel и Apple Silicon. Откройте скачанный DMG, перетащите Remotai в Applications («Программы»), затем откройте Remotai оттуда.</p>
+          <p>{t("ui.installtarget.m95a55de0bc")}</p>
           <details>
-            <summary>Mac не разрешает открыть приложение?</summary>
-            <p>Пакет пока без подписи Apple Developer ID. Если macOS сообщает, что разработчик не проверен, после попытки открытия зайдите в «Системные настройки» → «Конфиденциальность и безопасность» → «Всё равно открыть». Используйте только файл с remotai.ru.</p>
+            <summary>{t("ui.installtarget.m4b3ec3a2e5")}</summary>
+            <p>{t("ui.installtarget.m8a32677adf")}</p>
           </details>
-          <p>Доступны терминалы, файлы, SSH, мониторинг и ИИ-агенты. Экран самого Mac пока недоступен.</p>
+          <p>{t("ui.installtarget.m4e6e70b24f")}</p>
         </> : <>
-          <p>Откройте скачанный файл в программе установки приложений, нажмите «Установить», затем найдите Remotai в меню приложений. При установке система может запросить пароль компьютера.</p>
-          <p>Для экрана Linux нужна графическая сессия X11; работа с Wayland пока не проверена.</p>
+          <p>{t("ui.installtarget.md622309b07")}</p>
+          <p>{t("ui.installtarget.mbc45828024")}</p>
         </>}
-        <p>{os === "macos" ? "Remotai откроется в отдельном окне с иконкой в Dock. Закрытие окна сохраняет работу терминалов. " : "Интерфейс откроется в браузере. "}Подключите компьютер по подсказкам Remotai. Автозапуск можно включить в «Панели ПК».</p>
+        <p>{os === "macos" ? t("ui.installtarget.m3658be3491") : t("ui.installtarget.m32a16046bb")}{t("ui.installtarget.me4bb82f33d")}</p>
       </>}
       {!server && <details>
-        <summary>Нужный компьютер сейчас не перед вами?</summary>
+        <summary>{t("ui.installtarget.mebd9059704")}</summary>
         {bridge}
       </details>}
       {help}

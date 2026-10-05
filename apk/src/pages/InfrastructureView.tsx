@@ -1,3 +1,4 @@
+import { getLocale } from "@tgcontrol/shared";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { planState, type PlanMe } from "../plan";
@@ -124,15 +125,15 @@ const ROLE_RANK: Record<WorkspaceRole, number> = {
 };
 
 const ROLE_LABEL: Record<WorkspaceRole, string> = {
-  owner: "Владелец",
-  admin: "Администратор",
-  operator: "Оператор",
-  viewer: "Наблюдатель",
+  get owner() { return t("ui.infrastructureview.m926e3b436e"); },
+  get admin() { return t("ui.infrastructureview.m36d00fd77c"); },
+  get operator() { return t("ui.infrastructureview.m839e573793"); },
+  get viewer() { return t("ui.infrastructureview.md7f45e99fa"); },
 };
 
 const TYPE_LABEL: Record<DeviceType, string> = {
-  computer: "Компьютер",
-  server: "Сервер",
+  get computer() { return t("infra.local.thisPcName"); },
+  get server() { return t("ui.infrastructureview.m917e05143a"); },
 };
 
 const TAG_COLORS = ["#2ee6b0", "#4aa3ff", "#a78bfa", "#f0b429", "#ff6b6b", "#8b95a7"];
@@ -143,7 +144,7 @@ const UNASSIGNED_ZONE_ID = "__without_zone__";
 // домашним мини-сервером нет ни продакшена, ни центра обработки данных, зато
 // есть дом, работа и дача. Теми же словами зона объясняется в подписи «Создать
 // первую зону» и в ключе infra.zones.hint — язык один на всё приложение.
-const ZONE_PRESETS = ["Дом", "Работа", "Офис", "Дача"];
+const ZONE_PRESETS = [t("ui.infrastructureview.m92f3f459ec"), t("ui.hermesview.m75436e3162"), t("ui.infrastructureview.m5f826de7db"), t("ui.infrastructureview.ma62e4ed10d")];
 
 type InviteRole = Exclude<WorkspaceRole, "owner">;
 
@@ -217,7 +218,7 @@ function auditTargetName(event: CloudAuditEvent, devices: CloudDevice[]): string
     if (found) return found.name;
   }
   if (event.target_type === "user" && event.target_id) {
-    return `участник ${event.target_id}`;
+    return t("ui.infrastructureview.mda6eefef8f", { p0: (event.target_id) });
   }
   return "";
 }
@@ -226,7 +227,7 @@ function sharedWorkspace(devices: CloudDevice[]): CloudWorkspace {
   return {
     id: SHARED_WORKSPACE_ID,
     kind: "company",
-    name: "Общий доступ",
+    name: t("ui.infrastructureview.ma62c8c48e1"),
     // Роль здесь — служебная заглушка для гейтов (operator < admin, значит
     // «+ Устройство» и «Управление» в чужом псевдо-пространстве недоступны).
     // ЧЕЛОВЕКУ её показывать нельзя: у каждого расшаренного устройства своя
@@ -259,28 +260,28 @@ function canAdmin(role: WorkspaceRole): boolean {
 }
 
 function timeAgo(iso: string | null | undefined): string {
-  if (!iso) return "никогда";
+  if (!iso) return t("ui.infrastructureview.m8ceadba8d8");
   const ts = Date.parse(iso);
-  if (!Number.isFinite(ts)) return "недавно";
+  if (!Number.isFinite(ts)) return t("ui.infrastructureview.m211493da17");
   const sec = Math.max(0, Math.floor((Date.now() - ts) / 1000));
-  if (sec < 60) return "только что";
+  if (sec < 60) return t("chat.justNow");
   const min = Math.floor(sec / 60);
-  if (min < 60) return `${min} мин назад`;
+  if (min < 60) return t("ui.infrastructureview.m8ceea3d01a", { p0: (min) });
   const hours = Math.floor(min / 60);
-  if (hours < 24) return `${hours} ч назад`;
-  return `${Math.floor(hours / 24)} дн назад`;
+  if (hours < 24) return t("ui.infrastructureview.mb748cc3575", { p0: (hours) });
+  return t("ui.infrastructureview.m644d0bda1d", { p0: (Math.floor(hours / 24)) });
 }
 
 /** «1 устройство» / «2 устройства» / «5 устройств» — через общий склонятор
  *  packages/shared (локальная копия правил больше не нужна). */
 function deviceCountLabel(count: number): string {
-  return `${count} ${plural(count, ["устройство", "устройства", "устройств"])}`;
+  return `${count} ${plural(count, [t("ui.infrastructureview.mb40e2eef10"), t("ui.infrastructureview.m948202f5d7"), t("ui.infrastructureview.mc1cd0f4305")])}`;
 }
 
 function accountName(me: CloudMe): string {
   if (me.login_display) return me.login_display;
   if (me.username) return `@${me.username}`;
-  return me.first_name || "Аккаунт Remotai";
+  return me.first_name || t("ui.infrastructureview.mf19a4c0de9");
 }
 
 function DeviceEditSheet({
@@ -326,7 +327,7 @@ function DeviceEditSheet({
       await replaceDeviceTags(device.id, workspaceId === device.workspace_id ? tagIds : []);
       if (favorite !== device.favorite) await setDeviceFavorite(device.id, favorite);
       hapticSuccess();
-      toastSuccess("Устройство обновлено");
+      toastSuccess(t("ui.infrastructureview.mc9181bbb72"));
       await onChanged();
       onClose();
     } catch (error) {
@@ -339,8 +340,8 @@ function DeviceEditSheet({
 
   const remove = async () => {
     const ok = await tgConfirm(
-      `Удалить «${device.name}» из Remotai? Агент на устройстве потеряет доступ к аккаунту.`,
-      { danger: true, confirmText: "Удалить устройство" },
+      t("ui.infrastructureview.mb6c405b0d2", { p0: (device.name) }),
+      { danger: true, confirmText: t("ui.infrastructureview.m693b0bb233") },
     );
     if (!ok) return;
     setBusy(true);
@@ -363,18 +364,18 @@ function DeviceEditSheet({
         <div className="infra-sheet-handle" aria-hidden />
         <div className="infra-sheet-head">
           <div>
-            <div className="infra-eyebrow">Устройство</div>
+            <div className="infra-eyebrow">{t("ui.infrastructureview.mbc791dbe7e")}</div>
             <h2 id="infra-device-edit">{device.name}</h2>
             {/* Одно число — один раз: строки про обновление ниже сами называют
                 текущую версию, и «Remotai 2.38.0» над ними было её вторым
                 отпечатком подряд. */}
             {update !== "auto" && update !== "stuck" && <p>{agentVersionLabel(device)}</p>}
           </div>
-          <button className="infra-close" aria-label="Закрыть" onClick={onClose}>×</button>
+          <button className="infra-close" aria-label={t("pty.searchClose")} onClick={onClose}>×</button>
         </div>
 
         {!editable && (
-          <div className="infra-note">Ваша роль — {ROLE_LABEL[device.workspace_role].toLowerCase()}. Настройки может менять администратор компании.</div>
+          <div className="infra-note">{t("ui.infrastructureview.m049e5d3c47")}{ROLE_LABEL[device.workspace_role].toLowerCase()}{t("ui.infrastructureview.m5f17f9a162")}</div>
         )}
 
         {/* Отставшая версия — не повод для красной плашки в настройках машины:
@@ -391,12 +392,12 @@ function DeviceEditSheet({
         )}
 
         <label className="infra-field">
-          <span>Название</span>
+          <span>{t("ui.infrastructureview.m3de49828e8")}</span>
           <input value={name} onChange={(event) => setName(event.target.value.slice(0, 64))} disabled={!editable} />
         </label>
 
         <div className="infra-field">
-          <span>Тип устройства</span>
+          <span>{t("ui.infrastructureview.maa4d267f4a")}</span>
           <div className="infra-segmented">
             {(["computer", "server"] as DeviceType[]).map((type) => (
               <button key={type} className={deviceType === type ? "active" : ""} disabled={!editable} onClick={() => setDeviceType(type)}>
@@ -414,7 +415,7 @@ function DeviceEditSheet({
                 <option key={workspace.id} value={workspace.id}>{workspace.name}</option>
               ))}
             </select>
-            {targetWorkspace?.id !== device.workspace_id && <small>При переносе зона и теги будут очищены.</small>}
+            {targetWorkspace?.id !== device.workspace_id && <small>{t("ui.infrastructureview.m236670fe58")}</small>}
           </label>
         ) : (
           /* Выключенный селект был заполнен ЧУЖИМ списком: в нём только те
@@ -429,9 +430,9 @@ function DeviceEditSheet({
         {workspaceId === device.workspace_id && (editable ? (
           <>
             <label className="infra-field">
-              <span>Зона</span>
+              <span>{t("ui.infrastructureview.m8e5e9e399b")}</span>
               <select value={zoneId} onChange={(event) => setZoneId(event.target.value)}>
-                <option value="">Без зоны</option>
+                <option value="">{t("infra.device.zoneNone")}</option>
                 {zones.map((zone) => <option key={zone.id} value={zone.id}>{zone.name}</option>)}
               </select>
               {/* Одно объяснение зоны на всё приложение (infra.zones.hint):
@@ -441,7 +442,7 @@ function DeviceEditSheet({
             </label>
 
             <div className="infra-field">
-              <span>Теги</span>
+              <span>{t("ssh.form.tagsLabel")}</span>
               <div className="infra-check-grid">
                 {tags.length === 0 && <small>{t("infra.device.noTags")}</small>}
                 {tags.map((tag) => (
@@ -464,12 +465,12 @@ function DeviceEditSheet({
              зоны» при заполненной зоне на карточке. Печатаем факт с устройства. */
           <>
             <div className="infra-field">
-              <span>Зона</span>
+              <span>{t("ui.infrastructureview.m8e5e9e399b")}</span>
               <b className="infra-readonly">{deviceZone(device)?.name || t("infra.device.zoneNone")}</b>
             </div>
             {device.tags.length > 0 && (
               <div className="infra-field">
-                <span>Теги</span>
+                <span>{t("ssh.form.tagsLabel")}</span>
                 <div className="infra-pill-list">
                   {device.tags.map((tag) => (
                     <span className="infra-manage-pill" key={tag.id}><i style={{ background: tag.color }} />{tag.name}</span>
@@ -481,13 +482,13 @@ function DeviceEditSheet({
         ))}
 
         <label className="infra-toggle-line">
-          <span><b>Избранное</b><small>Показывать устройство в быстром фильтре</small></span>
+          <span><b>{t("folder.tab.fav")}</b><small>{t("ui.infrastructureview.mda1a7e7b3b")}</small></span>
           <input type="checkbox" checked={favorite} onChange={(event) => setFavorite(event.target.checked)} />
         </label>
 
         <div className="infra-sheet-actions">
-          {editable && <button className="btn btn-primary" disabled={busy || !name.trim()} onClick={() => void save()}>{busy ? "Сохраняю…" : "Сохранить"}</button>}
-          {editable && <button className="btn infra-danger" disabled={busy} onClick={() => void remove()}>Удалить устройство</button>}
+          {editable && <button className="btn btn-primary" disabled={busy || !name.trim()} onClick={() => void save()}>{busy ? t("ui.infrastructureview.me8c7b10852") : t("generic.save")}</button>}
+          {editable && <button className="btn infra-danger" disabled={busy} onClick={() => void remove()}>{t("ui.infrastructureview.m693b0bb233")}</button>}
         </div>
     </SheetShell>
   );
@@ -526,7 +527,7 @@ function ZoneEditSheet({
     const nextName = name.trim();
     if (!nextName || busy) return;
     if (existingZones.some((item) => item.id !== zone?.id && item.name.toLocaleLowerCase("ru") === nextName.toLocaleLowerCase("ru"))) {
-      toastError(`Зона «${nextName}» уже существует`);
+      toastError(t("ui.infrastructureview.m841da274d8", { p0: (nextName) }));
       return;
     }
     setBusy(true);
@@ -534,11 +535,11 @@ function ZoneEditSheet({
       if (zone) {
         await renameWorkspaceZone(workspace.id, zone.id, nextName);
         onSelect(zone.id);
-        toastSuccess("Зона переименована");
+        toastSuccess(t("ui.infrastructureview.m58f8862a84"));
       } else {
         const result = await createWorkspaceZone(workspace.id, nextName);
         onSelect(result.zone.id);
-        toastSuccess(`Зона «${result.zone.name}» создана`);
+        toastSuccess(t("ui.infrastructureview.m17c8ae23b0", { p0: (result.zone.name) }));
       }
       hapticSuccess();
       await onChanged();
@@ -558,9 +559,9 @@ function ZoneEditSheet({
         // Без согласования глагола с числом: «1 устройство останутся» ломалось
         // именно здесь, а формы «останется/останутся» пришлось бы склонять
         // отдельно (N70).
-        ? `Удалить зону «${zone.name}»? Устройства (${deviceCount}) переедут в «Без зоны».`
-        : `Удалить пустую зону «${zone.name}»?`,
-      { danger: true, confirmText: "Удалить зону" },
+        ? t("ui.infrastructureview.m156079c675", { p0: (zone.name), p1: (deviceCount) })
+        : t("ui.infrastructureview.m620828adcc", { p0: (zone.name) }),
+      { danger: true, confirmText: t("ui.infrastructureview.m4860c70082") },
     );
     if (!ok) return;
     setBusy(true);
@@ -569,7 +570,7 @@ function ZoneEditSheet({
       onSelect("");
       await onChanged();
       hapticSuccess();
-      toastSuccess("Зона удалена");
+      toastSuccess(t("ui.infrastructureview.m78ac3b5916"));
       onClose();
     } catch (error) {
       hapticError();
@@ -585,30 +586,30 @@ function ZoneEditSheet({
         <div className="infra-sheet-head">
           <div>
             <div className="infra-eyebrow">{workspace.name}</div>
-            <h2 id="infra-zone-editor">{zone ? "Настроить зону" : "Новая зона"}</h2>
-            <p>{zone ? `${deviceCountLabel(deviceCount)} в этой зоне` : "Объедините устройства по месту или назначению"}</p>
+            <h2 id="infra-zone-editor">{zone ? t("ui.infrastructureview.m8e8e5feaa9") : t("ui.infrastructureview.md146ecdc42")}</h2>
+            <p>{zone ? t("ui.infrastructureview.m3e33e9c917", { p0: (deviceCountLabel(deviceCount)) }) : t("ui.infrastructureview.md3a6358bac")}</p>
           </div>
-          <button className="infra-close" aria-label="Закрыть" onClick={onClose}>×</button>
+          <button className="infra-close" aria-label={t("pty.searchClose")} onClick={onClose}>×</button>
         </div>
 
         <div className="infra-zone-explainer">
           <span aria-hidden>⌖</span>
-          <div><b>Компания → Зона → Устройство</b><p>Например: «Моя компания» → «Продакшен» → сервер API.</p></div>
+          <div><b>{t("ui.infrastructureview.mc79c78bb32")}</b><p>{t("ui.infrastructureview.me9fb72122f")}</p></div>
         </div>
 
         <label className="infra-field">
-          <span>Название зоны</span>
+          <span>{t("ui.infrastructureview.m0cb5c40797")}</span>
           <input
             ref={nameRef}
             value={name}
             onChange={(event) => setName(event.target.value.slice(0, 48))}
             onKeyDown={(event) => { if (event.key === "Enter") void save(); }}
-            placeholder="Например, Офис Москва"
+            placeholder={t("ui.infrastructureview.mc56aa25407")}
           />
         </label>
 
         {!zone && (
-          <div className="infra-zone-presets" aria-label="Примеры зон">
+          <div className="infra-zone-presets" aria-label={t("ui.infrastructureview.m1550d78cbb")}>
             {ZONE_PRESETS.map((preset) => (
               <button key={preset} className={name === preset ? "active" : ""} onClick={() => setName(preset)}>{preset}</button>
             ))}
@@ -617,9 +618,9 @@ function ZoneEditSheet({
 
         <div className="infra-sheet-actions">
           <button className="btn btn-primary" disabled={busy || !name.trim() || zone?.name === name.trim()} onClick={() => void save()}>
-            {busy ? "Сохраняю…" : zone ? "Сохранить" : "Создать зону"}
+            {busy ? t("ui.infrastructureview.me8c7b10852") : zone ? t("generic.save") : t("ui.infrastructureview.mcc09650c82")}
           </button>
-          {zone && <button className="btn infra-danger" disabled={busy} onClick={() => void remove()}>Удалить зону</button>}
+          {zone && <button className="btn infra-danger" disabled={busy} onClick={() => void remove()}>{t("ui.infrastructureview.m4860c70082")}</button>}
         </div>
     </SheetShell>
   );
@@ -723,7 +724,7 @@ function WorkspaceManageSheet({
   const zoneDeviceCount = (zone: CloudZone) => devices.filter((device) => deviceZone(device)?.id === zone.id).length;
 
   const addTag = async () => {
-    const name = (await promptDialog("Название тега", { defaultValue: "" }))?.trim();
+    const name = (await promptDialog(t("ui.infrastructureview.m98725e4116"), { defaultValue: "" }))?.trim();
     if (!name) return;
     const color = TAG_COLORS[tags.length % TAG_COLORS.length];
     try {
@@ -735,12 +736,12 @@ function WorkspaceManageSheet({
   };
 
   const rename = async () => {
-    const name = (await promptDialog("Название компании", { defaultValue: workspace.name }))?.trim();
+    const name = (await promptDialog(t("ui.infrastructureview.m2c3453de8f"), { defaultValue: workspace.name }))?.trim();
     if (!name || name === workspace.name) return;
     const { renameWorkspace } = await import("../cloud/api");
     try {
       await renameWorkspace(workspace.id, name);
-      toastSuccess("Название обновлено");
+      toastSuccess(t("ui.infrastructureview.mc6c97f3ad0"));
       await onChanged();
       onClose();
     } catch (error) { toastError(mapApiError(error)); }
@@ -748,8 +749,8 @@ function WorkspaceManageSheet({
 
   const removeCompany = async () => {
     if (!(await tgConfirm(
-      `Удалить компанию «${workspace.name}»? Сначала перенесите из неё все устройства.`,
-      { danger: true, confirmText: "Удалить компанию" },
+      t("ui.infrastructureview.mde0aeb333c", { p0: (workspace.name) }),
+      { danger: true, confirmText: t("ui.infrastructureview.m3fb3c992dd") },
     ))) return;
     try {
       await archiveWorkspace(workspace.id);
@@ -767,7 +768,7 @@ function WorkspaceManageSheet({
   };
 
   const removeMember = async (member: CloudWorkspaceMember) => {
-    if (!(await tgConfirm(`Удалить участника «${member.display || member.username || member.first_name || member.user_id}»?`, { danger: true, confirmText: "Удалить" }))) return;
+    if (!(await tgConfirm(t("ui.infrastructureview.md72a2e6536", { p0: (member.display || member.username || member.first_name || member.user_id) }), { danger: true, confirmText: t("mcp.delete") }))) return;
     try {
       await removeWorkspaceMember(workspace.id, member.user_id);
       await reload();
@@ -776,21 +777,21 @@ function WorkspaceManageSheet({
 
   const editable = canAdmin(workspace.role);
   const auditLabel: Record<string, string> = {
-    "workspace.created": "Создана компания",
-    "workspace.renamed": "Переименована компания",
-    "member.invited": "Создано приглашение",
-    "member.joined": "Добавлен участник",
-    "member.role_changed": "Изменена роль",
-    "member.removed": "Удалён участник",
-    "device.updated": "Обновлено устройство",
-    "device.moved": "Перенесено устройство",
-    "device.removed": "Удалено устройство",
-    "device.tags_changed": "Изменены теги устройства",
-    "group.created": "Создана зона",
-    "group.renamed": "Переименована зона",
-    "group.deleted": "Удалена зона",
-    "tag.created": "Создан тег",
-    "tag.deleted": "Удалён тег",
+    "workspace.created": t("ui.infrastructureview.m6d274e7243"),
+    "workspace.renamed": t("ui.infrastructureview.m5cbff8a421"),
+    "member.invited": t("ui.infrastructureview.m5067248eda"),
+    "member.joined": t("ui.infrastructureview.m2933be112f"),
+    "member.role_changed": t("ui.infrastructureview.m6abde7f5ea"),
+    "member.removed": t("ui.infrastructureview.m2eb5a4a1e5"),
+    "device.updated": t("ui.infrastructureview.mcdcef0a520"),
+    "device.moved": t("ui.infrastructureview.m94608839c8"),
+    "device.removed": t("ui.infrastructureview.m2dacb16b03"),
+    "device.tags_changed": t("ui.infrastructureview.mffb9458054"),
+    "group.created": t("ui.infrastructureview.mc9a75325ce"),
+    "group.renamed": t("ui.infrastructureview.m3c19524a65"),
+    "group.deleted": t("ui.infrastructureview.m601f28fd99"),
+    "tag.created": t("ui.infrastructureview.m016d22ced9"),
+    "tag.deleted": t("ui.infrastructureview.mcd72063ae0"),
   };
 
   return (
@@ -801,17 +802,17 @@ function WorkspaceManageSheet({
           <div>
             {/* «Рабочее пространство» из интерфейса убрано: у человека есть
                 «Личное» и компании, третьего слова про то же быть не должно. */}
-            <div className="infra-eyebrow">{workspace.kind === "personal" ? "Ваши устройства" : "Компания"}</div>
+            <div className="infra-eyebrow">{workspace.kind === "personal" ? t("ui.infrastructureview.mde79200bc9") : t("infra.device.company")}</div>
             <h2 id="infra-workspace-manage">{workspace.name}</h2>
-            <p>{ROLE_LABEL[workspace.role]} · {deviceCountLabel(workspace.device_count)} · {workspace.online_count} в сети</p>
+            <p>{ROLE_LABEL[workspace.role]} · {deviceCountLabel(workspace.device_count)} · {workspace.online_count} {t("ui.infrastructureview.m10fa635920")}</p>
           </div>
-          <button className="infra-close" aria-label="Закрыть" onClick={onClose}>×</button>
+          <button className="infra-close" aria-label={t("pty.searchClose")} onClick={onClose}>×</button>
         </div>
 
         <div className="infra-modal-tabs">
-          <button className={section === "members" ? "active" : ""} onClick={() => setSection("members")}>Участники</button>
-          <button className={section === "structure" ? "active" : ""} onClick={() => setSection("structure")}>Зоны и теги</button>
-          <button className={section === "audit" ? "active" : ""} onClick={() => setSection("audit")}>Журнал</button>
+          <button className={section === "members" ? "active" : ""} onClick={() => setSection("members")}>{t("ui.infrastructureview.mfcb848e426")}</button>
+          <button className={section === "structure" ? "active" : ""} onClick={() => setSection("structure")}>{t("ui.infrastructureview.m6e8a074477")}</button>
+          <button className={section === "audit" ? "active" : ""} onClick={() => setSection("audit")}>{t("ui.infrastructureview.m67ade741ae")}</button>
         </div>
 
         {section === "members" && (
@@ -820,17 +821,17 @@ function WorkspaceManageSheet({
               <div className="infra-member" key={member.user_id}>
                 <span className="infra-avatar">{(member.display || member.username || member.first_name || "?").slice(0, 1).toUpperCase()}</span>
                 <span className="infra-member-main">
-                  <b>{member.display || (member.username ? `@${member.username}` : member.first_name) || `Участник ${member.user_id}`}</b>
-                  <small>С {new Date(member.joined_at).toLocaleDateString("ru-RU")}</small>
+                  <b>{member.display || (member.username ? `@${member.username}` : member.first_name) || t("ui.infrastructureview.m5a1e223256", { p0: (member.user_id) })}</b>
+                  <small>{t("ui.infrastructureview.meff7839a9a")}{new Date(member.joined_at).toLocaleDateString(getLocale())}</small>
                 </span>
                 {editable && member.role !== "owner" ? (
                   <select value={member.role} onChange={(event) => void changeMemberRole(member, event.target.value as WorkspaceRole)}>
-                    <option value="admin">Администратор</option>
-                    <option value="operator">Оператор</option>
-                    <option value="viewer">Наблюдатель</option>
+                    <option value="admin">{t("ui.infrastructureview.m36d00fd77c")}</option>
+                    <option value="operator">{t("ui.infrastructureview.m839e573793")}</option>
+                    <option value="viewer">{t("ui.infrastructureview.md7f45e99fa")}</option>
                   </select>
                 ) : <span className="infra-role">{ROLE_LABEL[member.role]}</span>}
-                {editable && member.role !== "owner" && <button className="infra-icon-btn danger" aria-label="Удалить участника" onClick={() => void removeMember(member)}>×</button>}
+                {editable && member.role !== "owner" && <button className="infra-icon-btn danger" aria-label={t("ui.infrastructureview.mc1007dc114")} onClick={() => void removeMember(member)}>×</button>}
               </div>
             ))}
             {editable && workspace.kind === "company" && (inviteFormOpen ? (
@@ -844,19 +845,19 @@ function WorkspaceManageSheet({
                 </label>
                 <div className="infra-sheet-actions">
                   <button className="btn btn-primary" disabled={busy} onClick={() => void inviteMember()}>
-                    {busy ? "Создаю…" : t("infra.invite.create")}
+                    {busy ? t("ui.infrastructureview.m78de681552") : t("infra.invite.create")}
                   </button>
-                  <button className="btn btn-secondary" disabled={busy} onClick={() => setInviteFormOpen(false)}>Отмена</button>
+                  <button className="btn btn-secondary" disabled={busy} onClick={() => setInviteFormOpen(false)}>{t("agentSessions.cancel")}</button>
                 </div>
               </div>
             ) : (
-              <button className="btn btn-secondary infra-full" disabled={busy} onClick={() => setInviteFormOpen(true)}>+ Пригласить участника</button>
+              <button className="btn btn-secondary infra-full" disabled={busy} onClick={() => setInviteFormOpen(true)}>{t("ui.infrastructureview.mf5c1828f64")}</button>
             ))}
             {invite && (
               <div className="infra-invite-result">
                 <span>{t("infra.invite.codeFor", { role: ROLE_LABEL[invite.role] })}</span>
                 <button onClick={() => void copyInviteCode(invite.code)}>{invite.code}</button>
-                <small>Действует до {new Date(invite.expires_at).toLocaleString("ru-RU")}</small>
+                <small>{t("ui.infrastructureview.mbe1c230f65")}{new Date(invite.expires_at).toLocaleString(getLocale())}</small>
                 <small>{t("infra.invite.kept")}</small>
                 <button className="infra-invite-done" onClick={forgetInvite}>{t("infra.invite.done")}</button>
               </div>
@@ -869,23 +870,23 @@ function WorkspaceManageSheet({
             {/* Что такое зона, объясняем теми же словами, что и на самом экране
                 машин (infra.zones.hint): «места и контуры» — это описание для
                 админа, а человек раскладывает компьютеры по дому, работе и даче. */}
-            <div className="infra-structure-head"><span><b>Зоны</b><small>{t("infra.zones.hint")}</small></span>{editable && <button onClick={() => setZoneEditor("new")}>+ Добавить</button>}</div>
+            <div className="infra-structure-head"><span><b>{t("ui.infrastructureview.m95d0cdfaf6")}</b><small>{t("infra.zones.hint")}</small></span>{editable && <button onClick={() => setZoneEditor("new")}>{t("ui.infrastructureview.m2fc209ae53")}</button>}</div>
             <div className="infra-pill-list">
-              {zones.length === 0 && <span className="infra-muted">Зон пока нет. Создайте «Дом» или «Офис».</span>}
+              {zones.length === 0 && <span className="infra-muted">{t("ui.infrastructureview.m3e31f3eb6c")}</span>}
               {zones.map((zone) => (
                 <span className="infra-manage-pill zone" key={zone.id}>⌖ {zone.name}{editable && (
                   /* Переименование и удаление живут внутри листа зоны — там же,
                      где человек видит, сколько устройств переедет в «Без зоны». */
-                  <button aria-label={`Настроить зону ${zone.name}`} onClick={() => setZoneEditor(zone)}>•••</button>
+                  <button aria-label={t("ui.infrastructureview.mcfe01beefd", { p0: (zone.name) })} onClick={() => setZoneEditor(zone)}>•••</button>
                 )}</span>
               ))}
             </div>
-            <div className="infra-structure-head"><b>Теги</b>{editable && <button onClick={() => void addTag()}>+ Добавить</button>}</div>
+            <div className="infra-structure-head"><b>{t("ssh.form.tagsLabel")}</b>{editable && <button onClick={() => void addTag()}>{t("ui.infrastructureview.m2fc209ae53")}</button>}</div>
             <div className="infra-pill-list">
-              {tags.length === 0 && <span className="infra-muted">Пока нет тегов</span>}
+              {tags.length === 0 && <span className="infra-muted">{t("ui.infrastructureview.m81d6cfd220")}</span>}
               {tags.map((tag) => (
-                <span className="infra-manage-pill" key={tag.id}><i style={{ background: tag.color }} />{tag.name}{editable && <button aria-label={`Удалить тег ${tag.name}`} onClick={async () => {
-                  if (!(await tgConfirm(`Удалить тег «${tag.name}»?`, { danger: true, confirmText: "Удалить" }))) return;
+                <span className="infra-manage-pill" key={tag.id}><i style={{ background: tag.color }} />{tag.name}{editable && <button aria-label={t("ui.infrastructureview.m9933d19f60", { p0: (tag.name) })} onClick={async () => {
+                  if (!(await tgConfirm(t("ui.infrastructureview.m470e3b5ffd", { p0: (tag.name) }), { danger: true, confirmText: t("mcp.delete") }))) return;
                   try {
                     await deleteWorkspaceTag(workspace.id, tag.id);
                     await reload();
@@ -899,7 +900,7 @@ function WorkspaceManageSheet({
 
         {section === "audit" && (
           <div className="infra-audit">
-            {audit.length === 0 && <div className="infra-muted">Событий пока нет.</div>}
+            {audit.length === 0 && <div className="infra-muted">{t("ui.infrastructureview.m69cb057e60")}</div>}
             {audit.map((event) => {
               // Заголовок — только человеческий текст: сырой ключ вида
               // «device.tags_changed» уходит в мелкую подпись, а неизвестное
@@ -909,7 +910,7 @@ function WorkspaceManageSheet({
                 ? members.find((item) => String(item.user_id) === event.target_id)
                 : undefined;
               const target = member
-                ? (member.display || (member.username ? `@${member.username}` : member.first_name) || `участник ${member.user_id}`)
+                ? (member.display || (member.username ? `@${member.username}` : member.first_name) || t("ui.infrastructureview.mda6eefef8f", { p0: (member.user_id) }))
                 : auditTargetName(event, devices);
               const role = typeof event.metadata?.role === "string"
                 ? ROLE_LABEL[event.metadata.role as WorkspaceRole]
@@ -920,7 +921,7 @@ function WorkspaceManageSheet({
                   <span>
                     <b>{label || t("infra.audit.unknown")}{target ? ` «${target}»` : ""}{role ? ` · ${role}` : ""}</b>
                     <small>
-                      {event.actor || "Система"} · {new Date(event.created_at).toLocaleString("ru-RU")}
+                      {event.actor || t("guide.action.openSystem")} · {new Date(event.created_at).toLocaleString(getLocale())}
                       {label ? "" : ` · ${event.action}`}
                     </small>
                   </span>
@@ -932,8 +933,8 @@ function WorkspaceManageSheet({
 
         {editable && workspace.kind === "company" && (
           <div className="infra-company-actions">
-            <button onClick={() => void rename()}>Переименовать компанию</button>
-            {workspace.role === "owner" && <button className="danger" onClick={() => void removeCompany()}>Удалить компанию</button>}
+            <button onClick={() => void rename()}>{t("ui.infrastructureview.m9a768a5e35")}</button>
+            {workspace.role === "owner" && <button className="danger" onClick={() => void removeCompany()}>{t("ui.infrastructureview.m3fb3c992dd")}</button>}
           </div>
         )}
     </SheetShell>
@@ -988,7 +989,7 @@ function DeviceActionsSheet({ device, isCurrent, hasScreen, onClose, onSwitch, o
             <h2 id="infra-device-menu">{device.name}</h2>
             <p>{t("infra.menu.title")}</p>
           </div>
-          <button className="infra-close" aria-label="Закрыть" onClick={onClose}>×</button>
+          <button className="infra-close" aria-label={t("pty.searchClose")} onClick={onClose}>×</button>
         </div>
 
         {viewer && <div className="infra-note">{t("infra.menu.viewer")}</div>}
@@ -1401,9 +1402,9 @@ function CloudInfrastructureView() {
       setAddZoneId("");
       setPairCode(code);
       setLocalRequestedCode(code);
-      toastSuccess("Код этого компьютера подставлен. Нажмите «Подключить».");
+      toastSuccess(t("ui.infrastructureview.mf9d1dc0ae6"));
     } catch {
-      toastError("Не удалось получить код этого компьютера. Откройте «Панель ПК» и попробуйте ещё раз.");
+      toastError(t("ui.infrastructureview.m179b34ecf1"));
     } finally { setLocalCodeBusy(false); }
   };
   const [tgBusy, setTgBusy] = useState(false);
@@ -1606,7 +1607,7 @@ function CloudInfrastructureView() {
           });
         }, 120);
       } else {
-        toastError("Устройство из сводки больше недоступно.");
+        toastError(t("ui.infrastructureview.m36c8db5e76"));
       }
       navigate("/infrastructure", { replace: true });
       return;
@@ -1621,7 +1622,7 @@ function CloudInfrastructureView() {
     if (target) {
       const found = devices.find((device) => device.id === target);
       if (!found) {
-        toastError("Устройство из ссылки больше недоступно.");
+        toastError(t("ui.infrastructureview.m3dacec7645"));
         navigate("/infrastructure", { replace: true });
         return;
       }
@@ -1750,24 +1751,24 @@ function CloudInfrastructureView() {
   };
 
   const createCompany = async () => {
-    const name = (await promptDialog("Название компании", { defaultValue: "" }))?.trim();
+    const name = (await promptDialog(t("ui.infrastructureview.m2c3453de8f"), { defaultValue: "" }))?.trim();
     if (!name) return;
     try {
       const result = await createWorkspace(name);
       await reload();
       switchWorkspace(result.workspace);
-      toastSuccess("Компания создана");
+      toastSuccess(t("ui.infrastructureview.m331dcc9779"));
     } catch (error) { toastError(mapApiError(error)); }
   };
 
   const joinCompany = async () => {
-    const code = (await promptDialog("Код приглашения в компанию", { defaultValue: "" }))?.trim();
+    const code = (await promptDialog(t("ui.infrastructureview.m0d731d81b0"), { defaultValue: "" }))?.trim();
     if (!code) return;
     try {
       const result = await acceptWorkspaceInvite(code);
       await reload();
       switchWorkspace(result.workspace);
-      toastSuccess(`Вы присоединились к «${result.workspace.name}»`);
+      toastSuccess(t("ui.infrastructureview.m4415a22470", { p0: (result.workspace.name) }));
     } catch (error) { toastError(mapApiError(error)); }
   };
 
@@ -1820,7 +1821,7 @@ function CloudInfrastructureView() {
           setJustAdded(device);
         }
       }
-      toastSuccess(`${TYPE_LABEL[addType]} подключён`);
+      toastSuccess(t("ui.infrastructureview.md402c41211", { p0: (TYPE_LABEL[addType]) }));
     } catch (error) {
       hapticError();
       const text = mapApiError(error);
@@ -1849,9 +1850,9 @@ function CloudInfrastructureView() {
     try {
       await navigator.clipboard.writeText(REMOTAI_SERVER_INSTALL_COMMAND);
       hapticSuccess();
-      toastSuccess("Команда установки скопирована");
+      toastSuccess(t("settings.agentInstallCopied"));
     } catch {
-      toastError("Не удалось скопировать. Выделите команду вручную.");
+      toastError(t("settings.agentInstallCopyFailed"));
     }
   };
 
@@ -1893,9 +1894,9 @@ function CloudInfrastructureView() {
     try {
       const result = await bulkUpdateDevices(targets, bulkAction, value);
       if (Object.keys(result.failures).length) {
-        toastError(`Изменено ${result.succeeded.length} из ${targets.length}. Проверьте права на остальные устройства.`);
+        toastError(t("ui.infrastructureview.m38e7cd1dec", { p0: (result.succeeded.length), p1: (targets.length) }));
       } else {
-        toastSuccess(`Обновлено устройств: ${result.succeeded.length}`);
+        toastSuccess(t("ui.infrastructureview.m59ae2cf923", { p0: (result.succeeded.length) }));
       }
       setSelected([]);
       await reload();
@@ -1908,7 +1909,7 @@ function CloudInfrastructureView() {
   // гостевого аккаунта («Подключить Telegram»).
   const switchTelegram = async () => {
     if (inTg) {
-      toastSuccess("Закрываем Mini App. Переключите активный аккаунт Telegram и откройте Remotai снова.");
+      toastSuccess(t("ui.infrastructureview.m4cf370696f"));
       tg?.close();
       return;
     }
@@ -1919,7 +1920,7 @@ function CloudInfrastructureView() {
       if (result.ok) {
         reconnectWS();
         await reload();
-        toastSuccess("Telegram-аккаунт подключён");
+        toastSuccess(t("ui.infrastructureview.m94ac0eea9b"));
       }
     } catch (error) { toastError(mapApiError(error)); } finally { setTgBusy(false); }
   };
@@ -2178,13 +2179,13 @@ function CloudInfrastructureView() {
 
       <div className="infra-content">
         {localFinishFailed && <div className="infra-empty" role="status">
-          <p>Компьютер добавлен в аккаунт. Осталось включить доступ через интернет в «Панели ПК».</p>
-          <button className="btn btn-primary" onClick={() => navigate("/panel")}>Открыть «Панель ПК»</button>
+          <p>{t("ui.infrastructureview.ma4c4f3fc64")}</p>
+          <button className="btn btn-primary" onClick={() => navigate("/panel")}>{t("ui.infrastructureview.mcf378ef7d0")}</button>
         </div>}
         {err ? (
           <div className="infra-empty">
-            <span>⌁</span><h2>Нет связи с Remotai</h2><p>{err}</p>
-            <button className="btn btn-primary" onClick={() => void reload()}>Повторить</button>
+            <span>⌁</span><h2>{t("ui.infrastructureview.m2e8398b759")}</h2><p>{err}</p>
+            <button className="btn btn-primary" onClick={() => void reload()}>{t("agentCheck.retry")}</button>
           </div>
         ) : devices == null ? (
           <div className="route-loading">{t("infra.loading")}</div>
@@ -2198,17 +2199,17 @@ function CloudInfrastructureView() {
                   <span aria-hidden>▣</span>
                   <div>
                     <h2>{t("infra.onboarding.title")}</h2>
-                    <p>{localComputer ? "Подключите этот компьютер к вашему аккаунту Remotai." : t("infra.onboarding.subtitle")}</p>
+                    <p>{localComputer ? t("ui.infrastructureview.mdab29729a7") : t("infra.onboarding.subtitle")}</p>
                   </div>
                 </div>
-                {localComputer === undefined ? <p role="status">Проверяем Remotai на этом компьютере…</p> : localComputer ? <div className="infra-local-connect">
-                  <p>Remotai уже запущен на этом {localComputer.platform === "darwin" ? "Mac" : "компьютере"}. Получите код и нажмите «Подключить», чтобы добавить его в текущий аккаунт и управлять через интернет.</p>
+                {localComputer === undefined ? <p role="status">{t("ui.infrastructureview.m2696f7f335")}</p> : localComputer ? <div className="infra-local-connect">
+                  <p>{t("ui.infrastructureview.md28d2fffb2")}{localComputer.platform === "darwin" ? "Mac" : t("ui.infrastructureview.mae54b7d831")}{t("ui.infrastructureview.m6aa5a91065")}</p>
                   <button className="btn btn-primary" disabled={localCodeBusy || pairBusy} onClick={() => void getLocalPairCode()}>
-                    {localCodeBusy ? "Получаем код…" : `Получить код этого ${localComputer.platform === "darwin" ? "Mac" : "компьютера"}`}
+                    {localCodeBusy ? t("ui.infrastructureview.me5a58d1709") : t("ui.infrastructureview.m1e911cdf3e", { p0: (localComputer.platform === "darwin" ? "Mac" : t("ui.infrastructureview.mf841b16907")) })}
                   </button>
-                  <p className="onb-hint">Для другой машины введите её код ниже.</p>
+                  <p className="onb-hint">{t("ui.infrastructureview.m1aeb5fe743")}</p>
                 </div> : <>
-                  <p className="onb-hint">Здесь вы будете работать с агентами. Remotai нужно установить на машину с проектами. Если она уже была в аккаунте, проверьте способ входа в «Личном кабинете».</p>
+                  <p className="onb-hint">{t("ui.infrastructureview.m558b476dae")}</p>
                   {mobileSurface ? openOnPcBlock : <InstallTarget />}
                 </>}
                 {localComputer === null && <ol className="infra-pair-steps">
@@ -2227,10 +2228,10 @@ function CloudInfrastructureView() {
                     autoCapitalize="characters"
                     autoCorrect="off"
                     spellCheck={false}
-                    aria-label="Код подключения"
+                    aria-label={t("ui.infrastructureview.mf923f9420f")}
                   />
                   <button className="btn btn-primary" disabled={pairBusy || localCodeBusy || pairCode.replace("-", "").length < 8} onClick={() => void pair()}>
-                    {pairBusy ? "Подключаю…" : "Подключить"}
+                    {pairBusy ? t("ui.infrastructureview.mbfc88f9303") : t("openrouter.connect")}
                   </button>
                 </div>
                 <button className="btn btn-secondary infra-full" onClick={scan}>{t("infra.add.scanBtn")}</button>
@@ -2239,8 +2240,8 @@ function CloudInfrastructureView() {
                 <div className="infra-onboarding-more">
                   <button onClick={() => openAddDevice("server")}>{t("infra.onboarding.serverLink")}</button>
                   <button onClick={() => void joinCompany()}>{t("infra.onboarding.haveInvite")}</button>
-                  <button onClick={() => navigate("/start")}>Помочь выбрать способ подключения</button>
-                  <details><summary>Для нескольких пользователей и компьютеров</summary><button onClick={() => setStructureOpen(true)}>{t("infra.onboarding.structure")}</button></details>
+                  <button onClick={() => navigate("/start")}>{t("ui.infrastructureview.m00c23f73a4")}</button>
+                  <details><summary>{t("ui.infrastructureview.m72e487d62a")}</summary><button onClick={() => setStructureOpen(true)}>{t("infra.onboarding.structure")}</button></details>
                 </div>
               </section>
             )}
@@ -2254,11 +2255,11 @@ function CloudInfrastructureView() {
                   <b>{activeWorkspace.name}</b>
                   {/* Счётчик — только когда он не повторяет заголовок списка. */}
                   {contextCountAdds && (
-                    <small>{activeWorkspace.online_count} из {activeWorkspace.device_count} в сети</small>
+                    <small>{activeWorkspace.online_count} {t("ui.infrastructureview.m6ce4fa393d")}{activeWorkspace.device_count} {t("ui.infrastructureview.m10fa635920")}</small>
                   )}
                 </span>
                 {activeWorkspace.id !== SHARED_WORKSPACE_ID && (
-                  <button onClick={() => setManageWorkspace(activeWorkspace)}>Управление</button>
+                  <button onClick={() => setManageWorkspace(activeWorkspace)}>{t("remote.sectionControl")}</button>
                 )}
                 <div className="infra-context-actions">
                   {canAdmin(activeWorkspace.role) && (
@@ -2282,8 +2283,8 @@ function CloudInfrastructureView() {
               <div className="infra-section-line">
                 <span>{t("infra.workspaces.title")}</span>
                 <div>
-                  <button onClick={() => void joinCompany()}>По приглашению</button>
-                  <button onClick={() => void createCompany()}>+ Компания</button>
+                  <button onClick={() => void joinCompany()}>{t("ui.infrastructureview.m0b7a3e93f1")}</button>
+                  <button onClick={() => void createCompany()}>{t("ui.infrastructureview.m24116e3174")}</button>
                 </div>
               </div>
               {workspaces.length > 1 && (
@@ -2305,7 +2306,7 @@ function CloudInfrastructureView() {
                         <small>
                           {workspace.device_count === 0
                             ? t("infra.workspaces.empty")
-                            : `${workspace.online_count} в сети · ${workspace.device_count} всего`}
+                            : t("ui.infrastructureview.md45c33c34b", { p0: (workspace.online_count), p1: (workspace.device_count) })}
                         </small>
                       )}
                     </span>
@@ -2346,14 +2347,14 @@ function CloudInfrastructureView() {
                   {/* Что такое зона, объясняем только там, где зоны есть: пока
                       их нет, ровно те же примеры стоят на карточке «Создать
                       первую зону» строкой ниже. */}
-                  <span id="infra-zones-title">Зоны {visibleZoneStats.length > 0 && <small>{t("infra.zones.hint")}</small>}</span>
+                  <span id="infra-zones-title">{t("ui.infrastructureview.mbe4065731d")}{visibleZoneStats.length > 0 && <small>{t("infra.zones.hint")}</small>}</span>
                   {activeWorkspace.id !== SHARED_WORKSPACE_ID && canAdmin(activeWorkspace.role) && (
-                    <button onClick={() => setZoneEditor("new")}>+ Зона</button>
+                    <button onClick={() => setZoneEditor("new")}>{t("ui.infrastructureview.mde89e55511")}</button>
                   )}
                 </div>
                 )}
                 {structureOpen && (
-                <div className="infra-zone-rail" role="tablist" aria-label="Фильтр по зонам">
+                <div className="infra-zone-rail" role="tablist" aria-label={t("ui.infrastructureview.m36ff9b24a0")}>
                   {/* «Все устройства» — сброс фильтра по зонам. Пока на ленте
                       нет ни одной зоны, сбрасывать нечего: карточка повторяла
                       список машин целиком и печатала его счётчик третий раз
@@ -2366,7 +2367,7 @@ function CloudInfrastructureView() {
                           числа: «Все устройства» — это отсутствие фильтра, и
                           сколько их всего, написано в заголовке списка. Числа
                           остаются у самих зон — их иначе не сравнить. */}
-                      <span><b>Все устройства</b></span>
+                      <span><b>{t("ui.infrastructureview.md6ebc727ee")}</b></span>
                     </button>
                   </article>
                   )}
@@ -2374,11 +2375,11 @@ function CloudInfrastructureView() {
                     <article className={`infra-zone-card${zoneFilter === zone.id ? " active" : ""}`} key={zone.id}>
                       <button className="infra-zone-main" role="tab" aria-selected={zoneFilter === zone.id} onClick={() => switchZone(zone.id)}>
                         <span className="infra-zone-icon" aria-hidden>⌖</span>
-                        <span><b>{zone.name}</b><small>{online} в сети · {total} всего</small></span>
+                        <span><b>{zone.name}</b><small>{online} {t("ui.infrastructureview.m96491c36a2")}{total} {t("ui.infrastructureview.m17257f7462")}</small></span>
                         <em>{total}</em>
                       </button>
                       {canAdmin(activeWorkspace.role) && (
-                        <button className="infra-zone-edit" aria-label={`Настроить зону ${zone.name}`} onClick={() => setZoneEditor(zone)}>•••</button>
+                        <button className="infra-zone-edit" aria-label={t("ui.infrastructureview.mcfe01beefd", { p0: (zone.name) })} onClick={() => setZoneEditor(zone)}>•••</button>
                       )}
                     </article>
                   ))}
@@ -2395,13 +2396,13 @@ function CloudInfrastructureView() {
                     <article className={`infra-zone-card unassigned${zoneFilter === UNASSIGNED_ZONE_ID ? " active" : ""}`}>
                       <button className="infra-zone-main" role="tab" aria-selected={zoneFilter === UNASSIGNED_ZONE_ID} onClick={() => switchZone(UNASSIGNED_ZONE_ID)}>
                         <span className="infra-zone-icon" aria-hidden>○</span>
-                        <span><b>Без зоны</b><small>{unassignedDevices.filter((device) => device.online).length} в сети</small></span>
+                        <span><b>{t("infra.device.zoneNone")}</b><small>{unassignedDevices.filter((device) => device.online).length} {t("ui.infrastructureview.m10fa635920")}</small></span>
                         <em>{unassignedDevices.length}</em>
                       </button>
                     </article>
                   )}
                   {activeWorkspace.id !== SHARED_WORKSPACE_ID && canAdmin(activeWorkspace.role) && zones.length === 0 && (
-                    <button className="infra-zone-create-card" onClick={() => setZoneEditor("new")}><span>＋</span><b>Создать первую зону</b><small>Дом, работа, офис или дача</small></button>
+                    <button className="infra-zone-create-card" onClick={() => setZoneEditor("new")}><span>＋</span><b>{t("ui.infrastructureview.m5d82768902")}</b><small>{t("ui.infrastructureview.m0386046ada")}</small></button>
                   )}
                 </div>
                 )}
@@ -2411,9 +2412,9 @@ function CloudInfrastructureView() {
                 {filtersActive && (
                 <div className="infra-zone-context" role="status">
                   <span aria-hidden>{zoneFilter ? "⌖" : "⌘"}</span>
-                  <b>{activeZone ? activeZone.name : zoneFilter === UNASSIGNED_ZONE_ID ? "Без зоны" : "Все зоны"}</b>
-                  <small>{`${deviceCountLabel(visibleDevices.length)} после всех фильтров`}</small>
-                  {zoneFilter && <button onClick={() => switchZone("")}>Сбросить</button>}
+                  <b>{activeZone ? activeZone.name : zoneFilter === UNASSIGNED_ZONE_ID ? t("infra.device.zoneNone") : t("ui.infrastructureview.m8c2d5a2c19")}</b>
+                  <small>{t("ui.infrastructureview.me1eef2a5dd", { p0: (deviceCountLabel(visibleDevices.length)) })}</small>
+                  {zoneFilter && <button onClick={() => switchZone("")}>{t("ui.infrastructureview.m058f162d29")}</button>}
                 </div>
                 )}
               </section>
@@ -2422,8 +2423,8 @@ function CloudInfrastructureView() {
             {!permanent && me && (
               <section className="infra-account-banner">
                 <span>◎</span>
-                <div><b>{t("infra.guestBanner.title")}</b><p>Сейчас это гостевой аккаунт. Подключите Telegram или другой способ входа.</p></div>
-                <button disabled={tgBusy} onClick={() => void switchTelegram()}>{tgBusy ? "Открываю…" : "Подключить Telegram"}</button>
+                <div><b>{t("infra.guestBanner.title")}</b><p>{t("ui.infrastructureview.m75ebf1f9a1")}</p></div>
+                <button disabled={tgBusy} onClick={() => void switchTelegram()}>{tgBusy ? t("ui.infrastructureview.m4e2c64e558") : t("settings.notifyConnectTelegram")}</button>
               </section>
             )}
 
@@ -2434,23 +2435,23 @@ function CloudInfrastructureView() {
               {((counters.computer > 0 && counters.server > 0) || tab !== "all") && (
               <div className="infra-tabs" role="tablist">
                 {([
-                  ["all", "Все", counters.all],
-                  ["computer", "Компьютеры", counters.computer],
-                  ["server", "Серверы", counters.server],
+                  ["all", t("agentSessions.filterAll"), counters.all],
+                  ["computer", t("nav.devices.short"), counters.computer],
+                  ["server", t("ui.infrastructureview.mbd5e9cf0e8"), counters.server],
                 ] as [DeviceTab, string, number][]).map(([key, label, count]) => (
                   <button key={key} className={tab === key ? "active" : ""} onClick={() => setTab(key)}>{label}<i>{count}</i></button>
                 ))}
               </div>
               )}
               <div className="infra-search-row">
-                <label className="infra-search"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Имя, хост, зона или тег" /></label>
-                <select value={filter} onChange={(event) => setFilter(event.target.value as FilterMode)} aria-label="Состояние">
-                  <option value="all">Любой статус</option>
-                  <option value="online">Только в сети</option>
-                  <option value="favorite">Избранные</option>
+                <label className="infra-search"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("ui.infrastructureview.m623ec4fc82")} /></label>
+                <select value={filter} onChange={(event) => setFilter(event.target.value as FilterMode)} aria-label={t("ui.infrastructureview.m81e4bb361c")}>
+                  <option value="all">{t("ui.infrastructureview.mf0d2db084e")}</option>
+                  <option value="online">{t("ui.infrastructureview.m329f75d48a")}</option>
+                  <option value="favorite">{t("ui.infrastructureview.m2538b91dbf")}</option>
                 </select>
-                <select value={tagFilter} onChange={(event) => setTagFilter(event.target.value)} aria-label="Тег">
-                  <option value="">Все теги</option>
+                <select value={tagFilter} onChange={(event) => setTagFilter(event.target.value)} aria-label={t("ui.infrastructureview.maea689a336")}>
+                  <option value="">{t("ui.infrastructureview.m4c3689f4bd")}</option>
                   {tags.map((tag) => <option key={tag.id} value={tag.id}>{tag.name}</option>)}
                 </select>
               </div>
@@ -2461,19 +2462,19 @@ function CloudInfrastructureView() {
               <section className="infra-bulk">
                 <b>{t("infra.bulk.selected", { count: selected.length, visible: visibleDevices.length })}</b>
                 <select value={bulkAction} onChange={(event) => { setBulkAction(event.target.value as typeof bulkAction); setBulkValue(event.target.value === "favorite" ? "true" : ""); }}>
-                  <option value="favorite">Избранное</option>
-                  <option value="device_type">Тип устройства</option>
-                  <option value="zone">Зона</option>
-                  <option value="move">Перенести</option>
-                  <option value="tags">Установить тег</option>
+                  <option value="favorite">{t("folder.tab.fav")}</option>
+                  <option value="device_type">{t("ui.infrastructureview.maa4d267f4a")}</option>
+                  <option value="zone">{t("ui.infrastructureview.m8e5e9e399b")}</option>
+                  <option value="move">{t("infra.bulk.moveConfirmBtn")}</option>
+                  <option value="tags">{t("ui.infrastructureview.m4f7368a8b3")}</option>
                 </select>
-                {bulkAction === "favorite" && <select value={bulkValue} onChange={(event) => setBulkValue(event.target.value)}><option value="true">Добавить</option><option value="false">Убрать</option></select>}
-                {bulkAction === "device_type" && <select value={bulkValue} onChange={(event) => setBulkValue(event.target.value)}><option value="">Выберите тип</option><option value="computer">Компьютер</option><option value="server">Сервер</option></select>}
-                {bulkAction === "zone" && <select value={bulkValue} onChange={(event) => setBulkValue(event.target.value)}><option value="">Без зоны</option>{zones.map((zone) => <option key={zone.id} value={zone.id}>{zone.name}</option>)}</select>}
+                {bulkAction === "favorite" && <select value={bulkValue} onChange={(event) => setBulkValue(event.target.value)}><option value="true">{t("mcp.addSubmit")}</option><option value="false">{t("pty.lost.forget")}</option></select>}
+                {bulkAction === "device_type" && <select value={bulkValue} onChange={(event) => setBulkValue(event.target.value)}><option value="">{t("ui.infrastructureview.m193df13d37")}</option><option value="computer">{t("infra.local.thisPcName")}</option><option value="server">{t("ui.infrastructureview.m917e05143a")}</option></select>}
+                {bulkAction === "zone" && <select value={bulkValue} onChange={(event) => setBulkValue(event.target.value)}><option value="">{t("infra.device.zoneNone")}</option>{zones.map((zone) => <option key={zone.id} value={zone.id}>{zone.name}</option>)}</select>}
                 {bulkAction === "move" && <select value={bulkValue} onChange={(event) => setBulkValue(event.target.value)}><option value="">{t("infra.bulk.moveSelect")}</option>{workspaces.filter((workspace) => canAdmin(workspace.role)).map((workspace) => <option key={workspace.id} value={workspace.id}>{workspace.name}</option>)}</select>}
-                {bulkAction === "tags" && <select value={bulkValue} onChange={(event) => setBulkValue(event.target.value)}><option value="">Очистить теги</option>{tags.map((tag) => <option key={tag.id} value={tag.id}>{tag.name}</option>)}</select>}
-                <button className="btn btn-primary btn-sm" disabled={bulkBusy || ((bulkAction === "device_type" || bulkAction === "move") && !bulkValue)} onClick={() => void applyBulk()}>{bulkBusy ? "Применяю…" : "Применить"}</button>
-                <button className="infra-bulk-clear" onClick={() => setSelected([])}>Отмена</button>
+                {bulkAction === "tags" && <select value={bulkValue} onChange={(event) => setBulkValue(event.target.value)}><option value="">{t("ui.infrastructureview.mc81555ca95")}</option>{tags.map((tag) => <option key={tag.id} value={tag.id}>{tag.name}</option>)}</select>}
+                <button className="btn btn-primary btn-sm" disabled={bulkBusy || ((bulkAction === "device_type" || bulkAction === "move") && !bulkValue)} onClick={() => void applyBulk()}>{bulkBusy ? t("ui.infrastructureview.mbe80c6fb2a") : t("ui.infrastructureview.m768af67762")}</button>
+                <button className="infra-bulk-clear" onClick={() => setSelected([])}>{t("agentSessions.cancel")}</button>
                 {bulkAction === "move" && <p className="infra-bulk-warn">⚠ {t("infra.bulk.moveWarning")}</p>}
               </section>
             )}
@@ -2523,7 +2524,7 @@ function CloudInfrastructureView() {
                    только то, ради чего строка нужна: выбор нескольких машин. */
                 <div className="infra-inventory-head">
                   <label><input type="checkbox" checked={visibleDevices.every((device) => selected.includes(device.id))} onChange={(event) => setSelected(event.target.checked ? visibleDevices.map((device) => device.id) : [])} /> <span>{t("infra.bulk.selectAll")}</span></label>
-                  <span>Выберите несколько для группового управления</span>
+                  <span>{t("ui.infrastructureview.mbcbf92cb98")}</span>
                 </div>
               )}
 
@@ -2532,24 +2533,24 @@ function CloudInfrastructureView() {
                   <span>{devices.length === 0 ? "▣" : activeZone ? "⌖" : "⌕"}</span>
                   <h2>
                     {devices.length === 0
-                      ? "Подключите первое устройство"
+                      ? t("ui.infrastructureview.m6d04896cd8")
                       : activeZone
-                        ? `В зоне «${activeZone.name}» пока пусто`
+                        ? t("ui.infrastructureview.mc0f5b561aa", { p0: (activeZone.name) })
                         : zoneFilter === UNASSIGNED_ZONE_ID
-                          ? "Все устройства распределены по зонам"
-                          : "Ничего не найдено"}
+                          ? t("ui.infrastructureview.mb7930e97a6")
+                          : t("folder.noMatches")}
                   </h2>
                   <p>
                     {devices.length === 0
-                      ? "Установите Remotai на компьютер или сервер и введите код подключения."
+                      ? t("ui.infrastructureview.m43787feecd")
                       : activeZone
-                        ? "Подключите новое устройство — эта зона уже выбрана. Существующее можно перенести через его настройки."
+                        ? t("ui.infrastructureview.m2d26ab53af")
                         : zoneFilter === UNASSIGNED_ZONE_ID
-                          ? "Откройте любую зону или сбросьте фильтр."
-                          : "Измените поиск или фильтры."}
+                          ? t("ui.infrastructureview.m3ce1c6280b")
+                          : t("ui.infrastructureview.m86ebcf7b2d")}
                   </p>
                   {activeWorkspace && canAdmin(activeWorkspace.role) && (devices.length === 0 || !!activeZone) && (
-                    <button className="btn btn-primary" onClick={() => openAddDevice()}>{activeZone ? `${t("infra.addComputer")} в «${activeZone.name}»` : t("infra.addComputer")}</button>
+                    <button className="btn btn-primary" onClick={() => openAddDevice()}>{activeZone ? t("ui.notifications.m0c33d9e662", { p0: (t("infra.addComputer")), p1: (activeZone.name) }) : t("infra.addComputer")}</button>
                   )}
                 </div>
               ) : (
@@ -2581,11 +2582,11 @@ function CloudInfrastructureView() {
                       /* «1 терминалов» на карточке единственной машины читалось
                          как ошибка программы — склоняем тем же общим
                          склонятором, что и счётчик устройств. */
-                      summary ? <span key="pty"><b>{summary.terminalCount}</b> {plural(summary.terminalCount, ["терминал", "терминала", "терминалов"])}</span> : null,
+                      summary ? <span key="pty"><b>{summary.terminalCount}</b> {plural(summary.terminalCount, [t("ui.notifications.m9119233037"), t("ui.infrastructureview.mde14f4b054"), t("ui.infrastructureview.m3bee8a3c40")])}</span> : null,
                       summary && Number.isFinite(summary.cpuPercent) ? <span key="cpu"><b>{Math.round(summary.cpuPercent!)}%</b> CPU</span> : null,
                       summary && Number.isFinite(summary.memoryPercent) ? <span key="ram"><b>{Math.round(summary.memoryPercent!)}%</b> RAM</span> : null,
                       /* И «1 ждут ответа» — та же беда: склоняем сам глагол. */
-                      summary && summary.waitingCount > 0 ? <span key="wait" className="attention"><b>{summary.waitingCount}</b> {plural(summary.waitingCount, ["ждёт ответа", "ждут ответа", "ждут ответа"])}</span> : null,
+                      summary && summary.waitingCount > 0 ? <span key="wait" className="attention"><b>{summary.waitingCount}</b> {plural(summary.waitingCount, [t("ui.infrastructureview.m942b5942e9"), t("ui.infrastructureview.md840bbb311"), t("ui.infrastructureview.md840bbb311")])}</span> : null,
                     ];
                     const metricCount = metrics.filter(Boolean).length;
                     return (
@@ -2632,9 +2633,9 @@ function CloudInfrastructureView() {
                           <span className={device.online ? "online" : "offline"}>
                             <i />
                             {device.online
-                              ? "В сети"
+                              ? t("infra.local.online")
                               : device.last_seen_at
-                                ? `Не в сети · ${timeAgo(device.last_seen_at)}`
+                                ? t("ui.infrastructureview.m1bde587fa1", { p0: (timeAgo(device.last_seen_at)) })
                                 : t("infra.neverOnline")}
                           </span>
                           <em>{TYPE_LABEL[device.device_type]}</em>
@@ -2650,7 +2651,7 @@ function CloudInfrastructureView() {
                           ) : (
                             <em>{agentVersionLabel(device)}</em>
                           )}
-                          {device.workspace_role === "viewer" && <em className="viewer">Только просмотр</em>}
+                          {device.workspace_role === "viewer" && <em className="viewer">{t("remote.vbReadOnly")}</em>}
                         </div>
                         {/* Машина привязана, но ни разу не выходила на связь —
                             называем самую частую причину и даём команду, а не
@@ -2761,7 +2762,7 @@ function CloudInfrastructureView() {
             {me && (
               <section className="infra-account">
                 <span className="infra-avatar">{accountName(me).slice(0, 1).toUpperCase()}</span>
-                <span><b>{permanent ? accountName(me) : "Гостевой аккаунт"}</b><small>{t("infra.account.securityHint")}</small></span>
+                <span><b>{permanent ? accountName(me) : t("ui.infrastructureview.m80fda73e88")}</b><small>{t("infra.account.securityHint")}</small></span>
                 <button onClick={() => navigate("/settings", { state: { focus: "logins" } })}>{t("infra.account.manage")}</button>
               </section>
             )}
@@ -2779,50 +2780,50 @@ function CloudInfrastructureView() {
         >
             <div className="infra-sheet-handle" aria-hidden />
             <div className="infra-sheet-head">
-              <div><div className="infra-eyebrow">{activeWorkspace.name}</div><h2 id="infra-add-device">{addType === "server" ? "Подключить сервер" : "Подключить компьютер"}</h2></div>
-              <button className="infra-close" aria-label="Закрыть" onClick={() => setAddOpen(false)}>×</button>
+              <div><div className="infra-eyebrow">{activeWorkspace.name}</div><h2 id="infra-add-device">{addType === "server" ? t("ui.infrastructureview.m2fd3bdd68a") : t("settings.connectAnotherPc")}</h2></div>
+              <button className="infra-close" aria-label={t("pty.searchClose")} onClick={() => setAddOpen(false)}>×</button>
             </div>
             {/* Лимит виден до установки агента: раньше про исчерпанную квоту
                 человек узнавал из отказа, уже поставив Remotai на третий ПК. */}
             {quotaBlock}
             <div className="infra-field">
-              <span>Что подключаем?</span>
+              <span>{t("ui.infrastructureview.m8e77b0f6e6")}</span>
               <div className="infra-type-cards">
-                <button className={addType === "computer" ? "active" : ""} onClick={() => setAddType("computer")}><i>▣</i><b>Компьютер</b><small>Windows, macOS или Linux</small></button>
-                <button className={addType === "server" ? "active" : ""} onClick={() => setAddType("server")}><i>▰</i><b>Сервер</b><small>Linux, VPS или машина без монитора</small></button>
+                <button className={addType === "computer" ? "active" : ""} onClick={() => setAddType("computer")}><i>▣</i><b>{t("infra.local.thisPcName")}</b><small>{t("ui.infrastructureview.m24cdf925e2")}</small></button>
+                <button className={addType === "server" ? "active" : ""} onClick={() => setAddType("server")}><i>▰</i><b>{t("ui.infrastructureview.m917e05143a")}</b><small>{t("ui.infrastructureview.mc4a4cfdcbd")}</small></button>
               </div>
             </div>
             <details>
-              <summary>Размещение по зонам (необязательно)</summary>
+              <summary>{t("ui.infrastructureview.md3f94d975a")}</summary>
             <label className="infra-field">
-              <span>Куда добавить?</span>
+              <span>{t("ui.infrastructureview.ma829d03e9b")}</span>
               <select value={addZoneId} onChange={(event) => setAddZoneId(event.target.value)}>
-                <option value="">Без зоны</option>
+                <option value="">{t("infra.device.zoneNone")}</option>
                 {zones.map((zone) => <option key={zone.id} value={zone.id}>{zone.name}</option>)}
               </select>
-              <small>Зону можно изменить позже в настройках устройства.</small>
+              <small>{t("ui.infrastructureview.m0df534c812")}</small>
             </label>
             {zones.length === 0 && activeWorkspace.id !== SHARED_WORKSPACE_ID && (
-              <button className="infra-inline-zone-create" onClick={() => { setAddOpen(false); setZoneEditor("new"); }}>＋ Сначала создать зону</button>
+              <button className="infra-inline-zone-create" onClick={() => { setAddOpen(false); setZoneEditor("new"); }}>{t("ui.infrastructureview.mdc635b1dcf")}</button>
             )}
             </details>
             {addType === "server" && (
               <div className="infra-install-command">
-                <span><b>Установка на Linux одной командой</b><small>Вставьте в SSH-терминал сервера. После установки там появится код подключения.</small></span>
+                <span><b>{t("ui.infrastructureview.m698f5fd980")}</b><small>{t("ui.infrastructureview.md3233d0337")}</small></span>
                 <code>{REMOTAI_SERVER_INSTALL_COMMAND}</code>
-                <button onClick={() => void copyServerInstall()}>Скопировать</button>
+                <button onClick={() => void copyServerInstall()}>{t("guide.copy")}</button>
               </div>
             )}
             {/* На телефоне .exe скачался бы В телефон: там нужен адрес, который
                 человек откроет на самом компьютере. */}
             {addType === "computer" && !fromInstalledApp && <details>
-              <summary>Remotai ещё не установлен?</summary>
+              <summary>{t("ui.infrastructureview.mbfb3ebd9c9")}</summary>
               {mobileSurface ? openOnPcBlock : <InstallTarget />}
             </details>}
-            {fromInstalledApp ? <p>Код из установленного Remotai уже подставлен. Нажмите «Подключить», чтобы добавить компьютер в «{activeWorkspace.name}»{me ? ` (аккаунт: ${accountName(me)})` : ""}.</p> : <ol className="infra-pair-steps">
-              <li><b>1</b><span>Откройте Remotai на {addType === "server" ? "сервере" : "компьютере, которым будете управлять"}. Если приложение уже установлено, скачивать его повторно не нужно.</span></li>
-              <li><b>2</b><span>Введите здесь код с той машины — она появится в «{activeWorkspace.name}»{addZoneId ? `, зона «${zones.find((zone) => zone.id === addZoneId)?.name || "выбранная"}»` : ""}.</span></li>
-              <li><b>3</b><span>Нажмите «Управление» у добавленной машины. Её имя будет видно вверху приложения.</span></li>
+            {fromInstalledApp ? <p>{t("ui.infrastructureview.m93c3967feb")}{activeWorkspace.name}»{me ? t("ui.infrastructureview.m2b4b299929", { p0: (accountName(me)) }) : ""}.</p> : <ol className="infra-pair-steps">
+              <li><b>1</b><span>{t("ui.infrastructureview.mebd38f983b")}{addType === "server" ? t("ui.infrastructureview.mb4d6c1015a") : t("ui.infrastructureview.m874a69d81e")}{t("ui.infrastructureview.ma445230b64")}</span></li>
+              <li><b>2</b><span>{t("ui.infrastructureview.m411802ebd3")}{activeWorkspace.name}»{addZoneId ? t("ui.infrastructureview.m410254ddbe", { p0: (zones.find((zone) => zone.id === addZoneId)?.name || t("ui.infrastructureview.mc03ef7fffb")) }) : ""}.</span></li>
+              <li><b>3</b><span>{t("ui.infrastructureview.mcb149f1de0")}</span></li>
             </ol>}
             {!quotaReached && (
               /* Два способа ввести один и тот же код стоят рядом и оба
@@ -2830,8 +2831,8 @@ function CloudInfrastructureView() {
                  поверх этой же, маршрут не меняется. */
               <div className="infra-add-ways">
                 <div className="device-pair-form infra-pair-form">
-                  <input className="device-pair-input" value={pairCode} onChange={(event) => setPairCode(event.target.value.toUpperCase().slice(0, 9))} onKeyDown={(event) => { if (event.key === "Enter") void pair(); }} placeholder="FX42-9KQ7" autoCapitalize="characters" autoCorrect="off" spellCheck={false} aria-label="Код подключения" />
-                  <button className="btn btn-primary" disabled={pairBusy || pairCode.replace("-", "").length < 8} onClick={() => void pair()}>{pairBusy ? "Подключаю…" : "Подключить"}</button>
+                  <input className="device-pair-input" value={pairCode} onChange={(event) => setPairCode(event.target.value.toUpperCase().slice(0, 9))} onKeyDown={(event) => { if (event.key === "Enter") void pair(); }} placeholder="FX42-9KQ7" autoCapitalize="characters" autoCorrect="off" spellCheck={false} aria-label={t("ui.infrastructureview.mf923f9420f")} />
+                  <button className="btn btn-primary" disabled={pairBusy || pairCode.replace("-", "").length < 8} onClick={() => void pair()}>{pairBusy ? t("ui.infrastructureview.mbfc88f9303") : t("openrouter.connect")}</button>
                 </div>
                 <button className="btn btn-secondary infra-full" onClick={scan}>{t("infra.add.scanBtn")}</button>
                 <small className="infra-add-scan-note">{t("infra.add.scanNote")}</small>

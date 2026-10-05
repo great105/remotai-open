@@ -405,7 +405,7 @@ function AddForm({ agents, onDone, onChanged, onCancel }: {
                 aria-label={t(isStdio ? "mcp.fieldEnv" : "mcp.fieldHeaders")}
                 value={isStdio ? form.envText : form.headersText}
                 onChange={(e) => patch(isStdio ? { envText: e.target.value } : { headersText: e.target.value })}
-                placeholder={isStdio ? "API_KEY=ваш-ключ" : "Authorization: Bearer ваш-ключ"}
+                placeholder={isStdio ? t("ui.mcppanel.m7b7387d2bb") : t("ui.mcppanel.m5ef32ffd88")}
                 rows={3}
                 autoCapitalize="off" autoCorrect="off" spellCheck={false}
                 aria-invalid={!!(isStdio ? errors.envText : errors.headersText)}

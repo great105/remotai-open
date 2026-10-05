@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"tgcontrol/internal/localize"
 	"time"
 
 	"tgcontrol/internal/config"
@@ -83,20 +84,20 @@ func runRemote(args []string) int {
 		}
 		action := strings.ToLower(rest[0])
 		if action != "on" && action != "off" && action != "start" && action != "stop" {
-			fmt.Fprintln(os.Stderr, "remotai remote <компьютер> vpn on|off")
+			fmt.Fprintln(os.Stderr, localize.Text("remotai remote <компьютер> vpn on|off"))
 			return 2
 		}
 		body, _ := json.Marshal(map[string]string{"action": action})
 		return remoteShow(dev, "POST", "/api/system/vpn", body, asJSON)
 	case "get":
 		if len(rest) == 0 {
-			fmt.Fprintln(os.Stderr, "remotai remote <компьютер> get <путь>")
+			fmt.Fprintln(os.Stderr, localize.Text("remotai remote <компьютер> get <путь>"))
 			return 2
 		}
 		return remoteShow(dev, "GET", rest[0], nil, asJSON)
 	case "post":
 		if len(rest) == 0 {
-			fmt.Fprintln(os.Stderr, "remotai remote <компьютер> post <путь> [json]")
+			fmt.Fprintln(os.Stderr, localize.Text("remotai remote <компьютер> post <путь> [json]"))
 			return 2
 		}
 		var body []byte
@@ -111,7 +112,7 @@ func runRemote(args []string) int {
 		// это же CLI, закрыть было НЕЧЕМ — POST-алиасов у них нет, и сессии
 		// висели, пока их не убрали руками.
 		if len(rest) == 0 {
-			fmt.Fprintln(os.Stderr, "remotai remote <компьютер> delete <путь>")
+			fmt.Fprintln(os.Stderr, localize.Text("remotai remote <компьютер> delete <путь>"))
 			return 2
 		}
 		return remoteShow(dev, "DELETE", rest[0], nil, asJSON)
@@ -122,7 +123,7 @@ func runRemote(args []string) int {
 }
 
 func remoteUsage() {
-	fmt.Fprintln(os.Stderr, `Использование: remotai remote <команда>
+	fmt.Fprintln(os.Stderr, localize.Text(`Использование: remotai remote <команда>
 
   list                          компьютеры этого аккаунта и кто из них на связи
   <компьютер> doctor            что с ним: связь, VPN, последний перерыв
@@ -139,7 +140,7 @@ func remoteUsage() {
 
 Доступ ограничивает сам компьютер: по умолчанию гостю видно состояние и
 доступно управление VPN. Полный доступ включает владелец на ТОМ компьютере:
-remotai config set peer_access full`)
+remotai config set peer_access full`))
 }
 
 type peerDevice struct {
@@ -165,7 +166,7 @@ func peerCreds() (base, jwt string, err error) {
 		jwt, _ = relay.LoadJWT()
 	}
 	if jwt == "" {
-		return "", "", fmt.Errorf("это устройство не привязано к аккаунту — выполните: remotai pair")
+		return "", "", fmt.Errorf("%s", localize.Text("это устройство не привязано к аккаунту — выполните: remotai pair"))
 	}
 	return base, jwt, nil
 }
@@ -195,7 +196,7 @@ func listPeers() ([]peerDevice, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("облако ответило %d", resp.StatusCode)
+		return nil, fmt.Errorf(localize.Text("облако ответило %d"), resp.StatusCode)
 	}
 	var out struct {
 		Devices []peerDevice `json:"devices"`
@@ -218,7 +219,7 @@ func remoteList(asJSON bool) int {
 		return 0
 	}
 	if len(devices) == 0 {
-		fmt.Println("В аккаунте нет ни одного компьютера.")
+		fmt.Println(localize.Text("В аккаунте нет ни одного компьютера."))
 		return 0
 	}
 	for _, d := range devices {
@@ -228,7 +229,7 @@ func remoteList(asJSON bool) int {
 		}
 		self := ""
 		if d.Self {
-			self = "  (это я)"
+			self = localize.Text("  (это я)")
 		}
 		name := d.Name
 		if name == "" {
@@ -265,10 +266,10 @@ func resolvePeer(target string) (peerDevice, int) {
 	case 1:
 		return matches[0], 0
 	case 0:
-		fmt.Fprintf(os.Stderr, "Компьютер «%s» не найден. Список: remotai remote list\n", target)
+		fmt.Fprintf(os.Stderr, localize.Text("Компьютер «%s» не найден. Список: remotai remote list\n"), target)
 		return peerDevice{}, 1
 	default:
-		fmt.Fprintf(os.Stderr, "Под «%s» подходит несколько компьютеров — уточните идентификатором:\n", target)
+		fmt.Fprintf(os.Stderr, localize.Text("Под «%s» подходит несколько компьютеров — уточните идентификатором:\n"), target)
 		for _, d := range matches {
 			fmt.Fprintf(os.Stderr, "  %s  %s\n", d.ID, d.Name)
 		}
@@ -367,9 +368,9 @@ func remoteDoctor(dev peerDevice, asJSON bool) int {
 			fmt.Println(string(data))
 			return 1
 		}
-		fmt.Printf("🔴 %s не на связи с облаком.\n", name)
-		fmt.Println("   Если компьютер включён — на нём завис VPN или пропал интернет.")
-		fmt.Println("   Дотянуться до него отсюда нельзя: команда идёт тем же каналом.")
+		fmt.Printf(localize.Text("🔴 %s не на связи с облаком.\n"), name)
+		fmt.Println(localize.Text("   Если компьютер включён — на нём завис VPN или пропал интернет."))
+		fmt.Println(localize.Text("   Дотянуться до него отсюда нельзя: команда идёт тем же каналом."))
 		return 1
 	}
 
@@ -384,7 +385,7 @@ func remoteDoctor(dev peerDevice, asJSON bool) int {
 	} {
 		code, data, err := peerRequest(dev, "GET", s.path, nil)
 		if err != nil || code >= 300 {
-			msg := "нет доступа"
+			msg := localize.Text("нет доступа")
 			if err != nil {
 				msg = err.Error()
 			} else {
@@ -405,7 +406,7 @@ func remoteDoctor(dev peerDevice, asJSON bool) int {
 		return 0
 	}
 
-	fmt.Printf("🟢 %s на связи (%s, v%s)\n", name, dev.Platform, dev.Version)
+	fmt.Printf(localize.Text("🟢 %s на связи (%s, v%s)\n"), name, dev.Platform, dev.Version)
 	if boot, ok := result["boot"].(map[string]any); ok {
 		if rep, ok := boot["report"].(map[string]any); ok {
 			if title, _ := rep["title"].(string); title != "" {
@@ -423,13 +424,13 @@ func remoteDoctor(dev peerDevice, asJSON bool) int {
 			fmt.Println("   сеть: " + e)
 		} else {
 			online, _ := net["internet"].(bool)
-			fmt.Printf("   интернет: %s\n", yesNo(online, "есть", "нет"))
+			fmt.Printf(localize.Text("   интернет: %s\n"), yesNo(online, localize.Text("есть"), localize.Text("нет")))
 			if vpn, ok := net["vpn"].(map[string]any); ok && vpn != nil {
 				vname, _ := vpn["name"].(string)
 				running, _ := vpn["running"].(bool)
-				fmt.Printf("   VPN: %s — %s\n", vname, yesNo(running, "запущен", "выключен"))
+				fmt.Printf("   VPN: %s — %s\n", vname, yesNo(running, localize.Text("запущен"), localize.Text("выключен")))
 			} else {
-				fmt.Println("   VPN: не найден")
+				fmt.Println(localize.Text("   VPN: не найден"))
 			}
 			if last, ok := net["last_action"].(map[string]any); ok && last != nil {
 				if txt, _ := last["text"].(string); txt != "" {

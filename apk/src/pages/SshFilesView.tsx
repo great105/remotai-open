@@ -6,7 +6,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { useEscape, useToast, mapApiError, isPcOffline, OfflineState, transport, humanSize } from "@tgcontrol/shared";
+import { useEscape, useToast, mapApiError, isPcOffline, OfflineState, transport, humanSize, getLanguage, getLocale } from "@tgcontrol/shared";
 import {
   sftpList, sftpPreview, sftpMkdir, sftpDelete, sftpRename, sshSftpDownloadBlob,
   sftpPull, sftpTransfers, sftpCancelTransfer, getSshHosts, unlockSshHost, forgetSshHostSecret,
@@ -47,6 +47,14 @@ function formatModTime(iso: string): string {
   if (!Number.isFinite(ms)) return "";
   const d = new Date(ms);
   const now = new Date();
+  if (getLanguage() === "en") {
+    if (d.getFullYear() !== now.getFullYear()) {
+      return new Intl.DateTimeFormat(getLocale(), { month: "short", day: "numeric", year: "numeric" }).format(d);
+    }
+    const time = new Intl.DateTimeFormat(getLocale(), { hour: "2-digit", minute: "2-digit", hour12: false }).format(d);
+    if (d.getMonth() === now.getMonth() && d.getDate() === now.getDate()) return `${t("files.dateToday")} ${time}`;
+    return `${new Intl.DateTimeFormat(getLocale(), { month: "short", day: "numeric" }).format(d)} ${time}`;
+  }
   const day = d.getDate().toString().padStart(2, "0");
   const mon = (d.getMonth() + 1).toString().padStart(2, "0");
   const h = d.getHours().toString().padStart(2, "0");
@@ -807,7 +815,7 @@ function SshFilesInner({ host }: { host: SshHost }) {
     try {
       await sftpMkdir(activeConn(), joinRemote(path, mkdirName.trim()));
       hapticSuccess();
-      toastSuccess(`Папка «${mkdirName.trim()}» создана`);
+      toastSuccess(t("ui.sshfilesview.mc794163b66", { p0: (mkdirName.trim()) }));
       setShowMkdir(false);
       setMkdirName("");
       void loadDir(path);
@@ -826,7 +834,7 @@ function SshFilesInner({ host }: { host: SshHost }) {
         joinRemote(path, renameTo.trim()),
       );
       hapticSuccess();
-      toastSuccess(`Переименовано в «${renameTo.trim()}»`);
+      toastSuccess(t("ui.sshfilesview.mdb9f8c926c", { p0: (renameTo.trim()) }));
       setRenameItem(null);
       setContextItem(null);
       void loadDir(path);
@@ -841,13 +849,13 @@ function SshFilesInner({ host }: { host: SshHost }) {
     try {
       await sftpDelete(activeConn(), joinRemote(path, item.name));
       haptic("medium");
-      toastSuccess(`«${item.name}» удалено`);
+      toastSuccess(t("ui.sshfilesview.m15b2f54546", { p0: (item.name) }));
       setContextItem(null);
       void loadDir(path);
     } catch (e: any) {
       hapticError();
       toastError(e?.code === "not_empty"
-        ? "Папка не пуста. Удалите содержимое вручную."
+        ? t("ui.sshfilesview.m3d40a3a07f")
         : mapApiError(e));
     }
   };
@@ -923,10 +931,10 @@ function SshFilesInner({ host }: { host: SshHost }) {
           e.preventDefault();
           if (manualPath.trim()) void loadDir(manualPath.trim());
         }}>
-          <input className="modal-input" aria-label="Путь на сервере"
+          <input className="modal-input" aria-label={t("ui.sshfilesview.mad67d5a640")}
             value={manualPath} onChange={(e) => setManualPath(e.target.value)}
             placeholder="/var/www" autoCapitalize="off" autoCorrect="off" />
-          <button className="btn btn-secondary" type="submit">Перейти</button>
+          <button className="btn btn-secondary" type="submit">{t("ui.sshfilesview.m48db038c20")}</button>
         </form>
         {/* Слова и значки — те же, что в «Файлах» ПК (аудит ИА 02.09.2026,
             P1-27): «Вверх» стрелкой ↑ как fm-nav-up, а отправка с телефона —
@@ -943,8 +951,7 @@ function SshFilesInner({ host }: { host: SshHost }) {
             {uploading ? "✕" : "⬆"} {uploading ? (uploadPct != null ? `${uploadPct}%` : t("files.uploading")) : t("sshfiles.upload")}
           </button>
           <button className="fm-tool-btn" onClick={() => { setShowMkdir(true); setMkdirName(""); }}>
-            {"➕"} Папка
-          </button>
+            {"➕"} {t("ui.sshfilesview.m06ce30f6ec")}</button>
           <button className={`fm-tool-btn${showHidden ? " active" : ""}`} onClick={() => {
             const next = !showHidden;
             setShowHidden(next);
@@ -959,7 +966,7 @@ function SshFilesInner({ host }: { host: SshHost }) {
 
         <div className="ssh-files-controls">
           <input className="modal-input" value={filter} onChange={(e) => setFilter(e.target.value)}
-            placeholder="Фильтр в папке…" />
+            placeholder={t("ui.sshfilesview.m7a7265fc06")} />
           {/* Смена порядка = новый запрос: сортирует сервер по всему каталогу,
               иначе «по размеру» упорядочило бы первые 2000 записей из 50 000. */}
           <select className="modal-input" value={sort} onChange={(e) => {
@@ -974,7 +981,7 @@ function SshFilesInner({ host }: { host: SshHost }) {
           </select>
         </div>
         {truncated && (
-          <div className="fm-truncated">Показаны первые {entries.length} из {total} объектов. Уточните фильтр или путь.</div>
+          <div className="fm-truncated">{t("ui.sshfilesview.m0558775fd5")}{entries.length} {t("ui.infrastructureview.m6ce4fa393d")}{total} {t("ui.sshfilesview.mf3b65684a6")}</div>
         )}
 
         {loading ? (
@@ -1005,7 +1012,7 @@ function SshFilesInner({ host }: { host: SshHost }) {
         ) : filteredEntries.length === 0 ? (
           <div className="empty">
             <div className="empty-icon">{"📂"}</div>
-            <div className="empty-text">Пустая папка</div>
+            <div className="empty-text">{t("files.empty")}</div>
             <button className="btn btn-primary btn-sm" style={{ marginTop: 10 }}
               onClick={uploading ? cancelUpload : handleUpload}>
               {uploading ? "✕" : `⬆ ${t("sshfiles.upload")}`}
@@ -1028,7 +1035,7 @@ function SshFilesInner({ host }: { host: SshHost }) {
                 <div className="fm-info">
                   <div className="fm-name">{item.name}</div>
                   <div className="fm-meta">
-                    {item.is_dir ? "Папка" : humanSize(item.size)}
+                    {item.is_dir ? t("agentSessions.confirmFolder") : humanSize(item.size)}
                     {formatModTime(item.mod_time) ? ` · ${formatModTime(item.mod_time)}` : ""}
                     {item.permissions ? ` · ${item.permissions}` : ""}
                   </div>
@@ -1070,14 +1077,11 @@ function SshFilesInner({ host }: { host: SshHost }) {
                 </button>
               )}
               <button className="fm-ctx-btn" onClick={() => { setRenameItem(contextItem); setRenameTo(contextItem.name); }}>
-                {"✏️"} Переименовать
-              </button>
+                {"✏️"} {t("ui.sshfilesview.m1c5a1dd974")}</button>
               <HoldButton className="fm-ctx-btn fm-ctx-del" onConfirm={() => handleDelete(contextItem)}>
-                {"🗑️"} Удалить
-              </HoldButton>
+                {"🗑️"} {t("ui.sshfilesview.m63817cc689")}</HoldButton>
               <button className="fm-ctx-btn" onClick={() => setContextItem(null)}>
-                {"✖"} Закрыть
-              </button>
+                {"✖"} {t("ui.sshfilesview.m0a042e2e21")}</button>
             </div>
           </div>
         )}
@@ -1178,10 +1182,10 @@ function SshFilesInner({ host }: { host: SshHost }) {
           <div className="modal-sheet">
             <div className="modal-title">{t("sshfiles.newFolder")}</div>
             <input className="modal-input" value={mkdirName} onChange={(e) => setMkdirName(e.target.value)}
-              placeholder="Имя папки" autoFocus onKeyDown={(e) => e.key === "Enter" && handleMkdir()} />
+              placeholder={t("files.folderName")} autoFocus onKeyDown={(e) => e.key === "Enter" && handleMkdir()} />
             <div className="modal-actions">
-              <button className="btn btn-secondary" onClick={() => setShowMkdir(false)}>Отмена</button>
-              <button className="btn btn-primary" onClick={handleMkdir} disabled={!mkdirName.trim()}>Создать</button>
+              <button className="btn btn-secondary" onClick={() => setShowMkdir(false)}>{t("agentSessions.cancel")}</button>
+              <button className="btn btn-primary" onClick={handleMkdir} disabled={!mkdirName.trim()}>{t("modal.create")}</button>
             </div>
           </div>
         </div>
@@ -1191,12 +1195,12 @@ function SshFilesInner({ host }: { host: SshHost }) {
       {renameItem && (
         <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setRenameItem(null); }}>
           <div className="modal-sheet">
-            <div className="modal-title">Переименовать</div>
+            <div className="modal-title">{t("pty.renameAction")}</div>
             <input className="modal-input" value={renameTo} onChange={(e) => setRenameTo(e.target.value)}
               autoFocus onKeyDown={(e) => e.key === "Enter" && handleRename()} />
             <div className="modal-actions">
-              <button className="btn btn-secondary" onClick={() => setRenameItem(null)}>Отмена</button>
-              <button className="btn btn-primary" onClick={handleRename} disabled={!renameTo.trim()}>Переименовать</button>
+              <button className="btn btn-secondary" onClick={() => setRenameItem(null)}>{t("agentSessions.cancel")}</button>
+              <button className="btn btn-primary" onClick={handleRename} disabled={!renameTo.trim()}>{t("pty.renameAction")}</button>
             </div>
           </div>
         </div>
@@ -1206,7 +1210,7 @@ function SshFilesInner({ host }: { host: SshHost }) {
       {pwOpen && (
         <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setPwOpen(false); }}>
           <div className="modal-sheet">
-            <div className="modal-title">Пароль для {sshTargetLabel(conn)}</div>
+            <div className="modal-title">{t("ui.sshfilesview.m6bed1ba7dc")}{sshTargetLabel(conn)}</div>
             <input className="modal-input" type="password" value={pwDraft}
               onChange={(e) => setPwDraft(e.target.value)} placeholder={t("ssh.form.password")} autoFocus
               onKeyDown={(e) => e.key === "Enter" && submitPassword()} />
@@ -1236,9 +1240,9 @@ function SshFilesInner({ host }: { host: SshHost }) {
             </label>
             <div className="ssh-sheet-hint">{t("ssh.form.secretsHint")}</div>
             <div className="modal-actions">
-              <button className="btn btn-secondary" onClick={() => setPwOpen(false)}>Отмена</button>
+              <button className="btn btn-secondary" onClick={() => setPwOpen(false)}>{t("agentSessions.cancel")}</button>
               <button className="btn btn-primary" onClick={submitPassword}
-                disabled={!pwDraft && !keyPassDraft && !proxyPwDraft}>Повторить</button>
+                disabled={!pwDraft && !keyPassDraft && !proxyPwDraft}>{t("agentCheck.retry")}</button>
             </div>
           </div>
         </div>
@@ -1249,15 +1253,15 @@ function SshFilesInner({ host }: { host: SshHost }) {
           <div className="modal-sheet ssh-preview-sheet">
             <div className="help-sheet-header">
               <div className="modal-title">{preview.item.name}</div>
-              <button className="icon-btn" onClick={() => setPreview(null)} aria-label="Закрыть">{"✕"}</button>
+              <button className="icon-btn" onClick={() => setPreview(null)} aria-label={t("pty.searchClose")}>{"✕"}</button>
             </div>
             <div className="ssh-sheet-hint">
               {preview.data.content_type} · {humanSize(preview.data.size)}
-              {preview.data.truncated ? " · показано начало файла" : ""}
+              {preview.data.truncated ? t("ui.sshfilesview.m2c5089a746") : ""}
             </div>
             {preview.data.kind === "text"
               ? <pre className="ssh-preview-text">{preview.data.content || ""}</pre>
-              : <div className="ssh-empty">Бинарный файл — используйте скачивание для просмотра.</div>}
+              : <div className="ssh-empty">{t("ui.sshfilesview.mae3fd1b86b")}</div>}
           </div>
         </div>
       )}

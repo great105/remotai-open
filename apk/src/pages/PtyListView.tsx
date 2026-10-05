@@ -1,3 +1,4 @@
+import { getLocale } from "@tgcontrol/shared";
 import { useEffect, useState, useCallback, useRef } from "react";
 import type { PointerEvent as ReactPointerEvent, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -865,7 +866,7 @@ export function PtyListView() {
           accountsReady: true,
         }, resumeAccount);
         if (resume.agent.account_env && !platformRef.current) {
-          throw new Error("Не удалось проверить платформу компьютера — продолжение аккаунта заблокировано.");
+          throw new Error(t("ui.ptylistview.m3bde919d7c"));
         }
         resumeCommand = composeLaunch(resume.agent.resume_cli || "", EMPTY_PREFS, {
           agentID: resume.agent.id,
@@ -877,7 +878,7 @@ export function PtyListView() {
           launchArgs: resume.agent.launch_args,
         });
         if (!resumeCommand) {
-          throw new Error(launchAccount?.blockedReason || "Продолжение аккаунта заблокировано.");
+          throw new Error(launchAccount?.blockedReason || t("ui.ptylistview.mc16c569984"));
         }
         }
       }
@@ -1026,7 +1027,7 @@ export function PtyListView() {
   const timeAgo = (ms: number) => t("pty.timeAgo", { value: formatAgoValue(ms, nowMs) });
 
   /** Время последнего успешного ответа — «Данные на 09:41». */
-  const clockAt = (ms: number) => new Date(ms).toLocaleTimeString("ru-RU", {
+  const clockAt = (ms: number) => new Date(ms).toLocaleTimeString(getLocale(), {
     hour: "2-digit",
     minute: "2-digit",
   });

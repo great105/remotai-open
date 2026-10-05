@@ -153,11 +153,11 @@ export function sshLastAgo(iso?: string): string {
   const ms = Date.parse(iso);
   if (!Number.isFinite(ms)) return "";
   const sec = Math.max(0, ((Date.now() - ms) / 1000) | 0);
-  if (sec < 60) return "только что";
-  if (sec < 3600) return `${(sec / 60) | 0} мин назад`;
-  if (sec < 86400) return `${(sec / 3600) | 0} ч назад`;
+  if (sec < 60) return t("chat.justNow");
+  if (sec < 3600) return t("ui.infrastructureview.m8ceea3d01a", { p0: ((sec / 60) | 0) });
+  if (sec < 86400) return t("ui.infrastructureview.mb748cc3575", { p0: ((sec / 3600) | 0) });
   const d = (sec / 86400) | 0;
-  return `${d} дн назад`;
+  return t("ui.infrastructureview.m644d0bda1d", { p0: (d) });
 }
 
 /** Короткая подпись сервера: user@host:port (порт 22 не показываем). */

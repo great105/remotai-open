@@ -1,3 +1,4 @@
+import { getLocale } from "@tgcontrol/shared";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
@@ -15,7 +16,7 @@ import { getAuthProviders, type AuthProvider } from "../cloud/authProviders";
 import { connectWS } from "../api";
 import { resetCapabilities } from "../capabilities";
 import { useToast } from "@tgcontrol/shared";
-import { mapApiError, RELAY_BASE } from "@tgcontrol/shared";
+import { mapApiError, RELAY_BASE, LanguageSelector } from "@tgcontrol/shared";
 import { IconQr } from "../components/icons";
 import { InstallPwaBanner } from "../components/InstallPwaBanner";
 import { QrCode } from "../components/QrCode";
@@ -141,7 +142,7 @@ export function CloudLoginView() {
         return;
       }
       if (res.reason === "expired" || res.reason === "timeout") {
-        toastError("Время на вход вышло. Попробуйте ещё раз.");
+        toastError(t("settings.notifyTgLinkTimeout"));
       }
       // "cancelled" — пользователь сам нажал «Отмена», молча возвращаемся.
     } catch (e) {
@@ -164,7 +165,7 @@ export function CloudLoginView() {
         return;
       }
       if (res.reason === "expired" || res.reason === "timeout") {
-        toastError("Время на вход вышло. Попробуйте ещё раз.");
+        toastError(t("settings.notifyTgLinkTimeout"));
       }
     } catch (e) {
       toastError(mapApiError(e));
@@ -177,7 +178,7 @@ export function CloudLoginView() {
   const handleEmailStart = async () => {
     const clean = email.trim();
     if (!clean.includes("@")) {
-      toastError("Введите адрес почты");
+      toastError(t("ui.cloudloginview.mee5e999b8e"));
       return;
     }
     setEmailBusy(true);
@@ -196,7 +197,7 @@ export function CloudLoginView() {
   const handleEmailVerify = async (override?: string) => {
     const clean = (override ?? emailCode).trim();
     if (clean.length !== 6) {
-      toastError("Введите 6 цифр из письма");
+      toastError(t("ui.cloudloginview.mb9184d66dd"));
       return;
     }
     setEmailBusy(true);
@@ -263,7 +264,7 @@ export function CloudLoginView() {
     // его выбрасывает сам). Порог стоял на 6: недобранный код уезжал на релей
     // и возвращался бессмысленным «Не найдено.» вместо подсказки (N95).
     if (cleanCode.replace(/[-\s]/g, "").length < 8) {
-      toastError("В коде подключения 8 символов — проверьте, всё ли переписано с экрана компьютера.");
+      toastError(t("ui.cloudloginview.mb2e33aa8bc"));
       return;
     }
     setBusy(true);
@@ -301,16 +302,16 @@ export function CloudLoginView() {
       await navigator.clipboard.writeText(text);
       toastSuccess(okMessage);
     } catch {
-      toastError("Не удалось скопировать — выделите строку и скопируйте вручную.");
+      toastError(t("ui.cloudloginview.m90c6bbde83"));
     }
   };
 
   const copySiteAddress = async () => {
     try {
       await navigator.clipboard.writeText(RELAY_BASE);
-      toastSuccess(`Адрес скопирован. Откройте ${SITE_HOST} на компьютере и установите Remotai.`);
+      toastSuccess(t("ui.cloudloginview.mcc0917d5ed", { p0: (SITE_HOST) }));
     } catch {
-      toastError(`Не удалось скопировать. Наберите на компьютере ${SITE_HOST}`);
+      toastError(t("ui.cloudloginview.mc65a03c6dc", { p0: (SITE_HOST) }));
     }
   };
 
@@ -335,41 +336,34 @@ export function CloudLoginView() {
     const tg = getTelegram();
     return (
       <div className="onb">
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}><LanguageSelector /></div>
         {brand}
         <div className="onb-hero">
-          <h1>Откройте Remotai заново</h1>
+          <h1>{t("ui.cloudloginview.md08f31a11e")}</h1>
           <p>
-            В Telegram вход происходит сам — отдельного входа здесь нет. Telegram передал устаревшие
-            данные сеанса (мини-приложение провисело слишком долго) либо доступ к компьютеру отозвали,
-            поэтому запросы больше не проходят.
-          </p>
+            {t("ui.cloudloginview.me1856f9e77")}</p>
         </div>
         <div className="onb-actions">
           <button className="onb-tg" onClick={() => tg?.close()}>
-            Закрыть мини-приложение
-          </button>
+            {t("ui.cloudloginview.m25e9ea994e")}</button>
           <p className="onb-hint">
-            Затем вернитесь в чат с ботом Remotai и нажмите «Открыть» — данные сеанса обновятся сами,
-            всё останется на месте.
-          </p>
+            {t("ui.cloudloginview.mf1f0218936")}</p>
           <button
             className="btn btn-secondary"
             style={{ width: "100%", marginTop: 12 }}
             onClick={() => window.location.reload()}
           >
-            Попробовать снова
-          </button>
+            {t("ui.hermesautomation.mfc95f94b15")}</button>
         </div>
         <div className="onb-foot">
-          Если не помогло — переключитесь в Telegram на тот аккаунт, которым подключали компьютер,
-          и снова откройте Remotai из чата с ботом.
-        </div>
+          {t("ui.cloudloginview.mfc002f9a07")}</div>
       </div>
     );
   }
 
   return (
     <div className="onb">
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}><LanguageSelector /></div>
       {brand}
 
       {/* Сюда приходят и из ЖИВОГО приложения («Войти в аккаунт» при локальном
@@ -390,10 +384,10 @@ export function CloudLoginView() {
       )}
 
       <div className="onb-hero">
-        <h1>{forSupport ? "Написать в поддержку" : forInstalledComputer ? "Подключить компьютер к аккаунту" : "Вход в Remotai"}</h1>
-        <p>{forSupport ? "Войдите удобным способом, чтобы отправить сообщение и прочитать ответ в личном чате на сайте. При первом входе аккаунт создастся автоматически." : "Один аккаунт для управления с телефона, браузера и приложения на ПК. При первом входе аккаунт создастся автоматически."}</p>
-        <p className="onb-hint">{forSupport ? "Устанавливать Remotai или подключать компьютер для обращения не нужно. После входа сразу откроется поддержка." : forInstalledComputer ? "Вы пришли из установленного Remotai. Войдите тем же способом, что на других устройствах. После входа подтвердите добавление компьютера — код уже подставлен." : "После входа выберите компьютер или подключите новый по его коду. На других устройствах используйте тот же способ входа."}</p>
-        {!forSupport && !forInstalledComputer && <Link className="login-advanced-toggle" style={{ minHeight: 44, display: "inline-flex", alignItems: "center" }} to="/start">Впервые здесь? Выбрать, что подключить</Link>}
+        <h1>{forSupport ? t("guide.supportRow") : forInstalledComputer ? t("ui.cloudloginview.m4dd3357b19") : t("ui.cloudloginview.mf5ea3e834d")}</h1>
+        <p>{forSupport ? t("ui.cloudloginview.m4826ac87d4") : t("ui.cloudloginview.m70d73092eb")}</p>
+        <p className="onb-hint">{forSupport ? t("ui.cloudloginview.m700041811d") : forInstalledComputer ? t("ui.cloudloginview.m11bf5f1c62") : t("ui.cloudloginview.m54ada41f82")}</p>
+        {!forSupport && !forInstalledComputer && <Link className="login-advanced-toggle" style={{ minHeight: 44, display: "inline-flex", alignItems: "center" }} to="/start">{t("ui.cloudloginview.mc108bdee77")}</Link>}
       </div>
 
       {/* Перед способами входа, а не после: у приложения с главного экрана
@@ -409,7 +403,7 @@ export function CloudLoginView() {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M21 4 3 11l5 2 2 6 3-4 5 4z" stroke="#06120e" strokeWidth="1.8" strokeLinejoin="round" />
               </svg>
-              {!tgBusy ? "Войти через Telegram" : qrLink ? "Ждём подтверждения с телефона…" : "Открываем Telegram…"}
+              {!tgBusy ? t("ui.cloudloginview.m6e870a09b3") : qrLink ? t("ui.cloudloginview.m2874283966") : t("settings.notifyTgConnecting")}
             </button>
             {/* Показать свой QR — второе действие того же входа. На большом
                 экране Telegram может быть не установлен и не залогинен, зато
@@ -423,29 +417,24 @@ export function CloudLoginView() {
                 style={{ width: "100%", marginTop: 12 }}
                 onClick={() => void handleTgLogin(false)}
               >
-                <IconQr size={18} /> Показать QR — войти с телефона
-              </button>
+                <IconQr size={18} /> {t("ui.cloudloginview.m11fb2edee6")}</button>
             )}
             {tgBusy && qrLink && (
               <div className="onb-fallback" style={{ marginTop: 12, textAlign: "center" }}>
                 <div style={{ display: "flex", justifyContent: "center", padding: 12 }}>
-                  <QrCode value={qrLink} size={220} title="QR-код для входа через Telegram" />
+                  <QrCode value={qrLink} size={220} title={t("ui.cloudloginview.ma99a3eeb53")} />
                 </div>
                 <p className="onb-hint" style={{ marginTop: 0 }}>
-                  Наведите камеру телефона и нажмите «Запустить» в Telegram — вход на этом
-                  компьютере завершится сам, страницу закрывать не нужно.
-                </p>
+                  {t("ui.cloudloginview.ma6624ac6c6")}</p>
                 <button className="btn btn-secondary" style={{ width: "100%", marginTop: 12 }} onClick={() => tgHandleRef.current?.cancel()}>
-                  Отмена
-                </button>
+                  {t("agentSessions.cancel")}</button>
               </div>
             )}
             {tgBusy && !qrLink && (
               <>
-                <p className="onb-hint">Нажмите «Запустить» в Telegram и вернитесь в приложение — вход завершится сам.</p>
+                <p className="onb-hint">{t("ui.cloudloginview.m59c1fc64be")}</p>
                 <button className="btn btn-secondary" style={{ width: "100%", marginTop: 12 }} onClick={() => tgHandleRef.current?.cancel()}>
-                  Отмена
-                </button>
+                  {t("agentSessions.cancel")}</button>
               </>
             )}
           </>
@@ -467,12 +456,9 @@ export function CloudLoginView() {
               }}
               onClick={() => navigate("/scan")}
             >
-              <IconQr size={18} /> Сканировать QR-код с экрана компьютера
-            </button>
+              <IconQr size={18} /> {t("ui.cloudloginview.m617369df57")}</button>
             <p className="onb-hint">
-              Сразу привяжем этот компьютер — аккаунт можно добавить позже. QR показывает окно Remotai
-              на компьютере.
-            </p>
+              {t("ui.cloudloginview.mcd4811674a")}</p>
           </>
         )}
 
@@ -484,15 +470,14 @@ export function CloudLoginView() {
             disabled={oauthBusy !== null}
             onClick={() => void handleOAuthLogin(p.id)}
           >
-            {oauthBusy === p.id ? `Открываем ${p.label}…` : `Войти через ${p.label}`}
+            {oauthBusy === p.id ? t("ui.cloudloginview.mcad753516b", { p0: ownedText(p.label) }) : t("ui.cloudloginview.m0046fc427f", { p0: ownedText(p.label) })}
           </button>
         ))}
         {oauthBusy && (
           <>
-            <p className="onb-hint">Войдите в открывшемся окне и вернитесь в приложение — вход завершится сам.</p>
+            <p className="onb-hint">{t("ui.cloudloginview.m9fabfb5dfa")}</p>
             <button className="btn btn-secondary" style={{ width: "100%", marginTop: 12 }} onClick={() => oauthHandleRef.current?.cancel()}>
-              Отмена
-            </button>
+              {t("agentSessions.cancel")}</button>
           </>
         )}
 
@@ -515,17 +500,16 @@ export function CloudLoginView() {
                   />
                 </div>
                 <button className="btn btn-secondary" style={{ width: "100%", marginTop: 12 }} disabled={emailBusy} onClick={() => void handleEmailStart()}>
-                  {emailBusy ? "Отправляем…" : "Получить код на почту"}
+                  {emailBusy ? t("ui.cloudloginview.m4cbdc4d6d2") : t("ui.cloudloginview.m4c01e97312")}
                 </button>
               </>
             ) : (
               <>
                 <p className="onb-hint" style={{ marginBottom: 10 }}>
-                  Код отправлен на <b>{email.trim()}</b> · действует 10 минут
-                  {emailExpiresAt ? ` (до ${new Date(emailExpiresAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })})` : ""}.
+                  {t("ui.cloudloginview.m2b1057d4f5")}<b>{email.trim()}</b> {t("ui.cloudloginview.mf7a1462933")}{emailExpiresAt ? t("ui.cloudloginview.maea6d78f8e", { p0: (new Date(emailExpiresAt).toLocaleTimeString(getLocale(), { hour: "2-digit", minute: "2-digit" })) }) : ""}.
                 </p>
                 <div className="login-field">
-                  <label>Код из письма</label>
+                  <label>{t("ui.cloudloginview.mce3c5d2aec")}</label>
                   <input
                     value={emailCode}
                     onChange={(e) => handleEmailCodeInput(e.target.value)}
@@ -537,43 +521,39 @@ export function CloudLoginView() {
                     autoFocus
                     style={{ fontFamily: "var(--font-mono)", fontSize: 18, letterSpacing: 4, textAlign: "center" }}
                   />
-                  <small className="login-hint">Шесть цифр из письма. Как введёте — проверим сами.</small>
+                  <small className="login-hint">{t("ui.cloudloginview.m7bdd5d1a4b")}</small>
                 </div>
                 <button className="btn btn-secondary" style={{ width: "100%", marginTop: 12 }} disabled={emailBusy} onClick={() => void handleEmailVerify()}>
-                  {emailBusy ? "Проверяем…" : "Войти"}
+                  {emailBusy ? t("agents.rescanning") : t("agentLaunch.accountSignIn")}
                 </button>
                 <button
                   className="login-advanced-toggle"
                   disabled={emailBusy || emailResendLeft > 0}
                   onClick={() => void handleEmailStart()}
                 >
-                  {emailResendLeft > 0 ? `Отправить снова через ${emailResendLeft} с` : "Отправить код снова"}
+                  {emailResendLeft > 0 ? t("ui.cloudloginview.m5d4ba3ba63", { p0: (emailResendLeft) }) : t("ui.cloudloginview.m67973776b1")}
                 </button>
                 <button className="login-advanced-toggle" onClick={() => { setEmailToken(null); setEmailCode(""); }}>
-                  ◂ Другая почта
-                </button>
+                  {t("ui.cloudloginview.ma5d19f5d96")}</button>
               </>
             )}
           </div>
         )}
 
         <button className="login-advanced-toggle" aria-expanded={showCode} onClick={() => setShowCode(!showCode)}>
-          {showCode ? "▾" : "▸"} Подключиться по коду с другого компьютера
-        </button>
+          {showCode ? "▾" : "▸"} {t("ui.cloudloginview.m8cc9e511c4")}</button>
         {showCode && (
           <div className="onb-fallback">
             {fromScan && (
               <p className="onb-hint" style={{ marginTop: 0, marginBottom: 10 }}>
-                Введите код с экрана компьютера — он под QR-кодом в окне Remotai.
-              </p>
+                {t("ui.cloudloginview.ma1ec84699f")}</p>
             )}
             {!phoneLike && (
               <button className="btn btn-secondary" style={{ width: "100%", marginBottom: 12 }} onClick={() => navigate("/scan")}>
-                <IconQr size={18} /> Сканировать QR
-              </button>
+                <IconQr size={18} /> {t("ui.cloudloginview.m9eba6c03fb")}</button>
             )}
             <div className="login-field">
-              <label htmlFor="login-pair-code">Код подключения с экрана компьютера</label>
+              <label htmlFor="login-pair-code">{t("ui.cloudloginview.mf300d815d5")}</label>
               <input
                 id="login-pair-code"
                 value={code}
@@ -593,13 +573,13 @@ export function CloudLoginView() {
                   : { fontFamily: "var(--font-mono)", fontSize: 18, letterSpacing: 2, textAlign: "center" }}
               />
               <small className="login-hint">
-                {lanInput ? t("login.code.lanDetected") : "Код из 8 символов, буквы и цифры. Действует час."}
+                {lanInput ? t("login.code.lanDetected") : t("ui.cloudloginview.mc5763d2c8c")}
               </small>
             </div>
             <button className="btn btn-secondary" style={{ width: "100%", marginTop: 12 }} disabled={busy} onClick={() => void submit()}>
-              {busy ? "Подключение…" : lanInput ? t("login.code.connectLan") : "Подключиться по коду"}
+              {busy ? t("remote.connecting") : lanInput ? t("login.code.connectLan") : t("ui.cloudloginview.m60f1133d87")}
             </button>
-            <p className="onb-hint">Это быстрый вход без регистрации. Чтобы затем видеть компьютер с других устройств и восстановить доступ, добавьте способ входа в «Личном кабинете».</p>
+            <p className="onb-hint">{t("ui.cloudloginview.m9c8008ab61")}</p>
 
             {/* Кода ещё нет, потому что на компьютере ничего не установлено.
                 На телефоне прямая ссылка на .exe бесполезна (N96) — там остаётся
@@ -608,25 +588,21 @@ export function CloudLoginView() {
                 на компьютере. Там даём ссылку прямо на установщик этой ОС. */}
             <div style={{ marginTop: 14 }}>
               <small className="login-hint" style={{ display: "block" }}>
-                Код показывает окно Remotai на том компьютере, которым вы хотите управлять:
-                он живёт час, дальше нужен новый.
-              </small>
+                {t("ui.cloudloginview.m22d5d87a9f")}</small>
               {desktopDownload ? (
                 <>
                   <small className="login-hint" style={{ display: "block", marginTop: 8 }}>
-                    Хотите управлять <b>этим</b> компьютером? Браузер этого не умеет — на него нужно
-                    поставить Remotai, и он сам покажет QR и код.
-                  </small>
+                    {t("ui.cloudloginview.m14f604173a")}<b>{t("ui.cloudloginview.mc96d2e0db8")}</b> {t("ui.cloudloginview.mca7003bc9b")}</small>
                   <a
                     className="btn btn-secondary"
                     style={{ width: "100%", marginTop: 10, display: "block", textAlign: "center" }}
                     href={desktopDownload.os === "linux" ? desktopDownload.guideUrl : desktopDownload.url}
                     download={desktopDownload.os !== "linux" || undefined}
                   >
-                    {desktopDownload.os === "linux" ? "Выбрать установщик для Linux" : `↓ ${desktopDownload.label}`}
+                    {desktopDownload.os === "linux" ? t("ui.cloudloginview.m97c2959108") : `↓ ${desktopDownload.label}`}
                   </a>
                   {(desktopDownload.os === "macos" || desktopDownload.os === "linux") && <small className="login-hint" style={{ display: "block", marginTop: 8 }}>{t("install.previousNativePackage")}</small>}
-                  {desktopDownload.guideUrl && <a className="login-advanced-toggle" href={desktopDownload.guideUrl}>Открыть пошаговую установку и получить код</a>}
+                  {desktopDownload.guideUrl && <a className="login-advanced-toggle" href={desktopDownload.guideUrl}>{t("ui.cloudloginview.m4c8e4beae2")}</a>}
                   {desktopDownload.os === "windows" && desktopDownload.altUrl && (
                     <a
                       className="login-advanced-toggle"
@@ -641,24 +617,22 @@ export function CloudLoginView() {
               ) : (
                 <>
                   <small className="login-hint" style={{ display: "block", marginTop: 8 }}>
-                    Ещё не установили — откройте <b>{SITE_HOST}</b> на компьютере и скачайте приложение там.
-                  </small>
+                    {t("ui.cloudloginview.m9db90349fb")}<b>{SITE_HOST}</b> {t("ui.cloudloginview.m3d7dc3d943")}</small>
                   <button className="login-advanced-toggle" onClick={() => void copySiteAddress()}>
-                    ⧉ Скопировать адрес {SITE_HOST}
+                    {t("ui.cloudloginview.m105faff095")}{SITE_HOST}
                   </button>
                 </>
               )}
             </div>
 
             <button className="login-advanced-toggle" onClick={() => setShowAdvanced(!showAdvanced)}>
-              {showAdvanced ? "▾" : "▸"} Собственный сервис связи Remotai (для администраторов)
-            </button>
+              {showAdvanced ? "▾" : "▸"} {t("ui.cloudloginview.m79b119c5cf")}</button>
             {showAdvanced && (
               <div className="login-field">
                 {/* «relay» — наше внутреннее слово: в продукте оно нигде не
                     объяснено, а поле видит человек, который поднял сервер сам. */}
-                <label>Адрес сервиса связи Remotai</label>
-                <small className="login-hint">Только если вы развёрнули собственный сервис Remotai. Для подключения обычного Linux-сервера или VPS оставьте стандартный адрес.</small>
+                <label>{t("ui.cloudloginview.mb94b972943")}</label>
+                <small className="login-hint">{t("ui.cloudloginview.m4ff3c3e952")}</small>
                 <input
                   value={relayBase}
                   onChange={(e) => setRelayBase(e.target.value)}
@@ -678,27 +652,26 @@ export function CloudLoginView() {
         {/* Правовая строка: «условия использования» намеренно не упоминаем —
             такой страницы нет, ссылка вела бы в никуда. */}
         <div>
-          Входя, вы принимаете{" "}
+          {t("ui.cloudloginview.m2940630771")}{" "}
           <a
-            href={PRIVACY_URL}
+            href={getLanguage() === "en" && RELAY_BASE === "https://remotai.ru" ? RELAY_BASE + "/en/privacy.html" : PRIVACY_URL}
             target="_blank"
             rel="noopener"
             style={{ color: "var(--tg-link)" }}
           >
-            политику конфиденциальности
-          </a>
+            {t("billing.privacyLink")}</a>
           .
         </div>
         <div style={{ marginTop: 8 }}>
           {isNativeApp ? (
             <button className="login-cloud-link" style={{ margin: 0 }} onClick={() => navigate("/login")}>
-              Компьютер рядом? Подключиться по локальной сети
-            </button>
+              {t("ui.cloudloginview.m0b716aa75e")}</button>
           ) : (
-            "Локальная работа бесплатна · серверы и облако входят в Про"
+            t("ui.cloudloginview.mc1a9801dbf")
           )}
         </div>
       </div>
     </div>
   );
 }
+import { ownedText, getLanguage } from "@tgcontrol/shared";

@@ -1,3 +1,4 @@
+import { getLocale, getLanguage } from "@tgcontrol/shared";
 /**
  * История посещений виртуального браузера.
  *
@@ -30,11 +31,11 @@ function dayLabel(at: number): string {
   if (same(date, today)) return t("remote.historyToday");
   const yesterday = new Date(today.getTime() - 86400000);
   if (same(date, yesterday)) return t("remote.historyYesterday");
-  return date.toLocaleDateString();
+  return date.toLocaleDateString(getLocale());
 }
 
 function timeLabel(at: number): string {
-  return new Date(at * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return new Date(at * 1000).toLocaleTimeString(getLocale(), { hour: "2-digit", minute: "2-digit" });
 }
 
 export default function BrowserHistorySheet({ onClose, onOpen }: BrowserHistorySheetProps) {
@@ -74,7 +75,7 @@ export default function BrowserHistorySheet({ onClose, onOpen }: BrowserHistoryS
       else out.push({ day, items: [entry] });
     }
     return out;
-  }, [entries]);
+  }, [entries, getLanguage()]);
 
   const forget = async (url: string) => {
     haptic("light");

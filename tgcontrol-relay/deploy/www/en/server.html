@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>Claude Code on your server - control from your phone | Remotai</title>
+<meta content="The agent runs on your server around the clock, and you control it from your phone or browser. Terminal, files and running tasks. You don't need your own computer. 7 days free, then 900 ₽/month." name="description"/>
+<link href="https://remotai.ru/en/server.html" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="Claude Code on your server - control from your phone" property="og:title"/>
+<meta content="The agent lives on your VPS and works around the clock. The remote control is in the phone. You don't need your own computer." property="og:description"/>
+<meta content="https://remotai.ru/en/server.html" property="og:url"/>
+<link href="/favicon.ico" rel="icon"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Golos+Text:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#06080b; --bg2:#0a0e13; --panel:#0d1218; --panel2:#10161e;
+  --line:#1c2530; --line2:#28333f;
+  --fg:#e8eef4; --muted:#91a0ae; --faint:#72818f;
+  --accent:#2ee6b0; --accent-deep:#0c8f6c; --accent-dim:rgba(46,230,176,.12);
+  --amber:#ffb454;
+  --font-display:"Unbounded","Arial Black",sans-serif;
+  --font-body:"Golos Text","Segoe UI",sans-serif;
+  --font-mono:"JetBrains Mono","Cascadia Code",Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:940px;margin:0 auto;padding:0 20px}
+header.top{border-bottom:1px solid var(--line);background:rgba(6,8,11,.9);position:sticky;top:0;z-index:10;backdrop-filter:blur(8px)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--fg)}
+.logo span{color:var(--accent)}
+.nav a{color:var(--muted);font-size:15px;margin-left:22px}
+.hero{padding:64px 0 40px}
+.eyebrow{font-family:var(--font-mono);font-size:13px;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
+h1{font-family:var(--font-display);font-weight:700;font-size:clamp(30px,5vw,46px);line-height:1.15;margin:0 0 18px}
+.lead{font-size:20px;color:var(--muted);max-width:720px;margin:0 0 28px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.btn{display:inline-block;padding:14px 24px;border-radius:12px;font-weight:600;font-size:16px}
+.btn-main{background:var(--accent);color:#06251c}
+.btn-main:hover{background:#3ff0bd;text-decoration:none}
+.btn-ghost{border:1px solid var(--line2);color:var(--fg)}
+.btn-ghost:hover{border-color:var(--accent);text-decoration:none}
+.note{font-size:14px;color:var(--faint)}
+section{padding:44px 0;border-top:1px solid var(--line)}
+h2{font-family:var(--font-display);font-weight:500;font-size:clamp(22px,3.4vw,30px);margin:0 0 10px}
+.sub{color:var(--muted);margin:0 0 26px;max-width:760px}
+.grid{display:grid;gap:16px}
+.grid>*{min-width:0}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:760px){.g3,.g2{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;min-width:0}
+.card h3{font-size:17px;margin:0 0 8px;font-weight:600}
+.card p{margin:0;color:var(--muted);font-size:15px}
+/* minmax(0,1fr) и min-width:0 обязательны: иначе длинная команда в <pre>
+   распирает колонку grid и на телефоне появляется горизонтальная прокрутка. */
+.steps{counter-reset:s;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.step{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:18px 20px 18px 62px;position:relative;min-width:0}
+.step:before{counter-increment:s;content:counter(s);position:absolute;left:20px;top:18px;width:28px;height:28px;border-radius:9px;background:var(--accent-dim);color:var(--accent);font-family:var(--font-mono);font-weight:500;display:flex;align-items:center;justify-content:center;font-size:15px}
+.step h3{margin:0 0 6px;font-size:17px}
+.step p{margin:0;color:var(--muted);font-size:15px}
+code,.mono{font-family:var(--font-mono);font-size:14px}
+pre{background:#05070a;border:1px solid var(--line);border-radius:12px;padding:16px;overflow-x:auto;margin:12px 0 0;max-width:100%}
+pre code{color:var(--accent)}
+.price{display:flex;gap:14px;flex-wrap:wrap;align-items:stretch}
+.price .card{flex:1 1 240px}
+.price .sum{font-family:var(--font-display);font-size:26px;margin:6px 0}
+.faq{display:grid;gap:12px}
+.faq details{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+.faq summary{cursor:pointer;font-weight:600;font-size:16px}
+.faq p{color:var(--muted);margin:10px 0 0;font-size:15px}
+footer{border-top:1px solid var(--line);padding:28px 0 44px;color:var(--faint);font-size:14px}
+footer a{color:var(--muted)}
+.tag{display:inline-block;font-family:var(--font-mono);font-size:12px;color:var(--accent);background:var(--accent-dim);border-radius:999px;padding:3px 10px;margin-bottom:10px}
+</style>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Do I need my computer for this to work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The agent and all your tools live on the server. A phone or browser is a remote control: it shows what is happening on the server and sends commands there."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Remotai a VPN?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Remotai doesn't change your network access and doesn't tunnel anything for you. This is a remote control for your own machine: you connect to your server and work on it."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "My server is abroad - will the agent work there?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The agent works on the network of the server on which it is launched: if the service is available in its country, everything works normally, and you don’t need to configure anything on your phone or computer. Remotai does not interfere in this chain - it shows you the terminal of your machine and sends commands there."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What agents are supported?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Any console ones: Claude Code, Codex CLI, Kimi, Gemini CLI, opencode and everything that runs in the terminal. Remotai does not replace the agent - it gives him a workplace and you access to it."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How safe is it?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Keys and data remain on your server. The connection is encrypted, access to the machine is provided only by the binding code, and the device can be recalled at any time from the application."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What if the server reboots?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The agent gets up on his own and restores communication. Terminals with history are returned, unfinished tasks are visible in the list."
+      }
+    }
+  ]
+}</script>
+<link href="https://remotai.ru/server.html" hreflang="ru" rel="alternate"/><link href="https://remotai.ru/en/server.html" hreflang="en" rel="alternate"/><link href="https://remotai.ru/server.html" hreflang="x-default" rel="alternate"/></head>
+<body>
+<header class="top">
+<div class="wrap">
+<a class="logo" href="/en/">Remot<span>ai</span></a><a class="language-link" href="/server.html" hreflang="ru" lang="ru" style="margin-left:auto;padding:8px;white-space:nowrap;font-size:13px">Русский</a>
+<nav class="nav">
+<a href="/en/#pricing">Prices</a>
+<a href="/en/#download">Download</a>
+<a href="/en/uslugi.html">Turnkey</a>
+<a href="/app/?lang=en">Web version</a>
+</nav>
+</div>
+</header>
+<div class="wrap">
+<div class="hero">
+<div class="eyebrow">Scenario: Agent on Server</div>
+<h1>Claude Code lives on your server. You control it from your phone.</h1>
+<p class="lead">The agent works where it is convenient for him to work - on your VPS, around the clock and without your participation. Terminal, files and launching tasks - on the phone or in the browser. In this scheme, you don’t need your own computer at all.</p>
+<div class="cta">
+<a class="btn btn-main" href="/app/?lang=en">Open in browser</a>
+<a class="btn btn-ghost" href="/en/#download">Download the application</a>
+</div>
+<p class="note">7 days free, no card needed. Further 900 ₽/month. Server rental is paid to its provider and is not included in the subscription.</p>
+</div>
+<section>
+<h2>Why keep an agent on the server?</h2>
+<p class="sub">Your home computer sleeps, reboots, and leaves with you. Server - no.</p>
+<div class="grid g3">
+<div class="card">
+<h3>Works while you sleep</h3>
+<p>Set the task in the evening - see the result in the morning. The server does not go to sleep and does not turn off along with the laptop.</p>
+</div>
+<div class="card">
+<h3>The keys and context are yours</h3>
+<p>The agent runs in your environment, with your keys and your repository. No one else's cloud agent can see your code.</p>
+</div>
+<div class="card">
+<h3>No computer needed</h3>
+<p>All development lives on the server. From your phone, you open the same terminal that you would open at your desk.</p>
+</div>
+</div>
+</section>
+<section id="where">
+<h2>Where the server is located - you decide</h2>
+<p class="sub">It is important for the agent from which country he accesses the network. All that matters to you is that you reach it.</p>
+<div class="grid g2">
+<div class="card">
+<h3>The server may be abroad</h3>
+<p>VPS is rented from any provider and in any country. Claude Code, Codex and other agents are not available in all regions: if the server is located where the service is running, the agent starts and lives in normal mode - without tricks with the network on your side.</p>
+</div>
+<div class="card">
+<h3>Your device remains yours</h3>
+<p>Remotai does not tunnel your traffic or change your internet access. You connect to your machine and work on it - as if you were sitting behind it. The agents' accounts are yours, your keys are yours, and the terms of their services apply as usual.</p>
+</div>
+</div>
+</section>
+<section>
+<h2>How it works</h2>
+<p class="sub">Three parts: your server, the Remotai agent on it and the remote control in your hands.</p>
+<div class="steps">
+<div class="step">
+<h3>Your server</h3>
+<p>Any VPS from any provider - Linux, from one gigabyte of memory. Your CLI agents also live there: Claude Code, Codex, Kimi, Gemini, opencode.</p>
+</div>
+<div class="step">
+<h3>Remotai agent on the server</h3>
+<p>Installed by one command and keeps the connection itself. Port forwarding, public IP address and firewall settings are not needed. A separate SSH client is also not needed: add the server to the application, click “Install Remotai”, and the server console will open right there.</p>
+<pre><code>curl -fsSL https://remotai.ru/install.sh | sh</code></pre>
+</div>
+<div class="step">
+<h3>Remote - phone or browser</h3>
+<p>Log in using the code that the agent showed in the console. Next - the terminal, files, screen and launching tasks from any device.</p>
+</div>
+</div>
+</section>
+<section>
+<h2>What do you get</h2>
+<div class="grid g2">
+<div class="card">
+<h3>Real terminal</h3>
+<p>Not emulation or chat: a live TTY with history, scrolling and keys, to which the agent connects as if it were their own.</p>
+</div>
+<div class="card">
+<h3>The task continues without you</h3>
+<p>If you closed the application or lost the network, the server will finish what it started and notify you when it’s finished.</p>
+</div>
+<div class="card">
+<h3>Files and edits</h3>
+<p>Open, view, edit, download. Diffs and logs can be read from the phone without having to mess with an SFTP client.</p>
+</div>
+<div class="card">
+<h3>Several computers at once</h3>
+<p>Server, home PC and laptop - in one list. Switch between them with one touch.</p>
+</div>
+</div>
+</section>
+<section id="pricing">
+<h2>How much does it cost</h2>
+<p class="sub">Working with servers is a paid part of Remotai. Local work on your computer remains free forever.</p>
+<div class="price">
+<div class="card">
+<span class="tag">Sample</span>
+<div class="sum">7 days</div>
+<p>Full Pro, no map. The countdown starts from the first connection via the cloud.</p>
+</div>
+<div class="card">
+<span class="tag">Pro</span>
+<div class="sum">900 ₽/month</div>
+<p>Up to 5 machines via the cloud, terminals and agents without restrictions. Year - 9,000 ₽, two months as a gift.</p>
+</div>
+<div class="card">
+<span class="tag">Turnkey</span>
+<div class="sum">8 000 ₽</div>
+<p>We will configure the server for your agent: installation, keys, autostart, verification. One-time.</p>
+</div>
+</div>
+<p class="note" style="margin-top:14px">VPS rental is paid directly to your provider and is not included in the Remotai subscription.</p>
+</section>
+<section>
+<h2>Frequently asked questions</h2>
+<div class="faq">
+<details>
+<summary>Do I need my computer for this to work?</summary>
+<p>No. The agent and all your tools live on the server. A phone or browser is a remote control: it shows what is happening on the server and sends commands there.</p>
+</details>
+<details>
+<summary>Is Remotai a VPN?</summary>
+<p>No. Remotai doesn't change your network access and doesn't tunnel anything for you. This is a remote control for your own machine: you connect to your server and work on it.</p>
+</details>
+<details>
+<summary>My server is abroad - will the agent work there?</summary>
+<p>Yes. The agent works on the network of the server on which it is launched: if the service is available in its country, everything works normally, and you don’t need to configure anything on your phone or computer. Remotai does not interfere in this chain - it shows you the terminal of your machine and sends commands there.</p>
+</details>
+<details>
+<summary>What agents are supported?</summary>
+<p>Any console ones: Claude Code, Codex CLI, Kimi, Gemini CLI, opencode and everything that runs in the terminal. Remotai does not replace the agent - it gives him a workplace and you access to it.</p>
+</details>
+<details>
+<summary>How safe is it?</summary>
+<p>Keys and data remain on your server. The connection is encrypted, access to the machine is provided only by the binding code, and the device can be recalled at any time from the application.</p>
+</details>
+<details>
+<summary>What if the server reboots?</summary>
+<p>The agent gets up on his own and restores communication. Terminals with history are returned, unfinished tasks are visible in the list.</p>
+</details>
+</div>
+</section>
+<section>
+<h2>Start</h2>
+<p class="sub">The easiest way is to open the web version and connect the server using the code - no installation required on your phone.</p>
+<div class="cta">
+<a class="btn btn-main" href="/app/?lang=en">Open web version</a>
+<a class="btn btn-ghost" href="https://t.me/Autocode1_bot">Write to us</a>
+</div>
+</section>
+</div>
+<footer>
+<div class="wrap">
+<p>Individual entrepreneur Vaulin Evgeniy Nikolaevich · TIN 773461030140 · OGRNIP 325774600620214</p>
+<p><a href="/en/">Home</a> · <a href="/en/offer.html">Offer</a> · <a href="/en/privacy.html">Privacy</a></p>
+</div>
+</footer>
+<script>
+// Метрика: тот же счётчик, что на лендинге и в приложении, — путь человека не рвётся.
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym(111692890,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+
+// UTM с рекламы кладём туда же, откуда их читает веб-приложение (тот же origin).
+(function(){
+  try{
+    var q=new URLSearchParams(location.search),utm={};
+    ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","yclid"].forEach(function(k){var v=q.get(k);if(v)utm[k]=v.slice(0,200);});
+    if(Object.keys(utm).length&&!localStorage.getItem("utm"))localStorage.setItem("utm",JSON.stringify(utm));
+  }catch(e){}
+  document.querySelectorAll('a[href="/app/?lang=en"]').forEach(function(a){
+    a.addEventListener("click",function(){try{ym(111692890,"reachGoal","open_web")}catch(e){}});
+  });
+})();
+</script>
+</body>
+</html>
