@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Remotai — админка</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: #0b0f14;
+    --panel: #131a22;
+    --panel2: #1a232e;
+    --border: #24303d;
+    --text: #e6edf3;
+    --muted: #8b98a5;
+    --accent: #4c9aff;
+    --green: #3fb950;
+    --red: #f85149;
+    --orange: #d29922;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 14px/1.45 -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  a { color: var(--accent); }
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 20px; border-bottom: 1px solid var(--border);
+    background: var(--panel); position: sticky; top: 0; z-index: 5;
+  }
+  header h1 { font-size: 16px; margin: 0; }
+  header h1 span { color: var(--muted); font-weight: normal; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px;
+  }
+  .card h2 { margin: 0 0 12px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .stat { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .stat .v { font-size: 26px; font-weight: 700; }
+  .stat .l { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+  .bar-row .name { width: 150px; color: var(--muted); font-size: 13px; flex-shrink: 0; }
+  .bar-row .bar { height: 18px; background: var(--accent); border-radius: 4px; min-width: 2px; opacity: .85; }
+  .bar-row .n { font-size: 13px; font-variant-numeric: tabular-nums; }
+  .chart { display: flex; align-items: flex-end; gap: 2px; height: 90px; margin-top: 8px; }
+  .chart .col { flex: 1; background: var(--accent); border-radius: 2px 2px 0 0; min-height: 2px; opacity: .8; }
+  .chart .col:hover { opacity: 1; }
+  .chart-labels { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; margin-top: 4px; }
+  /* Логин */
+  #login { max-width: 380px; margin: 15vh auto; text-align: center; }
+  #login .card { padding: 32px; }
+  #login p { color: var(--muted); }
+  /* Поддержка */
+  .support { display: grid; grid-template-columns: 320px 1fr; gap: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--panel); }
+  .threads { border-right: 1px solid var(--border); max-height: 560px; overflow-y: auto; }
+  .thread { padding: 10px 12px; border-bottom: 1px solid var(--border); cursor: pointer; }
+  .thread:hover { background: var(--panel2); }
+  .thread.active { background: var(--panel2); border-left: 3px solid var(--accent); }
+  .thread .t-name { font-weight: 600; }
+  .thread .t-name .badge { background: var(--red); color: #fff; border-radius: 9px; padding: 1px 7px; font-size: 11px; margin-left: 6px; }
+  .thread .t-status { color: var(--muted); font-size: 11px; margin-left: 6px; }
+  .thread .t-preview { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+  .chat { display: flex; flex-direction: column; max-height: 560px; }
+  .chat-head { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .chat-msgs { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 8px; min-height: 300px; }
+  .msg { max-width: 75%; padding: 8px 12px; border-radius: 12px; font-size: 13px; white-space: pre-wrap; word-break: break-word; }
+  .msg.user { align-self: flex-start; background: var(--panel2); border: 1px solid var(--border); }
+  .msg.admin { align-self: flex-end; background: #1f3a5f; }
+  .msg .m-time { display: block; font-size: 10px; color: var(--muted); margin-top: 4px; }
+  .chat-input { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--border); }
+  .chat-input textarea {
+    flex: 1; resize: none; height: 40px; background: var(--bg); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; font: inherit;
+  }
+  button {
+    background: var(--accent); color: #fff; border: none; border-radius: 8px;
+    padding: 8px 14px; font: inherit; cursor: pointer;
+  }
+  a.button {
+    display: inline-block; background: var(--accent); color: #fff;
+    border-radius: 8px; padding: 10px 16px; text-decoration: none;
+  }
+  button:hover { filter: brightness(1.1); }
+  button.ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  button.small { padding: 4px 10px; font-size: 12px; }
+  .empty { color: var(--muted); text-align: center; padding: 40px 0; }
+  .err { color: var(--red); }
+  .hidden { display: none !important; }
+  @media (max-width: 800px) {
+    .support { grid-template-columns: 1fr; }
+    .threads { max-height: 240px; border-right: none; border-bottom: 1px solid var(--border); }
+    /* Пять колонок таблицы пользователей расширяли всю страницу за экран.
+       На телефоне каждая строка становится читаемой карточкой с подписями. */
+    #recent, #recent tbody { display: block; width: 100%; }
+    #recent tr:first-child { display: none; }
+    #recent tr {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 10px 12px;
+      padding: 12px 0;
+    }
+    #recent tr:not(:last-child) { border-bottom: 1px solid var(--border); }
+    #recent td {
+      display: block;
+      min-width: 0;
+      padding: 0;
+      border: 0;
+      overflow-wrap: anywhere;
+    }
+    #recent td:first-child {
+      grid-column: 1 / -1;
+      font-weight: 600;
+    }
+    #recent td::before {
+      content: attr(data-label);
+      display: block;
+      margin-bottom: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 400;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- В production страница открывается из бота как Telegram Web App: Telegram
+     сам добавляет подписанный initData, а сервер сверяет ID с ADMIN_IDS. -->
+<div id="login">
+  <div class="card">
+    <h1>Remotai · админка</h1>
+    <p>Откройте кабинет через Telegram-бота. Доступ только у администраторов.</p>
+    <a class="button" href="https://t.me/__BOT_USERNAME__?start=admin">Открыть в Telegram</a>
+    <p>Бот пришлёт защищённую кнопку входа.</p>
+    <p id="login-err" class="err hidden"></p>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <header>
+    <h1>Remotai <span>· админ-кабинет</span></h1>
+    <button class="ghost small" onclick="logout()">Выйти</button>
+  </header>
+  <div class="wrap">
+    <div class="stats" id="cards"></div>
+    <div class="grid">
+      <div class="card"><h2>Воронка (30 дней)</h2><div id="funnel"></div></div>
+      <div class="card"><h2>Регистрации по дням (30 дней)</h2><div class="chart" id="regs-chart"></div><div class="chart-labels" id="regs-labels"></div></div>
+      <div class="card"><h2>Источники</h2><table id="sources"></table><h2 style="margin-top:16px">UTM-источники</h2><table id="utm"></table></div>
+      <div class="card"><h2>Использование фич</h2><table id="features"></table></div>
+    </div>
+    <div class="card" style="margin-top:16px"><h2>Последние пользователи</h2><table id="recent"></table></div>
+    <h2 style="margin:24px 0 10px; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em">Поддержка</h2>
+    <div class="support">
+      <div class="threads" id="threads"></div>
+      <div class="chat">
+        <div class="chat-head">
+          <div id="chat-title">Выберите тред</div>
+          <button class="ghost small hidden" id="toggle-btn" onclick="toggleThread()"></button>
+        </div>
+        <div class="chat-msgs" id="chat-msgs"><div class="empty">Тред не выбран</div></div>
+        <div class="chat-input hidden" id="chat-input">
+          <textarea id="reply" placeholder="Ответ пользователю… (Ctrl+Enter — отправить)"></textarea>
+          <button onclick="sendReply()">Отправить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const LS_KEY = "remotai_admin_tma";
+const tgWebApp = window.Telegram && window.Telegram.WebApp;
+if (tgWebApp && tgWebApp.initData) {
+  localStorage.setItem(LS_KEY, tgWebApp.initData);
+  tgWebApp.ready();
+  tgWebApp.expand();
+}
+
+function logout() {
+  localStorage.removeItem(LS_KEY);
+  if (tgWebApp && tgWebApp.initData) {
+    tgWebApp.close();
+    return;
+  }
+  location.reload();
+}
+
+// api — fetch с admin-заголовком. 403 → экран «нет доступа».
+async function api(path, opts) {
+  const tma = localStorage.getItem(LS_KEY) || "";
+  const resp = await fetch(path, Object.assign({}, opts, {
+    headers: Object.assign({"Authorization": "tma " + tma}, (opts && opts.headers) || {})
+  }));
+  if (resp.status === 403) {
+    showDenied();
+    throw new Error("forbidden");
+  }
+  if (!resp.ok) throw new Error(path + " -> " + resp.status);
+  return resp.json();
+}
+
+function showDenied() {
+  document.getElementById("app").classList.add("hidden");
+  const login = document.getElementById("login");
+  login.classList.remove("hidden");
+  const err = document.getElementById("login-err");
+  err.textContent = "Нет доступа или сессия устарела. Откройте кабинет заново через бота.";
+  err.classList.remove("hidden");
+}
+
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c =>
+    ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+}
+function fmtTime(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return d.toLocaleString("ru-RU", {day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"});
+}
+
+// ---- Статистика ----
+
+async function loadStats() {
+  const st = await api("/v1/admin/stats");
+
+  document.getElementById("cards").innerHTML = [
+    [st.active.dau, "DAU"], [st.active.wau, "WAU"], [st.active.mau, "MAU"],
+    [st.devices_online, "Устройств онлайн"],
+  ].map(([v, l]) => `<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("");
+
+  const f = st.funnel;
+  const rows = [
+    ["Визит лендинга", f.landing_visit], ["Скачивание", f.landing_download],
+    ["Регистрация", f.register], ["ПК подключён", f.pair_success], ["Активны за 7д", f.active_7d],
+  ];
+  const max = Math.max(1, ...rows.map(r => r[1]));
+  document.getElementById("funnel").innerHTML = rows.map(([name, n]) =>
+    `<div class="bar-row"><div class="name">${name}</div>` +
+    `<div class="bar" style="width:${Math.round(n / max * 100)}%"></div><div class="n">${n}</div></div>`
+  ).join("");
+
+  const days = st.regs_by_day || [];
+  const dmax = Math.max(1, ...days.map(d => d.n));
+  document.getElementById("regs-chart").innerHTML = days.map(d =>
+    `<div class="col" style="height:${Math.max(2, Math.round(d.n / dmax * 100))}%" title="${d.day}: ${d.n}"></div>`
+  ).join("") || `<div class="empty">нет данных</div>`;
+  document.getElementById("regs-labels").innerHTML = days.length
+    ? `<span>${days[0].day}</span><span>${days[days.length - 1].day}</span>` : "";
+
+  document.getElementById("sources").innerHTML =
+    `<tr><th>Источник</th><th>Польз.</th></tr>` +
+    (st.sources || []).map(s => `<tr><td>${esc(s.name)}</td><td>${s.n}</td></tr>`).join("");
+  document.getElementById("utm").innerHTML =
+    `<tr><th>utm_source</th><th>Польз.</th></tr>` +
+    ((st.utm || []).map(s => `<tr><td>${esc(s.name)}</td><td>${s.n}</td></tr>`).join("") ||
+     `<tr><td colspan="2" class="empty">нет меток</td></tr>`);
+  document.getElementById("features").innerHTML =
+    `<tr><th>Фича</th><th>7д</th><th>30д</th></tr>` +
+    ((st.features || []).map(f => `<tr><td>${esc(f.feature)}</td><td>${f.n7}</td><td>${f.n30}</td></tr>`).join("") ||
+     `<tr><td colspan="3" class="empty">нет данных</td></tr>`);
+  document.getElementById("recent").innerHTML =
+    `<tr><th>Пользователь</th><th>Источник</th><th>Регистрация</th><th>Был(а)</th><th>Устройств</th></tr>` +
+    (st.recent_users || []).map(u => {
+      const name = u.username ? "@" + u.username : (u.first_name || "—");
+      return `<tr><td data-label="Пользователь">${esc(name)}</td><td data-label="Источник">${esc(u.source || "—")}</td>` +
+        `<td data-label="Регистрация">${fmtTime(u.created_at)}</td><td data-label="Был(а)">${fmtTime(u.last_seen_at)}</td>` +
+        `<td data-label="Устройств">${u.devices_count}</td></tr>`;
+    }).join("");
+}
+
+// ---- Поддержка ----
+
+let curThread = null;   // {id, status, name}
+let threadsCache = [];
+
+async function loadThreads() {
+  const data = await api("/v1/admin/support/threads");
+  threadsCache = data.threads || [];
+  const el = document.getElementById("threads");
+  if (!threadsCache.length) {
+    el.innerHTML = `<div class="empty">Обращений нет</div>`;
+    return;
+  }
+  el.innerHTML = threadsCache.map(t => {
+    const name = t.username ? "@" + t.username : (t.first_name || "id " + t.id);
+    const badge = t.unread_admin > 0 ? `<span class="badge">${t.unread_admin}</span>` : "";
+    const st = t.status === "closed" ? `<span class="t-status">закрыт</span>` : "";
+    return `<div class="thread ${curThread && curThread.id === t.id ? "active" : ""}" onclick="openThread(${t.id})">` +
+      `<div class="t-name">${esc(name)}${badge}${st}</div>` +
+      `<div class="t-preview">${esc(t.last_text)}</div></div>`;
+  }).join("");
+}
+
+async function openThread(id) {
+  const t = threadsCache.find(x => x.id === id);
+  const name = t ? (t.username ? "@" + t.username : (t.first_name || "id " + t.id)) : "id " + id;
+  curThread = {id, status: t ? t.status : "open", name};
+  document.getElementById("chat-title").textContent = name;
+  document.getElementById("chat-input").classList.remove("hidden");
+  updateToggleBtn();
+  await loadMessages();
+  loadThreads(); // обновить активный тред и снятый бейдж
+}
+
+function updateToggleBtn() {
+  const b = document.getElementById("toggle-btn");
+  if (!curThread) { b.classList.add("hidden"); return; }
+  b.classList.remove("hidden");
+  b.textContent = curThread.status === "open" ? "Закрыть тред" : "Открыть тред";
+}
+
+async function loadMessages() {
+  if (!curThread) return;
+  const data = await api(`/v1/admin/support/threads/${curThread.id}/messages`);
+  const el = document.getElementById("chat-msgs");
+  const msgs = data.messages || [];
+  el.innerHTML = msgs.length ? msgs.map(m =>
+    `<div class="msg ${m.sender}">${esc(m.text)}<span class="m-time">${m.sender === "admin" ? "вы · " : ""}${fmtTime(m.created_at)}</span></div>`
+  ).join("") : `<div class="empty">Сообщений пока нет</div>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+async function sendReply() {
+  if (!curThread) return;
+  const ta = document.getElementById("reply");
+  const text = ta.value.trim();
+  if (!text) return;
+  ta.value = "";
+  await api(`/v1/admin/support/threads/${curThread.id}/messages`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({text})
+  });
+  await loadMessages();
+  loadThreads();
+}
+
+async function toggleThread() {
+  if (!curThread) return;
+  const r = await api(`/v1/admin/support/threads/${curThread.id}/close`, {method: "POST"});
+  curThread.status = r.status;
+  updateToggleBtn();
+  loadThreads();
+}
+
+document.getElementById("reply").addEventListener("keydown", e => {
+  if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) sendReply();
+});
+
+// ---- Запуск ----
+
+async function boot() {
+  if (!localStorage.getItem(LS_KEY)) return; // остаёмся на экране входа
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+  try {
+    await loadStats();
+    await loadThreads();
+  } catch (e) { /* 403 уже обработан в api() */ }
+}
+
+boot();
+// Polling: инбокс и открытый чат раз в 15 с, статистика раз в минуту.
+setInterval(() => {
+  if (document.getElementById("app").classList.contains("hidden")) return;
+  loadThreads().catch(() => {});
+  loadMessages().catch(() => {});
+}, 15000);
+setInterval(() => {
+  if (document.getElementById("app").classList.contains("hidden")) return;
+  loadStats().catch(() => {});
+}, 60000);
+</script>
+</body>
+</html>

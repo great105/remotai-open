@@ -1,0 +1,62 @@
+name: Open source CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  agent:
+    name: Agent (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: npm ci
+      - run: npm test
+      - run: node scripts/build-self-hosted.mjs https://remotai.example.com
+      - run: go test ./cmd/... ./internal/...
+      - uses: actions/upload-artifact@v4
+        with:
+          name: self-hosted-agent-${{ matrix.os }}
+          path: build/remotai-self-hosted*
+
+  relay:
+    name: Relay
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tgcontrol-relay
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: tgcontrol-relay/go.mod
+      - run: go test ./...
+      - run: go vet ./...
+
+  deployment:
+    name: Self-hosted Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node scripts/init-self-hosted.mjs http://localhost:18086
+      - run: docker compose --env-file deploy/self-hosted/.env -f deploy/self-hosted/compose.yaml config --quiet
+      - run: docker compose --env-file deploy/self-hosted/.env -f deploy/self-hosted/compose.yaml build

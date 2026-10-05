@@ -1,0 +1,116 @@
+.hermes-page { color: var(--tg-text); }
+.hermes-header { display: flex; align-items: center; gap: 12px; padding: calc(14px + var(--tg-top-inset)) 16px 14px; border-bottom: 1px solid var(--tg-border); }
+.hermes-heading { flex: 1; min-width: 0; }
+.hermes-heading .device-chip { max-width: 100%; }
+.hermes-heading h1 { margin: 0 0 4px; font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+.hermes-header-actions { display: flex; flex: none; gap: 4px; }
+.hermes-icon-button { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 44px; min-height: 44px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--tg-text); cursor: pointer; }
+.hermes-icon-button:hover { background: var(--elev-2); }
+.hermes-content { width: 100%; max-width: 920px; margin: 0 auto; padding: 14px 16px 32px; }
+.hermes-context { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px; margin-bottom: 18px; font-size: 13px; }
+.hermes-runtime { display: inline-flex; align-items: center; gap: 5px; color: var(--tg-hint); }
+.hermes-runtime.is-ready { color: var(--brand-mint); }
+.hermes-context-button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; min-width: 44px; padding: 6px 4px; border: 0; background: transparent; color: var(--tg-link); font: inherit; cursor: pointer; text-align: left; }
+.hermes-context-button:hover { text-decoration: underline; text-underline-offset: 3px; }
+.hermes-context-button:disabled { color: var(--tg-hint); cursor: default; }
+.hermes-panel, .hermes-setup { margin: 0 0 22px; padding: 18px; background: var(--elev-1); border-radius: var(--radius-lg); }
+.hermes-panel h2, .hermes-setup h2, .hermes-empty h2 { margin: 0 0 10px; font-size: 18px; line-height: 1.35; font-weight: 650; }
+.hermes-panel p, .hermes-setup p { margin: 8px 0 14px; font-size: 14px; line-height: 1.5; max-width: 70ch; }
+.hermes-panel-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.hermes-panel-heading h2 { margin: 0; }
+.hermes-muted, .hermes-notice { color: var(--tg-hint); }
+.hermes-notice { margin: 0 0 16px; line-height: 1.5; font-size: 14px; }
+.hermes-error { margin-bottom: 18px; padding: 14px 16px; border: 1px solid var(--tg-destructive); border-radius: var(--radius); }
+.hermes-error p { margin: 0 0 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.hermes-error-text { color: var(--tg-destructive); overflow-wrap: anywhere; }
+.hermes-history, .hermes-command-list { margin: 0; padding: 0; list-style: none; max-height: 400px; overflow-y: auto; }
+.hermes-history li + li, .hermes-command-list li + li { border-top: 1px solid var(--tg-border); }
+.hermes-history button, .hermes-command-list button { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; width: 100%; min-height: 54px; padding: 12px 4px; text-align: left; border: 0; background: transparent; color: var(--tg-text); font: inherit; cursor: pointer; }
+.hermes-history button:hover, .hermes-command-list button:hover { background: var(--elev-2); }
+.hermes-history button.is-current b { color: var(--brand-mint); }
+.hermes-history b, .hermes-command-list b { font-size: 14px; overflow-wrap: anywhere; }
+.hermes-history small, .hermes-command-list small { color: var(--tg-hint); font-size: 13px; line-height: 1.4; overflow-wrap: anywhere; }
+.hermes-setting-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 0; border-top: 1px solid var(--tg-border); }
+.hermes-setting-row > div { min-width: 0; }
+.hermes-setting-row b { font-size: 14px; }
+.hermes-setting-row p { margin: 6px 0 0; color: var(--tg-hint); font-size: 13px; }
+.hermes-switch-target { display: inline-flex; align-items: center; justify-content: center; flex: none; min-width: 44px; min-height: 44px; border: 0; padding: 0; background: transparent; color: inherit; cursor: pointer; }
+.hermes-setting-row .btn { flex: none; min-height: 44px; }
+.hermes-provider-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 0; border-top: 1px solid var(--tg-border); }
+.hermes-provider-row > div { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.hermes-provider-row b { font-size: 14px; }
+.hermes-provider-row small { font-size: 13px; color: var(--tg-hint); line-height: 1.45; }
+.hermes-provider-row .btn { flex: none; min-height: 44px; }
+.hermes-login { padding: 4px 0; }
+.hermes-login-code { display: inline-flex; align-items: center; gap: 16px; margin: 0 0 14px; padding: 4px 8px 4px 16px; border: 1px solid var(--tg-border); border-radius: var(--radius); }
+.hermes-login-code code { color: var(--tg-text); font-family: ui-monospace, monospace; font-size: 22px; letter-spacing: .04em; user-select: all; }
+.hermes-login > .btn { display: flex; }
+.hermes-model-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+.hermes-model-fields label, .hermes-key-form label, .hermes-answer-text, .hermes-request form > label { display: flex; flex-direction: column; gap: 7px; font-size: 13px; color: var(--tg-hint); }
+.hermes-page select, .hermes-key-form input, .hermes-request input:not([type="radio"]):not([type="checkbox"]), .hermes-request textarea { width: 100%; min-height: 44px; border: 1px solid var(--tg-border); border-radius: var(--radius-sm); padding: 10px 12px; background: var(--elev-2); color: var(--tg-text); font: inherit; font-size: 16px; caret-color: var(--brand-mint); }
+.hermes-page select { text-overflow: ellipsis; }
+.hermes-key-form { display: flex; flex-direction: column; gap: 12px; margin: 6px 0; }
+.hermes-key-form .btn { align-self: flex-start; }
+.hermes-search { display: flex; align-items: center; gap: 8px; background: var(--elev-2); border-radius: var(--radius-sm); padding: 0 12px; color: var(--tg-hint); }
+.hermes-search input { width: 100%; min-height: 46px; border: 0; background: transparent; color: var(--tg-text); font: inherit; font-size: 16px; }
+.hermes-search input::placeholder, .hermes-composer textarea::placeholder { color: var(--tg-hint); }
+.hermes-command-list { margin-top: 10px; }
+.hermes-empty { padding: 36px 4px 44px; }
+.hermes-empty h2 { font-size: 24px; letter-spacing: -.02em; }
+.hermes-empty p { margin: 10px 0 20px; color: var(--tg-hint); max-width: 58ch; font-size: 15px; line-height: 1.5; }
+.hermes-suggestions { display: flex; flex-wrap: wrap; gap: 8px; }
+.hermes-suggestions button { min-height: 44px; padding: 10px 12px; border: 1px solid var(--tg-border); border-radius: var(--radius-sm); background: transparent; color: var(--tg-text); font: inherit; font-size: 13px; cursor: pointer; }
+.hermes-suggestions button:hover { background: var(--elev-1); }
+.hermes-conversation { min-height: 100px; }
+.hermes-message { padding: 20px 4px; border-top: 1px solid var(--tg-border); }
+.hermes-message > b { display: block; margin-bottom: 9px; font-size: 13px; color: var(--brand-mint); }
+.hermes-message.is-user > b { color: var(--tg-hint); }
+.hermes-message-content { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; line-height: 1.65; max-width: 75ch; }
+.hermes-activity { margin: 12px 0 18px; padding: 12px 0; border-top: 1px solid var(--tg-border); border-bottom: 1px solid var(--tg-border); }
+.hermes-activity > summary { cursor: pointer; color: var(--tg-hint); min-height: 44px; padding: 12px 0; font-size: 13px; }
+.hermes-activity details > summary, .hermes-approval-options > summary { min-height: 44px; padding: 12px 0; cursor: pointer; }
+.hermes-activity ol { padding-left: 20px; margin: 0; }
+.hermes-activity li { margin: 12px 0; font-size: 13px; overflow-wrap: anywhere; }
+.hermes-activity li > span { display: inline-flex; align-items: center; gap: 5px; }
+.hermes-activity details { color: var(--tg-hint); padding-top: 6px; }
+.hermes-activity pre, .hermes-request pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; line-height: 1.5; }
+.hermes-request { padding: 18px; margin: 18px 0; background: var(--elev-1); border: 1px solid var(--color-warning); border-radius: var(--radius); }
+.hermes-request h3 { margin: 0 0 8px; font-size: 16px; }
+.hermes-request p { line-height: 1.5; font-size: 13px; }
+.hermes-request-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.hermes-request .btn { min-height: 44px; }
+.hermes-request fieldset { border: 0; padding: 0; margin: 16px 0; min-width: 0; }
+.hermes-request legend { margin-bottom: 8px; font-size: 15px; }
+.hermes-answer-choice { display: flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; }
+.hermes-answer-choice input { width: 18px; height: 18px; accent-color: var(--brand-mint); }
+.hermes-answer-text { margin-top: 10px; }
+.hermes-working { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; color: var(--tg-hint); font-size: 13px; margin: 18px 0; }
+.hermes-composer { position: sticky; bottom: calc(80px + env(safe-area-inset-bottom, 0px) + var(--tg-bottom-inset)); z-index: 1; margin-top: 20px; padding: 12px 14px; border: 1px solid var(--tg-border); border-radius: var(--radius-lg); background: var(--elev-1); }
+.hermes-composer-context { display: flex; flex-wrap: wrap; gap: 2px 12px; align-items: center; margin: -5px 0 6px; font-size: 13px; }
+.hermes-folder { min-width: 0; max-width: 100%; flex: 1; justify-content: flex-start; }
+.hermes-folder span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hermes-composer textarea { display: block; resize: vertical; min-height: 90px; max-height: 280px; width: 100%; padding: 8px 0; border: 0; background: transparent; color: var(--tg-text); font: inherit; font-size: 16px; line-height: 1.5; caret-color: var(--brand-mint); }
+.hermes-composer textarea:focus { outline: none; }
+.hermes-composer:focus-within { border-color: var(--brand-mint); }
+.hermes-composer-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; }
+.hermes-composer-actions small { color: var(--tg-hint); font-size: 12px; line-height: 1.5; }
+.hermes-composer-actions .btn { flex: none; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
+.hermes-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; clip: rect(0,0,0,0); overflow: hidden; white-space: nowrap; border: 0; }
+.hermes-page button:focus-visible, .hermes-page input:focus-visible, .hermes-page select:focus-visible, .hermes-page summary:focus-visible { outline: 2px solid var(--brand-mint); outline-offset: 3px; }
+.hermes-page ::selection { background: var(--tg-btn); color: var(--tg-btn-text); }
+@media (max-width: 520px) {
+  .hermes-header { gap: 8px; padding-left: 10px; padding-right: 10px; }
+  .hermes-content { padding: 12px 12px 28px; }
+  .hermes-panel, .hermes-setup, .hermes-request { padding: 16px; }
+  .hermes-model-fields { grid-template-columns: 1fr; }
+  .hermes-composer-actions { flex-wrap: wrap; }
+  .hermes-composer-actions small { flex: 1 0 100%; }
+  .hermes-composer-actions .btn { margin-left: auto; }
+  .hermes-setting-row { align-items: flex-start; }
+  .hermes-setting-row .btn { max-width: 118px; white-space: normal; }
+}
+@media (min-width: 900px) {
+  .hermes-header { padding-left: 24px; padding-right: 24px; }
+  .hermes-composer { bottom: 18px; }
+  .hermes-content { padding-bottom: 36px; }
+}

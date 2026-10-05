@@ -1,0 +1,36 @@
+# Private settings and credentials
+.env
+.env.*
+!.env.example
+config.json
+keystore.properties
+*.enc
+*.pem
+*.key
+*.jks
+*.keystore
+*.db
+*.sqlite*
+*.log
+
+# Generated dependencies and assets
+node_modules/
+build/*
+!build/qa/
+build/qa/*
+!build/qa/terminal-replay-fixture.mjs
+internal/web/miniapp_dist/
+apk/dist*/
+apk/android/.gradle/
+apk/android/.kotlin/
+apk/android/app/build/
+apk/android/local.properties
+tgcontrol-relay/build/
+*.exe
+*.apk
+*.aab
+*.syso
+e2e/test-results/
+e2e/playwright-report/
+.DS_Store
+Thumbs.db

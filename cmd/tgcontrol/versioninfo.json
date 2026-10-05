@@ -1,0 +1,24 @@
+{
+  "//": "Сведения о версии Windows-бинаря: то, что человек видит в «Свойствах» файла и в предупреждении SmartScreen. До 30.08.2026 они были пусты вовсе — установщик скачивали у безымянного издателя (аудит онбординга). Номера версии подставляет scripts/build-local.ps1 через goversioninfo -ver-major/-minor/-patch, поэтому здесь нули.",
+  "FixedFileInfo": {
+    "FileVersion": { "Major": 0, "Minor": 0, "Patch": 0, "Build": 0 },
+    "ProductVersion": { "Major": 0, "Minor": 0, "Patch": 0, "Build": 0 },
+    "FileFlagsMask": "3f",
+    "FileFlags": "00",
+    "FileOS": "040004",
+    "FileType": "01",
+    "FileSubType": "00"
+  },
+  "StringFileInfo": {
+    "CompanyName": "Remotai",
+    "FileDescription": "Remotai — управление компьютером с телефона",
+    "InternalName": "remotai",
+    "LegalCopyright": "© Remotai, remotai.ru",
+    "OriginalFilename": "remotai.exe",
+    "ProductName": "Remotai",
+    "Comments": "remotai.ru"
+  },
+  "VarFileInfo": {
+    "Translation": { "LangID": "0419", "CharsetID": "04B0" }
+  }
+}

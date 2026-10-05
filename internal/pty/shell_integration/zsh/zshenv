@@ -1,0 +1,38 @@
+# Remotai: разметка команд (OSC 133) для zsh — первый стартовый файл. ST-10.
+# На диске лежит как <каталог>/zsh/.zshenv (в репозитории без точки, чтобы
+# go:embed и .gitignore не прятали файл).
+#
+# Агент запускает zsh с ZDOTDIR=<этот каталог> и REMOTAI_USER_ZDOTDIR=<прежний
+# ZDOTDIR, а если его не было — HOME>. zsh ищет стартовые файлы в ZDOTDIR,
+# поэтому каждый наш файл подключает одноимённый пользовательский, ВРЕМЕННО
+# вернув пользовательский ZDOTDIR: oh-my-zsh, zinit, powerlevel10k и прочие
+# ищут себя и свои кэши именно через него.
+__remotai_si_dir=$ZDOTDIR
+
+# Вернуть ZDOTDIR в исходное состояние, когда стартовые файлы кончились.
+# Не было ZDOTDIR (REMOTAI_USER_ZDOTDIR == HOME) — снимаем переменную совсем:
+# для zsh это то же самое, и дочерние процессы видят окружение как обычно.
+__remotai_si_restore() {
+	if [[ ${REMOTAI_USER_ZDOTDIR-} == "$HOME" ]]; then
+		unset ZDOTDIR
+	else
+		export ZDOTDIR=$REMOTAI_USER_ZDOTDIR
+	fi
+	unset REMOTAI_USER_ZDOTDIR __remotai_si_dir
+	unfunction __remotai_si_restore
+}
+
+if [[ -n ${REMOTAI_USER_ZDOTDIR-} && $REMOTAI_USER_ZDOTDIR != "$__remotai_si_dir" ]]; then
+	ZDOTDIR=$REMOTAI_USER_ZDOTDIR
+	[[ -f $ZDOTDIR/.zshenv ]] && builtin source "$ZDOTDIR/.zshenv"
+	# ~/.zshenv часто сам переносит ZDOTDIR (например, в ~/.config/zsh) —
+	# остальные пользовательские файлы тогда живут там.
+	REMOTAI_USER_ZDOTDIR=$ZDOTDIR
+	ZDOTDIR=$__remotai_si_dir
+fi
+
+# NO_RCS в пользовательском .zshenv: zsh больше ничего не прочтёт, а значит, и
+# наш .zshrc — возвращаем ZDOTDIR сразу, разметки в таком шелле не будет.
+if [[ ! -o rcs ]] && (( $+functions[__remotai_si_restore] )); then
+	__remotai_si_restore
+fi

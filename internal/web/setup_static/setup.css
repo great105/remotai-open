@@ -1,0 +1,836 @@
+/* ── Remotai — Setup & Control Panel (brand theme) ──
+   Палитра/типографика согласованы с лендингом remotai.ru:
+   мятный акцент #2ee6b0, ТЁМНЫЙ текст на акцентных кнопках,
+   Unbounded (display) / Golos Text (body) / JetBrains Mono (mono). */
+:root {
+  --bg: #0a0f0d;
+  --bg-glow: radial-gradient(ellipse 90% 55% at 50% -10%, rgba(46,230,176,.09), transparent);
+  --card: #10171466;
+  --card-solid: #101714;
+  --border: #1f2b26;
+  --border-soft: #18221e;
+  --text: #c7d4ce;
+  --text-dim: #7d8d86;
+  --text-bright: #eef6f2;
+  --accent: #2ee6b0;
+  --accent-hover: #56f0c3;
+  --accent-dim: rgba(46,230,176,.12);
+  --on-accent: #04211a;
+  --success: #2ee6b0;
+  --error: #ff6d6d;
+  --warning: #e8c35b;
+  --input-bg: #0c1310;
+  --radius: 14px;
+  --font-display: "Unbounded", "Arial Black", sans-serif;
+  --font-body: "Golos Text", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  background-image: var(--bg-glow);
+  background-repeat: no-repeat;
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 18px 16px 12px;
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.wizard { max-width: 488px; width: 100%; }
+
+/* ── Boot (статус ещё не получен) ── */
+.boot { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.boot .boot-text { flex: 1; min-width: 200px; }
+.boot .hint { margin-top: 4px; }
+.boot .btn-line { margin-top: 0; }
+
+/* ── Панель: одна колонка на узком окне, две на широком ──
+   Окно программы масштабируется мышью, и на 1000+ px одна колонка 488 px
+   оставляла две трети окна пустыми. Порядок карточек в разметке = порядок
+   в узком режиме, поэтому телефонный вид не меняется. */
+.panel-cols { display: flex; flex-direction: column; }
+.panel-col { min-width: 0; }
+
+@media (min-width: 900px) {
+  .wizard { max-width: 620px; }
+  body.panel-mode .wizard { max-width: 1024px; }
+  body.panel-mode .panel-cols { flex-direction: row; align-items: flex-start; gap: 16px; }
+  body.panel-mode .panel-col { flex: 1 1 0; }
+}
+
+/* ── Brand header ── */
+.brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.brand-left { display: flex; align-items: center; gap: 10px; }
+.brand-mark { width: 26px; height: 26px; color: var(--accent); flex: none; }
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: .5px;
+  color: var(--text-bright);
+  margin: 0;
+  display: inline;
+}
+.ver-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid rgba(46,230,176,.25);
+  border-radius: 99px;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+.brand-tag {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-dim);
+  letter-spacing: .4px;
+}
+
+/* ── Steps indicator ── */
+.steps { display: flex; gap: 8px; margin-bottom: 18px; }
+.step-dot {
+  flex: 1; height: 3px; border-radius: 2px;
+  background: var(--border);
+  transition: background .3s;
+}
+.step-dot.active { background: var(--accent); box-shadow: 0 0 10px rgba(46,230,176,.5); }
+.step-dot.done { background: rgba(46,230,176,.45); }
+
+/* ── Card ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: 14px;
+  backdrop-filter: blur(6px);
+}
+.card h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 17px;
+  color: var(--text-bright);
+  margin-bottom: 4px;
+}
+.card .subtitle { color: var(--text-dim); font-size: 13px; margin-bottom: 16px; }
+.card-head { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
+.card-head h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 13.5px;
+  letter-spacing: .3px;
+  color: var(--text-bright);
+}
+.card-ico { width: 17px; height: 17px; color: var(--accent); flex: none; }
+
+/* ── Status hero (panel) ── */
+.status-hero { display: flex; align-items: center; gap: 14px; padding: 18px 22px; }
+.status-dot {
+  width: 11px; height: 11px; border-radius: 50%; flex: none;
+  background: var(--accent);
+  box-shadow: 0 0 0 0 rgba(46,230,176,.55);
+  animation: pulse 2.2s ease-out infinite;
+}
+.status-dot.off { background: var(--text-dim); animation: none; box-shadow: none; }
+.status-dot.warn { background: var(--warning); animation: none; box-shadow: none; }
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(46,230,176,.55); }
+  70% { box-shadow: 0 0 0 9px rgba(46,230,176,0); }
+  100% { box-shadow: 0 0 0 0 rgba(46,230,176,0); }
+}
+.status-text { flex: 1; min-width: 0; }
+.status-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 14.5px;
+  color: var(--text-bright);
+}
+.status-sub { font-size: 12.5px; color: var(--text-dim); font-family: var(--font-mono); margin-top: 2px; }
+.cloud-pill {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.cloud-pill.on { color: var(--accent); border-color: rgba(46,230,176,.35); background: var(--accent-dim); }
+.cloud-pill.err { color: var(--error); border-color: rgba(255,109,109,.35); background: rgba(255,109,109,.08); }
+
+/* ── Key-value grid (updates card) ── */
+.kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 14px;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+.kv span { color: var(--text-dim); }
+.kv code, .kv b { font-family: var(--font-mono); font-size: 12.5px; color: var(--text-bright); font-weight: 500; }
+.kv .ok { color: var(--accent); }
+.update-note {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(46,230,176,.3);
+  background: var(--accent-dim);
+  font-size: 13px;
+  color: var(--text-bright);
+}
+.update-note.plain { border-color: var(--border); background: var(--input-bg); color: var(--text-dim); }
+
+/* Готовое, но ещё не применённое обновление (рестарт ждёт закрытия окна). */
+.pending-update {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,180,84,.45);
+  background: rgba(255,180,84,.10);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.pending-update-text { flex: 1; min-width: 220px; font-size: 13px; color: var(--text-bright); }
+
+/* ── Mode selection ──
+   Карточки режимов и туннеля — <button>: в окне на компьютере клавиатура
+   (Tab/Enter) должна доходить до вариантов, а не проскакивать мимо них. */
+.mode-options { display: flex; flex-direction: column; gap: 10px; }
+.mode-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  color: var(--text);
+  background: var(--input-bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+.mode-option:hover { border-color: rgba(46,230,176,.45); }
+.mode-option:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mode-option.selected { border-color: var(--accent); background: var(--accent-dim); }
+.mode-option .mode-title { display: block; font-weight: 600; color: var(--text-bright); font-size: 14.5px; }
+.mode-option .mode-desc { display: block; color: var(--text-dim); font-size: 12.5px; margin-top: 4px; line-height: 1.5; }
+.mode-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+  margin-left: 6px;
+  vertical-align: 1px;
+}
+.mode-badge.alt { background: var(--border); color: var(--text); font-weight: 500; }
+
+/* ── Forms ── */
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 12.5px; color: var(--text-dim); margin-bottom: 6px; }
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-bright);
+  font-size: 14px;
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color .2s;
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+.hint { font-size: 12px; color: var(--text-dim); margin: 4px 0; }
+.hint.ok, .ok { color: var(--accent); }
+.hint.center { text-align: center; margin-top: 4px; }
+.warn { color: var(--warning); }
+.link { color: var(--accent); text-decoration: none; }
+.link:hover { text-decoration: underline; }
+.mono-path { font-family: var(--font-mono); font-size: 11px; }
+
+/* ── Agent list ── */
+.agent-list { display: flex; flex-direction: column; gap: 8px; }
+.agent-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.agent-item .agent-icon { font-size: 19px; width: 28px; text-align: center; }
+.agent-item .agent-info { flex: 1; min-width: 0; }
+.agent-item .agent-name { font-size: 14px; color: var(--text-bright); font-weight: 500; }
+.agent-item .agent-path {
+  font-size: 11px; color: var(--text-dim); font-family: var(--font-mono);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.agent-item .agent-status { font-family: var(--font-mono); font-size: 11px; padding: 2px 9px; border-radius: 99px; white-space: nowrap; }
+.agent-status.found { background: var(--accent-dim); color: var(--accent); }
+.agent-status.missing { background: rgba(125,141,134,.12); color: var(--text-dim); }
+.agent-status.builtin { background: rgba(46,230,176,.2); color: var(--accent); }
+
+/* Установка помощников прямо из мастера: свёрнутый блок под списком найденных */
+.agent-install { margin-top: 12px; }
+.agent-install-list { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 10px; }
+.agent-install-list .btn { padding: 7px 14px; font-size: 13px; }
+
+/* ── Buttons ── */
+/* Главная кнопка шага всегда на экране. В окне 504×608 (ноутбук 1366×768)
+   «Открыть управление компьютером» на шаге «Готово!» стояла на 755 px — то
+   есть под нижним краем, и последний шаг мастера выглядел тупиком
+   (аудит онбординга 30.08.2026). Полоса липкая, фон непрозрачный: под ней
+   проезжает содержимое шага. */
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  padding: 10px 0;
+  background: linear-gradient(to bottom, transparent, var(--bg) 30%);
+}
+.btn-line { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.btn {
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+  transition: background .2s, opacity .2s, border-color .2s;
+}
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: var(--on-accent); flex: 1; }
+.btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover:not(:disabled) { border-color: rgba(46,230,176,.45); color: var(--text-bright); }
+.btn-danger { background: var(--error); color: #2b0707; }
+.btn-danger:hover:not(:disabled) { background: #ff8585; }
+.btn-danger-ghost {
+  background: transparent;
+  color: var(--error);
+  border: 1px solid rgba(255,109,109,.35);
+}
+.btn-danger-ghost:hover:not(:disabled) { background: rgba(255,109,109,.08); }
+.btn-icon { padding: 10px 13px; flex: none; }
+/* Кнопка во всю ширину карточки: так выглядит осознанный выход с шага
+   («Подключу телефон позже»), который раньше был ссылкой 12,5 px. */
+.btn-wide { width: 100%; flex: none; }
+/* Кнопка по содержимому: в широком окне растянутая на всю карточку кнопка
+   выглядит аварийной, хотя действие второстепенное. */
+.btn-inline { flex: none; }
+.btn-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  padding: 13px 18px;
+  font-size: 15px;
+  margin-bottom: 14px;
+}
+.app-actions { margin-bottom: 14px; flex-wrap: nowrap; }
+.app-actions .btn-block { width: auto; flex: 1; margin-bottom: 0; white-space: nowrap; }
+
+/* ── Action tiles («На этом компьютере») ── */
+.action-tiles { display: flex; flex-direction: column; gap: 10px; }
+.action-tile {
+  text-align: left;
+  background: var(--input-bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: border-color .2s, background .2s;
+}
+.action-tile:hover { border-color: var(--accent); background: var(--accent-dim); }
+.action-tile:disabled { opacity: .55; cursor: wait; }
+.action-tile .t-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 600;
+  font-size: 14.5px;
+  color: var(--text-bright);
+}
+.action-tile .t-ico { width: 15px; height: 15px; color: var(--accent); flex: none; }
+.action-tile .t-desc { display: block; margin-top: 4px; font-size: 12.5px; color: var(--text-dim); }
+
+/* ── Pairing steps (1-2-3) ── */
+.pair-steps {
+  text-align: left;
+  margin: 0 0 6px;
+  padding-left: 0;
+  list-style: none;
+  counter-reset: ps;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--text);
+}
+.pair-steps li {
+  counter-increment: ps;
+  position: relative;
+  padding-left: 30px;
+  line-height: 1.5;
+}
+.pair-steps li::before {
+  content: counter(ps);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Danger link + collapsible card ── */
+.link-danger {
+  display: block;
+  margin-top: 14px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--text-dim);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.link-danger:hover { color: var(--error); }
+
+.card-toggle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+}
+.card-toggle h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 13.5px;
+  letter-spacing: .3px;
+  color: var(--text-bright);
+  flex: 1;
+}
+.card-toggle .chev { color: var(--text-dim); font-size: 12px; }
+
+/* ── Slim version card ── */
+.card.slim { padding: 14px 22px; }
+.ver-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  color: var(--text-dim);
+}
+.ver-line code { font-family: var(--font-mono); color: var(--text-bright); font-size: 12px; }
+.ver-line .sep { opacity: .5; }
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.link-btn:hover { color: var(--accent-hover); }
+.btn-ico { width: 17px; height: 17px; flex: none; }
+
+/* ── Access rows (доступ с других устройств) ── */
+.access-rows { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.access-row { display: flex; gap: 10px; align-items: baseline; font-size: 13px; }
+.access-k {
+  flex: none;
+  width: 112px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: .3px;
+}
+.access-v { color: var(--text); min-width: 0; }
+
+/* ── Тумблер (автозапуск) ──
+   Нативный чекбокс в тёмной панели рисовался системным синим и выбивался из
+   остальных контролов, поэтому сам input скрыт, а состояние показывает .switch
+   (клик по строке-label работает как раньше, клавиатура — тоже). */
+.toggle-row { cursor: pointer; }
+.toggle-line { display: flex; align-items: center; gap: 10px; }
+.switch-input { position: absolute; opacity: 0; width: 0; height: 0; }
+.switch {
+  flex: none;
+  position: relative;
+  width: 38px; height: 22px;
+  border-radius: 99px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  transition: background .2s, border-color .2s;
+}
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  transition: transform .2s, background .2s;
+}
+.switch-input:checked + .switch { background: var(--accent-dim); border-color: rgba(46,230,176,.55); }
+.switch-input:checked + .switch::after { transform: translateX(16px); background: var(--accent); }
+.switch-input:focus-visible + .switch { outline: 2px solid var(--accent); outline-offset: 2px; }
+.switch-input:disabled + .switch { opacity: .5; }
+.url-chip {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid rgba(46,230,176,.3);
+  border-radius: 8px;
+  padding: 4px 10px;
+  margin: 2px 6px 2px 0;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+.url-chip:hover { border-color: var(--accent); }
+
+/* ── Сворачиваемые пояснения (номер аккаунта, «компьютера нет в приложении?») ──
+   Постоянно висящая строка с деструктивным советом пугала на здоровом ПК,
+   поэтому объяснение раскрывается по требованию. */
+.tech-details { margin-top: 10px; font-size: 12.5px; color: var(--text-dim); }
+.tech-details > summary {
+  cursor: pointer;
+  color: var(--text-dim);
+  text-underline-offset: 3px;
+  list-style-position: outside;
+}
+.tech-details > summary:hover { color: var(--text); }
+.tech-details > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+.tech-details[open] > summary { margin-bottom: 6px; color: var(--text); }
+
+.confirm-line {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255,109,109,.35);
+  background: rgba(255,109,109,.06);
+  border-radius: 10px;
+  font-size: 13px;
+}
+.confirm-line .btn-line { margin-top: 10px; }
+
+/* ── Pairing block ── */
+/* Блок принадлежит ВЫБРАННОЙ карточке способа, а не висит сам по себе: он
+   продолжает её акцентной рамкой и подхватывает тот же фон. Раньше QR читался
+   как отдельная сущность на шаге, и связь «я выбрал через интернет → вот код
+   для него» приходилось достраивать самому (аудит онбординга 30.08.2026). */
+.pairing-block {
+  margin-top: 10px;
+  padding: 16px;
+  border: 1.5px solid var(--accent);
+  border-radius: 12px;
+  background: var(--accent-dim);
+  text-align: center;
+}
+/* Чей это блок — сказано словами и цветом выбранного варианта: раньше он
+   висел на шаге отдельной сущностью, и связь «я выбрал через интернет → вот
+   код для него» человек достраивал сам (аудит онбординга 30.08.2026). */
+.pairing-block-title {
+  font-weight: 600;
+  color: var(--text-bright);
+  margin-bottom: 8px;
+  font-size: 13.5px;
+}
+.qr {
+  background: #fff;
+  border-radius: 12px;
+  padding: 8px;
+  display: block;
+  margin: 10px auto;
+  width: 220px;
+  height: 220px;
+}
+/* Подпись под QR отвечает на вопрос «мне жать или оно само?» — она должна
+   читаться как часть кода, а не как отдельный абзац подсказок. */
+.qr-caption { margin: -4px 0 10px; }
+/* Нет связи с релеем — нет и кода. Всё, что зовёт им воспользоваться, уходит
+   с экрана: пустой белый квадрат с подписью «наведите камеру» — обещание,
+   которое продукт в эту секунду выполнить не может (аудит онбординга
+   30.08.2026). Остаются статус, «Получить новый код» и выход. */
+.pair-offline .qr,
+.pair-offline .qr-caption,
+.pair-offline .pair-code-row,
+.pair-offline #pair-expiry,
+.pair-offline #pair-install-toggle,
+.pair-offline #pair-install-block,
+.pair-offline #pair-tg-row { display: none; }
+.pair-offline .pair-scan-hint { display: none; }
+.pair-offline .pair-offline-note { display: block; }
+.pair-offline-note {
+  display: none;
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(232,195,91,.45);
+  background: rgba(232,195,91,.10);
+  font-size: 13px;
+  color: var(--text-bright);
+}
+/* Низкое окно (ноутбук 1366×768 — самый частый экран у «домашнего» ПК): код
+   уменьшается, отступы сжимаются. Иначе QR не помещался между содержимым шага
+   и липкой полосой статуса вовсе — замер аудита онбординга 30.08.2026. */
+@media (max-height: 820px) {
+  .qr { width: 168px; height: 168px; padding: 6px; margin: 6px auto; }
+  .pairing-block .hint { margin: 6px 0; }
+  .pair-dock { padding: 7px 16px 9px; }
+}
+.pair-code-row { display: flex; align-items: center; gap: 8px; margin: 8px 0; justify-content: center; }
+.pair-code-big {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: 4px;
+  text-align: center;
+  padding: 12px 8px;
+  background: var(--card-solid);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--accent);
+}
+/* LAN-код подключения — это base64 «адрес|токен» (~80 символов), а не
+   8-символьный облачный код: 26px без переносов рвал карточку и уносил кнопку
+   копирования за край окна. */
+.pair-code-row.stacked { flex-direction: column; align-items: stretch; }
+.pair-code-long {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0;
+  line-height: 1.45;
+  text-align: left;
+  word-break: break-all;
+  padding: 10px 12px;
+  background: var(--card-solid);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--accent);
+}
+.cloud-status {
+  margin-top: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--border-soft);
+  font-size: 13px;
+}
+
+/* ── Полоса «ждём скан + выход» на шаге с QR ──
+   Окно программы — 520×820 (cmd/tgcontrol/main.go), а шаг «Способ подключения»
+   вместе с QR, кодом и подсказками заметно выше. Живой статус и «Подключу
+   телефон позже» оказывались под сгибом, «Далее» на этом шаге скрыта намеренно —
+   человек видел код и не понимал, ждать ему или нажимать. Полоса липнет к низу
+   окна, пока блок пейринга на экране, и садится на своё место в конце прокрутки.
+   Фон непрозрачный (--card-solid): под полосой едет содержимое карточки.
+   Боковые отрицательные поля гасят padding .pairing-block, чтобы это читалось
+   полосой, а не ещё одной карточкой; отрицательного НИЖНЕГО поля быть не должно —
+   при залипании оно увело бы кнопку за нижний край окна. */
+.pair-dock {
+  position: sticky;
+  /* Ниже остаётся .btn-row с «Назад» (64 px). Две полосы с bottom:0
+     перекрывали кнопку «Подключу другое устройство позже» даже после скролла. */
+  bottom: 72px;
+  z-index: 2;
+  margin: 12px -16px 0;
+  padding: 9px 16px 12px;
+  background: var(--card-solid);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -10px 18px -10px rgba(0,0,0,.6);
+}
+/* Внутри полосы статус — строка, а не коробка: рамка в рамке отъедала ещё
+   20 px высоты окна, а полоса и так отделена от содержимого границей сверху.
+   Чем ниже полоса, тем больше QR-кода и подписи под ним остаётся на экране. */
+.pair-dock .cloud-status { margin: 0 0 8px; padding: 0; border: none; background: none; }
+.pair-dock .btn { margin-top: 0; }
+
+/* ── Complete step ── */
+.qr-container { text-align: center; margin: 14px 0; }
+.qr-container img { background: #fff; border-radius: 12px; padding: 12px; width: 200px; height: 200px; }
+.pairing-code {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  word-break: break-all;
+  color: var(--accent);
+  cursor: pointer;
+  margin: 12px 0;
+}
+.pairing-code:hover { background: var(--accent-dim); }
+.copy-hint { font-size: 11px; color: var(--text-dim); text-align: center; }
+
+.device-info { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 13px; }
+.device-info dt { color: var(--text-dim); }
+.device-info dd { color: var(--text-bright); font-family: var(--font-mono); font-size: 12px; word-break: break-all; }
+
+/* ── Spinner / progress ── */
+.spinner {
+  display: inline-block;
+  width: 15px; height: 15px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  vertical-align: -2px;
+}
+.spinner.big { width: 26px; height: 26px; border-width: 3px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  width: 30%;
+  transition: width .3s;
+  animation: progress-pulse 1.5s ease-in-out infinite;
+}
+@keyframes progress-pulse { 0%,100% { opacity: 1; } 50% { opacity: .6; } }
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(110px);
+  background: var(--accent);
+  color: var(--on-accent);
+  padding: 11px 22px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: transform .3s;
+  z-index: 1000;
+  box-shadow: 0 8px 28px rgba(0,0,0,.45);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── Tunnel ── */
+.tunnel-url-box {
+  background: var(--input-bg);
+  border: 1.5px solid var(--accent);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  word-break: break-all;
+  text-align: center;
+  cursor: pointer;
+}
+.tunnel-url-box:hover { background: var(--accent-dim); }
+.tunnel-notice {
+  padding: 10px 14px;
+  background: rgba(232,195,91,.08);
+  border: 1px solid rgba(232,195,91,.3);
+  border-radius: 10px;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ── Update overlay ── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(6,10,8,.82);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2000;
+}
+.overlay-card {
+  background: var(--card-solid);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  text-align: center;
+  max-width: 320px;
+}
+.overlay-card p { margin-top: 14px; font-size: 14px; color: var(--text-bright); }
+
+/* ── Footer ── */
+.foot {
+  margin-top: 4px;
+  padding: 10px 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+}
+.foot .sep { opacity: .5; }
+
+/* ── Hidden ── */
+.hidden { display: none !important; }
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .card { padding: 16px; }
+  .brand-tag { display: none; }
+}
+
+/* ── Встроенный режим (вкладка «Панель ПК» в клиенте, ?embed=1) ──────
+   Прячем то, что внутри вкладки приложения избыточно: плитки «открыть
+   управление/терминал» (пользователь уже в приложении) и подсказку
+   «это окно можно закрыть» (вкладка не закрывается). */
+body.embed #p-pc-actions,
+body.embed #p-close-hint { display: none; }
+/* «Завершить Remotai» во вкладке приложения означало бы «отрубить себе связь
+   тем же нажатием» — выход остаётся действием окна на самом компьютере. */
+body.embed #p-quit-line { display: none; }

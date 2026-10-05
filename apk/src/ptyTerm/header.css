@@ -1,0 +1,210 @@
+/* Две строки: имя и путь, затем подписанные действия. Размеры кнопок не
+   зависят от выбранного агента, избранного или входа в переименование. */
+.pty-header.pty-header--clear {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.pty-header-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 50px;
+}
+
+/* Связь и активность занимают две строки уже существующей шапки.
+   Появление статуса не добавляет высоту и не меняет размер терминала. */
+.pty-header-state {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  height: 50px;
+}
+.pty-header-state .pty-agent-status {
+  height: 28px;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  max-width: none;
+  font-size: 11px;
+}
+.pty-header-state .pty-agent-status-fix {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 3px;
+  margin-left: 0;
+  border-radius: var(--radius-xs);
+}
+
+.pty-header--clear .pty-back-btn {
+  flex: 0 0 44px;
+  padding: 0;
+  color: var(--tg-text);
+}
+
+.pty-header--clear .pty-title-row {
+  flex-wrap: nowrap;
+  gap: 8px;
+  height: 28px;
+}
+
+.pty-header--clear .pty-title-main,
+.pty-header--clear .pty-title-edit {
+  flex: 1;
+  min-width: 0;
+}
+
+.pty-header--clear .pty-title {
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.pty-header--clear .pty-conn-status {
+  padding: 0;
+  gap: 5px;
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 500;
+}
+
+.pty-conn-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.pty-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  height: 20px;
+}
+
+.pty-header--clear .pty-cwd-row {
+  flex: 1;
+  min-width: 0;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: none;
+  color: var(--tg-hint);
+  text-align: left;
+  cursor: pointer;
+}
+
+.pty-header--clear .pty-cwd {
+  flex: 0 1 auto;
+  line-height: 18px;
+}
+
+.pty-header--clear .pty-viewers,
+.pty-header--clear .pty-account {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  line-height: 18px;
+  color: var(--tg-hint);
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pty-header-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* Шапка уступает место выводу при системной клавиатуре. Класс ставится
+   синхронно в updateKeyboardMode, поэтому закрытие IME не дёргает PTY. */
+.pty-page.pty-kbd .pty-header-actions { display: none; }
+
+.pty-header.pty-header--clear .pty-header-action {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 44px;
+  height: 48px;
+  padding: 4px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  background: var(--tg-bg);
+  color: var(--tg-text);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 15px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pty-header-action > span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pty-header.pty-header--clear .pty-header-action.is-on {
+  color: var(--tg-btn);
+}
+
+.pty-header--clear .pty-cwd-fav::after {
+  content: none;
+}
+
+.pty-header.pty-header--clear .pty-header-action:disabled {
+  opacity: .45;
+  cursor: default;
+}
+
+.pty-header.pty-header--clear .pty-header-action:active:not(:disabled) {
+  background: var(--c-border);
+}
+
+.pty-header--clear button:focus-visible {
+  outline: 2px solid var(--tg-btn);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .pty-header.pty-header--clear .pty-header-action:hover:not(:disabled),
+  .pty-header--clear .pty-back-btn:hover {
+    background: var(--c-border);
+  }
+}
+
+@media (max-width: 360px) {
+  .pty-header-actions { gap: 4px; }
+  .pty-header.pty-header--clear .pty-header-action { font-size: 11px; }
+  .pty-header--clear .pty-title { font-size: 15px; }
+}
+
+@media (min-width: 600px) {
+  .pty-header-actions { padding-left: 52px; }
+  .pty-header.pty-header--clear .pty-header-action {
+    flex: 0 1 auto;
+    flex-direction: row;
+    gap: 7px;
+    height: 44px;
+    min-width: 100px;
+    padding: 0 12px;
+    font-size: 13px;
+  }
+}

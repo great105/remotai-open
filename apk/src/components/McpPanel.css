@@ -1,0 +1,439 @@
+/* «MCP-серверы» в разделе «Агенты» (McpPanel.tsx).
+   Телефон прежде всего: 320 px без горизонтальной прокрутки, цели ≥ 44 px.
+   Длинные команды и адреса переносятся по любому символу, а не распирают
+   экран: `npx -y @modelcontextprotocol/server-filesystem C:\…` шире 320 px. */
+
+.mcp-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.mcp-intro {
+  margin: 0;
+  font-size: var(--fs-sub, 14px);
+  line-height: 1.45;
+  color: var(--tg-hint);
+  max-width: 62ch;
+}
+
+.mcp-muted {
+  margin: 0;
+  padding: 4px 0 2px;
+  font-size: var(--fs-sub, 14px);
+  color: var(--tg-hint);
+}
+
+.mcp-error {
+  margin: 0;
+  font-size: var(--fs-sub, 14px);
+  line-height: 1.4;
+  color: var(--tg-destructive);
+  overflow-wrap: anywhere;
+}
+
+/* ── Агент ───────────────────────────────────────────────────── */
+
+.mcp-agent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px 6px;
+  background: var(--tg-section-bg);
+  border: 1px solid var(--tg-border);
+  border-radius: var(--radius, 12px);
+  min-width: 0;
+}
+
+.mcp-agent-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mcp-agent-name {
+  margin: 0;
+  font-size: var(--fs-body, 15px);
+  font-weight: 650;
+  color: var(--tg-text);
+}
+
+.mcp-agent-count {
+  font-size: 13px;
+  color: var(--tg-hint);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.mcp-accounts,
+.mcp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mcp-chip {
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--tg-border);
+  background: var(--elev-2, #1f2630);
+  color: var(--tg-text);
+  font-size: var(--fs-sub, 14px);
+  cursor: pointer;
+  touch-action: manipulation;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: background-color 0.15s ease-out, border-color 0.15s ease-out;
+}
+
+/* Выбранное — мятный и тёмный текст (бренд: светлое на мятном не читается). */
+.mcp-chip.is-on {
+  background: var(--brand-mint, #2ee6b0);
+  border-color: var(--brand-mint, #2ee6b0);
+  color: var(--tg-btn-text, #062019);
+  font-weight: 600;
+}
+
+/* ── Список серверов ─────────────────────────────────────────── */
+
+.mcp-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mcp-server {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 0;
+  border-top: 1px solid var(--tg-section-separator, rgba(240, 246, 252, 0.12));
+  min-width: 0;
+}
+
+.mcp-server:first-child { border-top: 0; }
+
+.mcp-server-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mcp-server-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  min-width: 0;
+}
+
+.mcp-server-name {
+  font-weight: 600;
+  font-size: var(--fs-body, 15px);
+  color: var(--tg-text);
+  overflow-wrap: anywhere;
+}
+
+.mcp-server-type,
+.mcp-server-state {
+  font-size: 12px;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: var(--radius-xs, 4px);
+  background: var(--elev-2, #1f2630);
+  color: var(--tg-hint);
+}
+
+.mcp-server-state {
+  background: transparent;
+  border: 1px solid var(--tg-border);
+}
+
+.mcp-server-cmd {
+  display: block;
+  font-family: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--tg-text) 78%, var(--tg-hint));
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  /* Больше трёх строк — это уже не подпись, а простыня: остальное по тапу
+     не нужно, полная команда есть в конфиге агента. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.mcp-server-meta,
+.mcp-server-note {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--tg-hint);
+  overflow-wrap: anywhere;
+}
+
+.mcp-server.is-off .mcp-server-name,
+.mcp-server.is-off .mcp-server-cmd {
+  opacity: 0.55;
+}
+
+.mcp-server-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: -6px;
+}
+
+/* Тумблер — прежний `.advanced-toggle`, но нажимается вся зона 44×52. */
+.mcp-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+/* Выключенный тумблер на карточке агента сливался с фоном (у общего
+   `.advanced-toggle` дорожка цвета --tg-secondary, как и сама карточка):
+   на снимке 320 px был виден один белый кружок. */
+.mcp-switch .advanced-toggle:not(.on) {
+  background: var(--elev-3, #2a323d);
+  border-color: color-mix(in srgb, var(--tg-hint) 45%, transparent);
+}
+
+.mcp-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm, 8px);
+  background: transparent;
+  color: var(--tg-hint);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: color 0.15s ease-out, background-color 0.15s ease-out;
+}
+
+.mcp-icon-btn:hover,
+.mcp-icon-btn:focus-visible {
+  color: var(--tg-destructive);
+  background: color-mix(in srgb, var(--tg-destructive) 12%, transparent);
+}
+
+.mcp-switch:disabled,
+.mcp-icon-btn:disabled { opacity: 0.4; cursor: default; }
+
+.mcp-switch:focus-visible,
+.mcp-icon-btn:focus-visible,
+.mcp-chip:focus-visible,
+.mcp-segment-btn:focus-visible,
+.mcp-link:focus-visible {
+  outline: 2px solid var(--brand-mint, #2ee6b0);
+  outline-offset: 2px;
+}
+
+.mcp-link {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--tg-link);
+  font-size: var(--fs-sub, 14px);
+  text-align: left;
+  cursor: pointer;
+}
+
+/* ── Добавление ──────────────────────────────────────────────── */
+
+.mcp-add {
+  width: 100%;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.mcp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 14px;
+  background: var(--tg-section-bg);
+  border: 1px solid color-mix(in srgb, var(--brand-mint, #2ee6b0) 35%, var(--tg-border));
+  border-radius: var(--radius, 12px);
+  min-width: 0;
+}
+
+.mcp-form-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 650;
+  color: var(--tg-text);
+}
+
+.mcp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.mcp-label {
+  padding: 0;
+  font-size: var(--fs-sub, 14px);
+  font-weight: 600;
+  color: var(--tg-text);
+}
+
+.mcp-input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--tg-border);
+  background: var(--elev-0, #0d1117);
+  color: var(--tg-text);
+  font-size: 16px; /* меньше 16 px — iOS увеличивает страницу при фокусе */
+  caret-color: var(--brand-mint, #2ee6b0);
+  outline: none;
+  transition: border-color 0.15s ease-out;
+}
+
+.mcp-input::placeholder { color: color-mix(in srgb, var(--tg-hint) 80%, transparent); }
+.mcp-input:focus { border-color: var(--brand-mint, #2ee6b0); }
+.mcp-input[aria-invalid="true"] { border-color: var(--tg-destructive); }
+
+.mcp-input-code {
+  font-family: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+  font-size: 15px;
+}
+
+@supports (-webkit-touch-callout: none) {
+  .mcp-input-code { font-size: 16px; }
+}
+
+.mcp-textarea {
+  resize: vertical;
+  min-height: 84px;
+  line-height: 1.45;
+}
+
+.mcp-hint {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--tg-hint);
+}
+
+.mcp-field-error {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--tg-destructive);
+}
+
+/* Тип подключения: две-три равные клетки с подписью, по ширине строки. */
+.mcp-segment {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+  gap: 6px;
+}
+
+.mcp-segment-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  min-height: 52px;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--tg-border);
+  background: var(--elev-2, #1f2630);
+  color: var(--tg-text);
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color 0.15s ease-out, border-color 0.15s ease-out;
+}
+
+.mcp-segment-title { font-size: var(--fs-sub, 14px); font-weight: 600; }
+.mcp-segment-hint { font-size: 12px; color: var(--tg-hint); line-height: 1.3; }
+
+.mcp-segment-btn.is-on {
+  background: color-mix(in srgb, var(--brand-mint, #2ee6b0) 16%, var(--elev-2, #1f2630));
+  border-color: var(--brand-mint, #2ee6b0);
+}
+
+.mcp-segment-btn.is-on .mcp-segment-hint { color: color-mix(in srgb, var(--brand-mint, #2ee6b0) 70%, var(--tg-text)); }
+
+.mcp-disclosure {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.mcp-disclosure-chev {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.mcp-results {
+  list-style: none;
+  margin: 0;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-radius: var(--radius-sm, 8px);
+  background: var(--elev-0, #0d1117);
+  font-size: var(--fs-sub, 14px);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.mcp-results .is-ok { color: var(--color-success, #3fb950); }
+.mcp-results .is-fail { color: var(--tg-destructive); }
+
+.mcp-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mcp-form-actions .btn { min-height: 44px; }
+.mcp-grow { flex: 1 1 140px; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mcp-chip, .mcp-segment-btn, .mcp-input, .mcp-icon-btn { transition: none; }
+}

@@ -1,0 +1,1 @@
+ALTER TABLE support_threads ADD COLUMN meta TEXT NOT NULL DEFAULT '';

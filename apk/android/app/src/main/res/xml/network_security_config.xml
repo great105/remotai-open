@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  TGControl network security policy.
+
+  The app can connect to a self-hosted backend on the local network, which is
+  typically reached over plain HTTP on a private IP (192.168.x.x, 10.x.x.x,
+  localhost). Android's network-security-config cannot express RFC-1918 CIDR
+  ranges, so cleartext stays permitted at the base level; the app layer
+  (src/config.ts -> getServerUrlSecurityError) is what actually blocks HTTP to
+  public hosts and forces HTTPS there.
+
+  Trust anchors are limited to system CAs (the platform default on API 24+),
+  so a self-signed cert must be reachable over a properly trusted chain.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- The managed cloud relay must always be reached over TLS. -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">tgcontrol.app</domain>
+    </domain-config>
+</network-security-config>

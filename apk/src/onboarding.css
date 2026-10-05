@@ -1,0 +1,18 @@
+.start-page { max-width: 620px; margin: 0 auto; padding-bottom: calc(32px + env(safe-area-inset-bottom)); }
+.start-page .onb-hero { margin: 24px 0; }
+.start-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.start-top a, .start-back { display: inline-flex; align-items: center; min-height: 44px; }
+.start-choices { display: grid; gap: 12px; }
+.start-choices > a { display: grid; gap: 6px; padding: 18px; border: 1px solid var(--tg-border); border-radius: 12px; color: var(--tg-text); text-decoration: none; }
+.start-choices > a:hover, .start-choices > a:focus-visible { border-color: var(--tg-link); }
+.start-choices span, .start-install p, .start-steps p { line-height: 1.55; font-size: 14px; }
+.start-choices span { color: var(--tg-hint); }
+.start-steps { padding-left: 24px; }
+.start-steps > li { padding: 8px 0 20px 6px; }
+.start-steps h2 { font-size: 18px; line-height: 1.4; margin: 0 0 10px; }
+.start-install { display: grid; gap: 10px; min-width: 0; margin: 12px 0; }
+.start-install code { display: block; padding: 12px; background: var(--tg-secondary-bg); overflow-wrap: anywhere; white-space: pre-wrap; user-select: all; font-size: 13px; }
+.start-install select { width: 100%; min-height: 44px; color: var(--tg-text); background: var(--tg-secondary-bg); border: 1px solid var(--tg-border); border-radius: 8px; padding: 8px; margin-top: 6px; }
+.start-install .btn, .start-page .btn { min-height: 44px; white-space: normal; text-align: center; }
+.start-install summary, .start-page summary, .infra-add-sheet summary { cursor: pointer; min-height: 44px; padding: 10px 0; }
+.start-install details .btn { margin-top: 10px; }

@@ -1,0 +1,8 @@
+# Remotai: .zprofile (только login-шелл). Подключает пользовательский
+# .zprofile с его ZDOTDIR — см. zshenv. ST-10.
+if [[ -n ${REMOTAI_USER_ZDOTDIR-} && $REMOTAI_USER_ZDOTDIR != "${__remotai_si_dir-}" ]]; then
+	ZDOTDIR=$REMOTAI_USER_ZDOTDIR
+	[[ -f $ZDOTDIR/.zprofile ]] && builtin source "$ZDOTDIR/.zprofile"
+	REMOTAI_USER_ZDOTDIR=$ZDOTDIR
+	ZDOTDIR=$__remotai_si_dir
+fi

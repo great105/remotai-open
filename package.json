@@ -1,0 +1,24 @@
+{
+  "name": "tgcontrol-monorepo",
+  "private": true,
+  "version": "2.9.3",
+  "workspaces": [
+    "packages/*",
+    "apk",
+    "e2e"
+  ],
+  "scripts": {
+    "build:apk": "npm run build --workspace=tgcontrol-apk",
+    "build:all": "npm run build:apk",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@xterm/addon-unicode-graphemes": "^0.4.0",
+    "@xterm/addon-unicode11": "^0.9.0",
+    "@xterm/headless": "^6.0.0",
+    "vitest": "^4.1.10"
+  }
+}

@@ -1,0 +1,10 @@
+/* Expanded tools may be longer than a narrow phone. Let that panel scroll
+   while keeping a usable piece of the live output above the input bar. */
+.pty-page[data-tools-open] .pty-terminal-wrap {
+  min-height: min(120px, 20dvh);
+}
+.pty-page[data-tools-open] .pty-keys-bar {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}

@@ -1,0 +1,47 @@
+.pty-mode-caption,
+.pty-mode-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.pty-mode-caption { color: var(--tg-hint); font-size: 11px; }
+.pty-mode-value { color: var(--tg-btn); }
+.pty-mode-sheet { max-width: 480px; }
+.pty-mode-sheet-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.pty-mode-sheet-heading .modal-title { margin: 0; }
+.pty-mode-sheet-heading .icon-btn { min-width: 44px; min-height: 44px; }
+.pty-mode-option {
+  width: 100%;
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 8px;
+  border: 0;
+  border-bottom: 1px solid var(--c-border);
+  background: transparent;
+  color: var(--tg-text);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.pty-mode-option:last-child { border-bottom: 0; }
+.pty-mode-option-copy { display: flex; flex-direction: column; gap: 4px; }
+.pty-mode-option-name { font-weight: 600; }
+.pty-mode-option-hint { font-size: 13px; line-height: 1.45; color: var(--tg-hint); }
+.pty-mode-option-check { display: flex; flex: 0 0 20px; color: var(--tg-btn); }
+.pty-mode-option[aria-pressed="true"] .pty-mode-option-name { color: var(--tg-btn); }
+.pty-mode-option:active { background: var(--c-border); }
+.pty-mode-sheet button:focus-visible { outline: 2px solid var(--tg-btn); outline-offset: -2px; }
+
+@media (max-height: 500px) and (min-width: 600px) {
+  .pty-mode-option { min-height: 62px; padding-block: 9px; }
+}

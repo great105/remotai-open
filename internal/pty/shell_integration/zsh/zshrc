@@ -1,0 +1,63 @@
+# Remotai: .zshrc (интерактивный шелл) — пользовательский .zshrc, затем
+# разметка команд OSC 133. ST-10, T-39.
+if [[ -n ${REMOTAI_USER_ZDOTDIR-} && $REMOTAI_USER_ZDOTDIR != "${__remotai_si_dir-}" ]]; then
+	# HISTFILE по умолчанию строят от ZDOTDIR (/etc/zshrc на macOS:
+	# HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history) — при нашем ZDOTDIR история
+	# уехала бы в каталог Remotai. Возвращаем её на место ДО ~/.zshrc: если
+	# пользователь задаёт HISTFILE сам, его значение победит.
+	[[ ${HISTFILE-} == "$__remotai_si_dir/.zsh_history" ]] && HISTFILE=$REMOTAI_USER_ZDOTDIR/.zsh_history
+	ZDOTDIR=$REMOTAI_USER_ZDOTDIR
+	[[ -f $ZDOTDIR/.zshrc ]] && builtin source "$ZDOTDIR/.zshrc"
+	REMOTAI_USER_ZDOTDIR=$ZDOTDIR
+	ZDOTDIR=$__remotai_si_dir
+fi
+
+if [[ -o interactive && -z ${__remotai_si_on-} ]]; then
+	__remotai_si_on=1
+	__remotai_si_ran=0
+	# Все маркеры завершаются BEL, а не ST (см. events.go, ansiRe). %{…%} —
+	# нулевая ширина для zsh: иначе он неверно считает длину приглашения.
+	__remotai_si_a=$'%{\e]133;A\a%}'
+	__remotai_si_b=$'%{\e]133;B\a%}'
+
+	# D — только если перед этим была команда (preexec). Пустой Enter и Ctrl+C
+	# на приглашении команды не запускают, и блока «без команды» не будет.
+	__remotai_si_precmd() {
+		local ec=$?
+		emulate -L zsh
+		if (( __remotai_si_ran )); then
+			builtin printf '\e]133;D;%s\a' "$ec"
+			__remotai_si_ran=0
+		fi
+		return ec
+	}
+
+	# Обёртка PS1 — последним хуком и заново на каждом приглашении:
+	# powerlevel10k, starship и подобные перестраивают PS1 в своих precmd.
+	__remotai_si_wrap() {
+		local ec=$?
+		emulate -L zsh
+		if [[ $PS1 != *"$__remotai_si_a"* ]]; then
+			PS1=$__remotai_si_a$PS1$__remotai_si_b
+		fi
+		return ec
+	}
+
+	__remotai_si_preexec() {
+		emulate -L zsh
+		builtin printf '\e]133;C\a'
+		__remotai_si_ran=1
+	}
+
+	builtin autoload -Uz add-zsh-hook
+	add-zsh-hook preexec __remotai_si_preexec
+	add-zsh-hook precmd __remotai_si_wrap
+	# D обязан идти ПЕРВЫМ precmd: $? ещё код пользовательской команды.
+	# add-zsh-hook умеет только дописывать в конец, поэтому ставим руками.
+	precmd_functions=(__remotai_si_precmd ${precmd_functions:#__remotai_si_precmd})
+fi
+
+# Не login-шелл: .zlogin не будет, стартовые файлы кончились здесь.
+if [[ ! -o login ]] && (( $+functions[__remotai_si_restore] )); then
+	__remotai_si_restore
+fi

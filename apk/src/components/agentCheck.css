@@ -1,0 +1,270 @@
+/* ── «Проверить подключение» (AgentCheckSheet) ───────────────────────────
+   Шторка на общем каркасе .modal-sheet. Телефон прежде всего: 320 px без
+   горизонтальной прокрутки (длинные адреса и маски переносятся где угодно),
+   все цели для пальца ≥44 px. Карточек внутри карточки нет: факты — строки
+   определений с тонкими разделителями, итог — одна плашка с цветом смысла. */
+
+.ac-sheet {
+  max-height: 86vh;
+  overscroll-behavior: contain;
+}
+
+.ac-head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+.ac-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 10px 0 0;
+  line-height: 1.25;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.ac-close {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  margin: 0 -10px 0 0;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--tg-hint);
+}
+.ac-close:focus-visible,
+.ac-account:focus-visible,
+.ac-detail summary:focus-visible {
+  outline: 2px solid var(--brand-mint);
+  outline-offset: 2px;
+}
+
+/* Аккаунты — сегменты одного ряда; не влезли — переносятся, а не уезжают. */
+.ac-accounts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+.ac-account {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--tg-border);
+  background: var(--elev-2);
+  color: var(--tg-text);
+  font: inherit;
+  font-size: var(--fs-sub);
+  cursor: pointer;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ac-account.is-on {
+  background: var(--tg-press);
+  border-color: var(--brand-mint);
+  color: var(--tg-text);
+  font-weight: 600;
+}
+.ac-account:disabled { opacity: 0.5; cursor: default; }
+
+/* Приговор — первое, что читается: одна фраза без подписи сверху. */
+.ac-verdict {
+  margin: 0 0 var(--space-4);
+  font-size: 16px;
+  line-height: 1.45;
+  font-weight: 500;
+  color: var(--tg-text);
+}
+.ac-route-none,
+.ac-route-unknown { color: var(--color-warning); }
+
+.ac-uses-title {
+  margin: 0 0 var(--space-1);
+  font-size: var(--fs-sub);
+  font-weight: 600;
+  color: var(--tg-section-header);
+}
+.ac-facts { margin: 0 0 var(--space-3); }
+.ac-fact {
+  padding: 10px 0;
+  border-top: 1px solid var(--tg-section-separator);
+}
+.ac-fact:first-child { border-top: 0; }
+.ac-fact dt {
+  font-size: 13px;
+  color: var(--tg-hint);
+  margin-bottom: 2px;
+}
+.ac-fact dd {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.ac-value {
+  font-size: 15px;
+  color: var(--tg-text);
+  overflow-wrap: anywhere;
+}
+.ac-mono {
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+}
+.ac-src,
+.ac-why {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--tg-hint);
+  overflow-wrap: anywhere;
+}
+.ac-why { color: var(--tg-text); opacity: 0.85; }
+/* Проигравшее значение: видно, но тише — и зачёркнуто по смыслу словами
+   «Не действует», а не линией поверх (перечёркнутую маску ключа не прочесть). */
+.ac-shadow {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--color-warning);
+  overflow-wrap: anywhere;
+}
+
+.ac-note {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 0 0 var(--space-2);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--tg-hint);
+}
+.ac-note svg { color: var(--color-warning); margin-top: 1px; }
+
+.ac-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+/* Главное действие — во всю ширину: большим пальцем в любом месте. Мятный с
+   тёмным текстом — токены --tg-btn / --tg-btn-text у .btn-primary. */
+.ac-run,
+.ac-run-free {
+  width: 100%;
+  min-height: 48px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ac-run:disabled { opacity: 0.55; }
+.ac-hint { margin: 2px 0 0; }
+
+.ac-muted {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--tg-hint);
+  margin: 0 0 var(--space-3);
+}
+.ac-error {
+  font-size: var(--fs-sub);
+  line-height: 1.45;
+  color: var(--color-danger);
+  margin: var(--space-3) 0 0;
+  overflow-wrap: anywhere;
+}
+.ac-load-error .btn { min-height: 44px; margin-top: var(--space-3); }
+
+.ac-result-slot:empty { display: none; }
+.ac-result {
+  margin-top: var(--space-4);
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--tg-border);
+  background: var(--elev-2);
+  animation: acReveal 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ac-result.is-ok {
+  border-color: rgba(46, 230, 176, 0.45);
+  background: rgba(46, 230, 176, 0.08);
+}
+.ac-result.is-fail {
+  border-color: rgba(248, 81, 73, 0.5);
+  background: rgba(248, 81, 73, 0.08);
+}
+.ac-result-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 16px;
+  line-height: 1.35;
+}
+.ac-result-head b { overflow-wrap: anywhere; }
+.ac-result-icon {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -3px;
+}
+.is-ok .ac-result-icon { background: var(--brand-mint); color: var(--tg-btn-text); }
+.is-fail .ac-result-icon { background: var(--color-danger); color: #fff; }
+.ac-reply {
+  margin: 10px 0 0 38px;
+  padding: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--tg-text);
+  overflow-wrap: anywhere;
+}
+.ac-result-hint {
+  margin: 6px 0 0 38px;
+  font-size: var(--fs-sub);
+  line-height: 1.45;
+  color: var(--tg-text);
+}
+.ac-meta {
+  margin: 8px 0 0 38px;
+  color: var(--tg-hint);
+  overflow-wrap: anywhere;
+}
+.ac-detail { margin: 8px 0 0 38px; }
+.ac-detail summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--tg-link);
+}
+.ac-detail p {
+  margin: 0;
+  color: var(--tg-hint);
+  overflow-wrap: anywhere;
+}
+
+@keyframes acReveal {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ac-result { animation: none; }
+}
+
+/* Кнопка-вход в шторку у карточки агента. */
+.ac-open {
+  min-height: 44px;
+  width: 100%;
+  margin-top: var(--space-2);
+}
+.agent-row .ac-open {
+  width: auto;
+  max-width: 100%;
+  margin-top: 6px;
+}

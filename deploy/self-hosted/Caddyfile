@@ -1,0 +1,15 @@
+{$SITE_ADDRESS} {
+    @api path /v1/* /health /metrics /admin /admin/*
+    handle @api {
+        reverse_proxy relay:8090
+    }
+    redir / /app/ 302
+    handle_path /app/* {
+        root * /srv/app
+        file_server
+    }
+    handle {
+        respond "Not found" 404
+    }
+    encode gzip
+}

@@ -1,0 +1,11 @@
+# Remotai: .zlogin (login-шелл, последний стартовый файл). Подключает
+# пользовательский .zlogin и возвращает ZDOTDIR на место — см. zshenv. ST-10.
+if [[ -n ${REMOTAI_USER_ZDOTDIR-} && $REMOTAI_USER_ZDOTDIR != "${__remotai_si_dir-}" ]]; then
+	ZDOTDIR=$REMOTAI_USER_ZDOTDIR
+	[[ -f $ZDOTDIR/.zlogin ]] && builtin source "$ZDOTDIR/.zlogin"
+	REMOTAI_USER_ZDOTDIR=$ZDOTDIR
+	ZDOTDIR=$__remotai_si_dir
+fi
+if (( $+functions[__remotai_si_restore] )); then
+	__remotai_si_restore
+fi

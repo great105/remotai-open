@@ -1,0 +1,159 @@
+/* Обновление CLI-агента в строке «Что установлено» (AgentUpdates.tsx).
+   Блок — последний ребёнок .agent-row и занимает всю её ширину отдельной
+   строкой: в колонке имени на 320 px рядом с чипами квоты тексту оставалось
+   ~70 px, и «установщик неизвестен» рвался по буквам (замер пробы). Отступ
+   слева — под иконку агента, чтобы текст стоял ровно под именем. */
+
+.agent-row:has(> .agent-update) {
+  flex-wrap: wrap;
+  row-gap: 0;
+}
+
+.agent-row > .agent-update {
+  flex: 1 0 100%;
+  padding-left: 32px; /* иконка 22 px + зазор строки 10 px */
+  box-sizing: border-box;
+}
+
+.agent-update {
+  margin-top: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.agent-update-line {
+  font-size: var(--fs-sub);
+  line-height: 1.35;
+  color: var(--tg-hint);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* Новость — единственное, что здесь говорит цветом: мятный текст и точка. */
+.agent-update[data-kind="update"] .agent-update-line {
+  color: var(--brand-mint);
+  font-weight: 600;
+}
+.agent-update[data-kind="update"] .agent-update-line::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: var(--brand-mint);
+  vertical-align: 1px;
+}
+
+.agent-update-hint {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--tg-subtitle);
+  overflow-wrap: anywhere;
+}
+
+.agent-update-warn {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-warning);
+}
+
+.agent-update-done {
+  font-size: var(--fs-sub);
+  color: var(--color-success);
+}
+
+.agent-update-error {
+  font-size: 12px;
+  color: var(--color-danger);
+  overflow-wrap: anywhere;
+}
+
+.agent-update-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  margin-top: 2px;
+}
+
+.agent-update-btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 18px;
+  font-size: var(--fs-sub);
+}
+/* Тёмный текст на мятной кнопке — правило бренда, даже если тема Telegram
+   подставила свой цвет текста кнопки. */
+.agent-update-btn.btn-primary {
+  background: var(--brand-mint);
+  color: #062019;
+}
+.agent-update-btn:disabled { opacity: .55; }
+
+.agent-update-history-toggle,
+.agent-update-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 2px;
+  border: 0;
+  background: none;
+  color: var(--tg-link);
+  font: inherit;
+  font-size: var(--fs-sub);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.agent-update-history-toggle svg { transition: transform .18s cubic-bezier(.2, .8, .2, 1); }
+.agent-update-history-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+.agent-update-history-toggle:focus-visible,
+.agent-update-progress:focus-visible,
+.agent-update-btn:focus-visible {
+  outline: 2px solid var(--brand-mint);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.agent-update-progress {
+  align-self: flex-start;
+  color: var(--tg-text);
+}
+
+.agent-update-spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--tg-border);
+  border-top-color: var(--brand-mint);
+  animation: agent-update-spin .9s linear infinite;
+}
+@keyframes agent-update-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .agent-update-spinner { animation: none; }
+  .agent-update-history-toggle svg { transition: none; }
+}
+
+.agent-update-history {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--tg-secondary-bg);
+}
+.agent-update-history ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.agent-update-history li {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--tg-text);
+  font-variant-numeric: tabular-nums;
+}

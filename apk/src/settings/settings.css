@@ -1,0 +1,28 @@
+.settings-content { max-width: 760px; width: 100%; margin-inline: auto; }
+.settings-index { padding: 12px 16px 24px; }
+.settings-index-list { border: 1px solid var(--tg-border); border-radius: 12px; overflow: hidden; background: var(--tg-secondary-bg); }
+.settings-index-row { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 76px; padding: 16px; background: transparent; border: 0; border-bottom: 1px solid var(--tg-border); color: var(--tg-text); font: inherit; text-align: left; cursor: pointer; }
+.settings-index-row:last-child { border-bottom: 0; }
+.settings-index-row > svg { flex: 0 0 22px; width: 22px; height: 22px; color: var(--tg-hint); }
+.settings-index-text { display: flex; flex: 1; flex-direction: column; gap: 4px; min-width: 0; }
+.settings-index-text strong { font-size: 15px; line-height: 1.35; font-weight: 600; }
+.settings-index-text > span { font-size: 13px; line-height: 1.4; color: var(--tg-hint); }
+.settings-index-machine { font-size: 12px; line-height: 1.4; overflow-wrap: anywhere; color: var(--tg-text); }
+.settings-index-chevron { flex-shrink: 0; color: var(--tg-hint); font-size: 22px; }
+.settings-index-row:focus-visible, .settings-index-plan:focus-visible { outline: 2px solid var(--tg-btn); outline-offset: -3px; }
+.settings-index-row:active, .settings-index-plan:active { background: var(--tg-bg); }
+@media (hover: hover) { .settings-index-row:hover, .settings-index-plan:hover { background: var(--tg-bg); } }
+.settings-index-plan { width: 100%; min-height: 68px; margin-top: 16px; padding: 14px 16px; border: 1px solid var(--tg-border); border-radius: 12px; color: var(--tg-text); background: var(--tg-secondary-bg); font: inherit; text-align: left; cursor: pointer; }
+.settings-detail > .setting-group:first-child { padding-top: 16px; }
+.settings-detail > .setting-group > .setting-label:first-child { margin-top: 0; }
+.settings-unavailable { padding: 24px 20px; }
+.settings-unavailable h2 { font-size: 18px; line-height: 1.4; margin: 0 0 10px; }
+.settings-unavailable p { color: var(--tg-hint); font-size: 14px; line-height: 1.5; margin: 0 0 20px; }
+.settings-page > .page-header h1 { white-space: normal; overflow-wrap: anywhere; min-width: 0; line-height: 1.25; }
+.settings-page > .page-header h1:focus { outline: none; }
+.settings-detail-context { padding: 16px 20px 0; color: var(--tg-hint); font-size: 13px; line-height: 1.4; overflow-wrap: anywhere; }
+.settings-page .settings-catalog-search { display: block; width: 100%; min-height: 44px; padding: 10px 12px; margin: 12px 0; border: 1px solid var(--tg-border); border-radius: 8px; background: var(--tg-bg); color: var(--tg-text); font: inherit; }
+.settings-page .settings-catalog-search::placeholder { color: var(--tg-hint); opacity: 1; }
+.settings-page .settings-catalog-search:focus-visible { outline: 2px solid var(--tg-btn); outline-offset: 2px; }
+.settings-catalog-empty { padding: 16px 0; color: var(--tg-hint); font-size: 14px; line-height: 1.5; }
+@media (max-width: 359px) { .settings-index { padding-inline: 12px; } .settings-index-row { gap: 10px; padding: 14px 12px; } }
