@@ -1,96 +1,115 @@
 # Remotai
 
-Терминалы и ИИ-агенты на вашем компьютере — с телефона или из браузера.
-Remotai объединяет удалённые терминалы, файлы, экран компьютера, SSH и управление
-несколькими устройствами. Агент работает на Windows и Linux; клиент — в браузере
-и на Android. Возможности экрана зависят от ОС.
+**English** · [Русский](README.ru.md)
 
-**Код и самостоятельное развёртывание бесплатны.** Хотите пользоваться готовым
-сервисом без настройки сервера? [Официальный Remotai](https://remotai.ru)
-предоставляет облачное подключение и обслуживание по подписке.
+Access the terminals and AI agents on your computer from your phone or browser.
+Remotai brings together remote terminals, files, computer screen access, SSH,
+and multiple devices. Desktop releases are available for Windows, macOS and
+Linux; the client runs in a browser and on Android. Screen features vary by OS.
 
-| Вариант | Как начать | Что оплачивается |
+[Download the latest release](https://github.com/great105/remotai-open/releases/latest)
+· [Self-hosting guide](docs/self-hosting.en.md)
+· [Managed service](https://remotai.ru)
+
+**The source code and self-hosted deployment are free.** Run your own server,
+or use the official managed Remotai service with a cloud subscription.
+You pay for your own infrastructure and AI providers separately.
+
+| Option | Getting started | What you pay for |
 |---|---|---|
-| Свой сервер | Собрать агент и запустить Docker Compose | Ваша инфраструктура и выбранные ИИ-сервисы |
-| Готовый Remotai | [Открыть сервис](https://remotai.ru) | Подписка на облако Remotai; ИИ-сервисы оплачиваются отдельно |
+| Your own server | Build the agent and start Docker Compose | Your infrastructure and chosen AI services |
+| Managed Remotai | [Open the service](https://remotai.ru) | The Remotai cloud subscription; AI services are billed separately |
 
-## Развернуть свой сервер
+The application interface is currently in Russian. This repository's overview
+and deployment guide are available in English and Russian. Self-hosting does
+not require a payment provider; the managed service currently uses Russian
+payment methods.
 
-Нужны Docker Compose, Node.js 22+, домен и открытые порты 80/443.
-Из корня репозитория:
+<img src="docs/images/remotai-agents.png" alt="AI agent terminals in the Remotai mobile client, with Russian interface labels" width="460">
+
+## Run your own server
+
+You need Docker Compose, Node.js 22+, a domain and open ports 80/443.
+Clone the source, then run these commands from the repository root:
 
 ```bash
+git clone https://github.com/great105/remotai-open.git
+cd remotai-open
 node scripts/init-self-hosted.mjs https://remotai.example.com
 docker compose --env-file deploy/self-hosted/.env -f deploy/self-hosted/compose.yaml up -d --build
 ```
 
-Откройте `https://remotai.example.com/app/`. TLS настраивается автоматически.
-Telegram-бот и SMTP для первого подключения не обязательны. Подробности,
-локальный запуск и резервные копии: **[инструкция развёртывания](docs/self-hosting.md)**.
+Replace `https://remotai.example.com` with your domain. Open its `/app/` page.
+TLS is configured automatically. A Telegram bot and SMTP are optional for the
+first connection. See the **[deployment guide](docs/self-hosting.en.md)** for
+local setup, persistent sign-in, updates and backups.
 
-## Собрать агент для своего сервера
+## Build an agent for your server
 
-Установите Go 1.25+ и Node.js 22+. Выполните на компьютере, для которого собираете
-агент (PowerShell на Windows или shell на Linux):
+Install Go 1.25+ and Node.js 22+. On the computer you are building for,
+use PowerShell on Windows or a shell on Linux/macOS:
 
 ```bash
 npm ci
 node scripts/build-self-hosted.mjs https://remotai.example.com
 ```
 
-Результат — `build/remotai-self-hosted.exe` на Windows или
-`build/remotai-self-hosted` на Linux. Скрипт только собирает приложение.
+The output is `build/remotai-self-hosted.exe` on Windows or
+`build/remotai-self-hosted` on Linux/macOS. The script only builds the agent.
 
-На Windows подключите компьютер:
+Pair your Windows computer:
 
 ```powershell
 .\build\remotai-self-hosted.exe pair --relay https://remotai.example.com
 ```
 
-На Linux:
+On Linux/macOS:
 
 ```bash
 ./build/remotai-self-hosted pair --relay https://remotai.example.com
 ```
 
-Введите полученный код в web-клиенте своего сервера. Для установки автозапуска
-на нужной машине используйте `install --no-pair` перед привязкой. Версия
-`self-hosted` не заменяется официальным автоматическим обновлением.
+Enter the generated code in your server's web client. To install startup
+integration on the target computer, run `install --no-pair` before pairing.
+Self-hosted builds are not replaced by official automatic updates.
 
-## Что находится в репозитории
+The ready-made downloads in Releases use the official service by default.
+Use the build instructions above for an agent configured for your own relay.
 
-| Путь | Что это |
+## Repository layout
+
+| Path | Contents |
 |---|---|
-| `cmd/tgcontrol/`, `internal/` | Агент на Go, терминалы, файлы, экран, локальный API |
-| `apk/` | React/Vite/Capacitor клиент для браузера и Android |
-| `packages/shared/` | Общие типы, API, компоненты и переводы |
-| `tgcontrol-relay/` | Релей и аккаунты, отдельный Go-модуль |
-| `deploy/self-hosted/` | Docker Compose, сборки релея и web-клиента, Caddy |
-| `scripts/` | Сборка и проверки исходного кода |
+| `cmd/tgcontrol/`, `internal/` | Go agent: terminals, files, screen access and local API |
+| `apk/` | React/Vite/Capacitor browser and Android client |
+| `packages/shared/` | Shared types, API, components and translations |
+| `tgcontrol-relay/` | Relay and accounts, with a separate Go module |
+| `deploy/self-hosted/` | Docker Compose, relay/client builds and Caddy |
+| `scripts/` | Source builds and checks |
 
-Для сборки отдельного web-клиента задайте `VITE_RELAY_BASE` адресом своего релея
-и `VITE_BASE=/app/`, затем выполните `npm run build:apk`.
-Для Android используйте сборку с `VITE_BASE=/`, `npx cap sync android` из `apk/`
-и собственный ключ подписи. Ключи официального приложения не входят в проект.
+For a separate web client, set `VITE_RELAY_BASE` to your relay origin and
+`VITE_BASE=/app/`, then run `npm run build:apk`.
+For Android, build with `VITE_BASE=/`, run `npx cap sync android` from `apk/`,
+and use your own signing key. Official app signing keys are not included.
 
-## Проверки
+## Checks
 
 ```bash
 npm test
-# После сборки агента, которая создаёт встраиваемый web-клиент:
+# Build the agent first to generate the embedded web client:
 go test ./cmd/... ./internal/...
-# Релей:
+# Relay:
 cd tgcontrol-relay
 go test ./...
 ```
 
-## Лицензия и бренд
+## License and brand
 
-Исходный код Remotai распространяется под **[AGPL-3.0](LICENSE)**.
-Использование, изучение и самостоятельное размещение бесплатны, включая
-коммерческое использование с соблюдением лицензии. При предоставлении изменённой
-версии через сеть её пользователям нужно предоставить соответствующий исходный код.
+Remotai source code is available under **[AGPL-3.0](LICENSE)**.
+You can use, study and self-host it for free, including for commercial use,
+subject to the license. When you offer a modified version over a network,
+make its corresponding source available to its users as the license requires.
 
-Зависимости сохраняют свои лицензии. Название и оформление официального Remotai
-не дают права представлять сторонний сервис как наш: [правила бренда](TRADEMARKS.md).
-Официальный облачный сервис остаётся отдельным платным продуктом.
+Dependencies retain their own licenses. Use your own identity for a public
+third-party service: see the [brand rules](TRADEMARKS.en.md).
+The official managed cloud remains a separate paid product.
