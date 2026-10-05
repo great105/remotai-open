@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import assert from "node:assert/strict";
 import { Terminal as HeadlessTerminal } from "@xterm/headless";
 import {
   AGENT_RESYNC_MAX_BYTES, AGENT_SUBQ_MAX_BYTES, FLOW_DIAG_MIN_MS, FLOW_DIAG_PERIOD_MS, FLUSH_BATCH_MAX_BYTES,
@@ -204,20 +205,23 @@ describe("selectFlushBatch (ST-09)", () => {
       const maxRounds = input.length + 2 * Math.ceil(expected.length / cap) + 1;
       while (queue.length > 0) {
         const { take, rest, takeBytes } = selectFlushBatch(queue, cap);
-        expect(take.length).toBeGreaterThan(0);
-        expect(takeBytes).toBeLessThanOrEqual(cap);
-        expect(takeBytes).toBe(take.reduce((n, i) => n + i.bytes.byteLength, 0));
+        // Some seeds split into tens of thousands of batches. Native strict
+        // assertions keep every invariant without allocating Vitest matchers
+        // for every batch on a busy Windows runner.
+        assert.ok(take.length > 0, "every batch must make progress");
+        assert.ok(takeBytes <= cap, "batch must respect its byte cap");
+        assert.equal(takeBytes, take.reduce((n, i) => n + i.bytes.byteLength, 0));
         for (const item of take) {
-          expect(item.guard.generation).toBe(take[0].guard.generation);
-          expect(item.guard.epoch).toBe(take[0].guard.epoch);
-          expect(item.streamEnd).toBeGreaterThanOrEqual(lastEnd);
+          assert.equal(item.guard.generation, take[0].guard.generation);
+          assert.equal(item.guard.epoch, take[0].guard.epoch);
+          assert.ok(item.streamEnd >= lastEnd, "streamEnd must stay monotonic");
           lastEnd = item.streamEnd;
           out.push(...item.bytes);
           // streamEnd — позиция последнего байта элемента в потоке.
-          expect(item.streamEnd).toBe(1000 + out.length);
+          assert.equal(item.streamEnd, 1000 + out.length);
         }
         queue = rest;
-        expect(++rounds).toBeLessThanOrEqual(maxRounds);
+        assert.ok(++rounds <= maxRounds, "reassembly must finish in bounded rounds");
       }
       expect(out).toEqual(expected);
     });
