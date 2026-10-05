@@ -19,6 +19,9 @@ beforeAll(async () => {
     configFile: false,
     cacheDir,
     root: fileURLToPath(new URL("../../", import.meta.url)),
+    // This fixture renders Markdown only; use the real message catalog without
+    // loading unrelated terminal widgets through the shared package barrel.
+    resolve: { alias: { "@tgcontrol/shared": fileURLToPath(new URL("../../../packages/shared/src/i18n.ts", import.meta.url)) } },
     server: { host: "127.0.0.1", port: 0 },
     optimizeDeps: {
       noDiscovery: true,

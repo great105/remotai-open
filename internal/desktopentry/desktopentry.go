@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"tgcontrol/internal/localize"
 )
 
 //go:embed icon.png
@@ -46,7 +47,7 @@ func installAt(home, exe, platform string) (string, error) {
 		return "", nil
 	}
 	if !filepath.IsAbs(home) || !filepath.IsAbs(exe) || strings.ContainsAny(exe, "\r\n\x00") {
-		return "", fmt.Errorf("путь программы должен быть абсолютным и не содержать переводов строки")
+		return "", fmt.Errorf("%s", localize.Text("путь программы должен быть абсолютным и не содержать переводов строки"))
 	}
 	root := filepath.Join(home, ".local", "share", "remotai", "desktop")
 	if platform == "darwin" {
@@ -54,11 +55,11 @@ func installAt(home, exe, platform string) (string, error) {
 	}
 	if st, err := os.Lstat(root); err == nil {
 		if !st.IsDir() || st.Mode()&os.ModeSymlink != 0 {
-			return "", fmt.Errorf("папка ярлыка занята: %s", root)
+			return "", fmt.Errorf(localize.Text("папка ярлыка занята: %s"), root)
 		}
 		data, err := os.ReadFile(filepath.Join(root, ".remotai-launcher"))
 		if err != nil || string(data) != marker {
-			return "", fmt.Errorf("не заменяю существующее приложение: %s", root)
+			return "", fmt.Errorf(localize.Text("не заменяю существующее приложение: %s"), root)
 		}
 	} else if !os.IsNotExist(err) {
 		return "", err
@@ -117,7 +118,7 @@ func installAt(home, exe, platform string) (string, error) {
 	}
 	entry := filepath.Join(home, ".local", "share", "applications", "ru.remotai.desktop")
 	if data, err := os.ReadFile(entry); err == nil && !strings.HasPrefix(string(data), desktopHeader) {
-		return "", fmt.Errorf("не заменяю существующий ярлык: %s", entry)
+		return "", fmt.Errorf(localize.Text("не заменяю существующий ярлык: %s"), entry)
 	}
 	content := desktopHeader + "[Desktop Entry]\nType=Application\nName=Remotai\nComment=Access your AI agents\nComment[ru]=Удалённый доступ к вашим ИИ-агентам\nExec=/bin/sh " + desktopArg(launcher) + "\nIcon=" + desktopString(iconPath) + "\nTerminal=false\nStartupNotify=false\nCategories=Development;Network;\n"
 	if err := write(entry, []byte(content), 0o644); err != nil {
@@ -172,10 +173,10 @@ func removeAt(home, platform string) error {
 		dirs = []string{"Contents/Resources", "Contents/MacOS", "Contents", ""}
 	}
 	if !filepath.IsAbs(home) {
-		return fmt.Errorf("домашний каталог должен быть абсолютным")
+		return fmt.Errorf("%s", localize.Text("домашний каталог должен быть абсолютным"))
 	}
 	if st, err := os.Lstat(root); err == nil && (!st.IsDir() || st.Mode()&os.ModeSymlink != 0) {
-		return fmt.Errorf("папка ярлыка заменена: %s", root)
+		return fmt.Errorf(localize.Text("папка ярлыка заменена: %s"), root)
 	}
 	data, err := os.ReadFile(filepath.Join(root, ".remotai-launcher"))
 	if os.IsNotExist(err) {
@@ -185,7 +186,7 @@ func removeAt(home, platform string) error {
 		return err
 	}
 	if string(data) != marker {
-		return fmt.Errorf("ярлык не принадлежит установщику Remotai: %s", root)
+		return fmt.Errorf(localize.Text("ярлык не принадлежит установщику Remotai: %s"), root)
 	}
 	if platform == "linux" {
 		entry := filepath.Join(home, ".local", "share", "applications", "ru.remotai.desktop")

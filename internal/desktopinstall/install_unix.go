@@ -15,6 +15,7 @@ import (
 	"regexp"
 	"strings"
 	"syscall"
+	"tgcontrol/internal/localize"
 	"time"
 
 	"golang.org/x/sys/unix"
@@ -43,14 +44,14 @@ func Install(ctx context.Context, source, home, bundledVersion string) (string, 
 
 func install(ctx context.Context, source, home, bundledVersion string, readVersion func(context.Context, string) (string, error)) (string, error) {
 	if !filepath.IsAbs(source) || !filepath.IsAbs(home) || !semverPattern.MatchString(bundledVersion) {
-		return "", errors.New("Установочный пакет повреждён: проверьте версию и скачайте его заново")
+		return "", errors.New(localize.Text("Установочный пакет повреждён: проверьте версию и скачайте его заново"))
 	}
 	dir := filepath.Join(home, ".local", "bin")
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return "", err
 	}
 	if st, err := os.Lstat(dir); err != nil || !st.IsDir() || st.Mode()&os.ModeSymlink != 0 {
-		return "", errors.New("Папка установки Remotai недоступна или заменена ссылкой")
+		return "", errors.New(localize.Text("Папка установки Remotai недоступна или заменена ссылкой"))
 	}
 	fd, err := unix.Open(filepath.Join(dir, ".remotai-desktop.lock"), unix.O_RDWR|unix.O_CREAT|unix.O_NOFOLLOW, 0o600)
 	if err != nil {
@@ -67,7 +68,7 @@ func install(ctx context.Context, source, home, bundledVersion string, readVersi
 		}
 		select {
 		case <-ctx.Done():
-			return "", errors.New("Remotai уже устанавливается. Подождите и откройте приложение ещё раз")
+			return "", errors.New(localize.Text("Remotai уже устанавливается. Подождите и откройте приложение ещё раз"))
 		case <-time.After(50 * time.Millisecond):
 		}
 	}
@@ -75,11 +76,11 @@ func install(ctx context.Context, source, home, bundledVersion string, readVersi
 	target := filepath.Join(dir, "remotai")
 	if st, err := os.Lstat(target); err == nil {
 		if !st.Mode().IsRegular() {
-			return "", fmt.Errorf("Не заменяю посторонний файл или ссылку: %s", target)
+			return "", fmt.Errorf(localize.Text("Не заменяю посторонний файл или ссылку: %s"), target)
 		}
 		installedVersion, err := readVersion(ctx, target)
 		if err != nil {
-			return "", fmt.Errorf("Не удалось проверить установленный Remotai; прежний файл сохранён: %w", err)
+			return "", fmt.Errorf(localize.Text("Не удалось проверить установленный Remotai; прежний файл сохранён: %w"), err)
 		}
 		if !version.IsNewer(bundledVersion, installedVersion) {
 			return target, nil
@@ -94,7 +95,7 @@ func install(ctx context.Context, source, home, bundledVersion string, readVersi
 	defer input.Close()
 	st, err := input.Stat()
 	if err != nil || !st.Mode().IsRegular() || st.Size() == 0 {
-		return "", errors.New("В установочном пакете нет готового приложения")
+		return "", errors.New(localize.Text("В установочном пакете нет готового приложения"))
 	}
 	staged, err := os.CreateTemp(dir, ".remotai-desktop-*")
 	if err != nil {
@@ -115,7 +116,7 @@ func install(ctx context.Context, source, home, bundledVersion string, readVersi
 		return "", err
 	}
 	if got, err := readVersion(ctx, staged.Name()); err != nil || got != bundledVersion {
-		return "", errors.New("Проверка установочного пакета не прошла; прежний Remotai сохранён")
+		return "", errors.New(localize.Text("Проверка установочного пакета не прошла; прежний Remotai сохранён"))
 	}
 	if err := os.Rename(staged.Name(), target); err != nil {
 		return "", err
@@ -132,11 +133,11 @@ func executableVersion(ctx context.Context, path string) (string, error) {
 	procutil.Hidden(cmd)
 	output, err := cmd.Output()
 	if err != nil {
-		return "", errors.New("файл не отвечает на проверку версии")
+		return "", errors.New(localize.Text("файл не отвечает на проверку версии"))
 	}
 	match := releasePattern.FindStringSubmatch(strings.TrimSpace(string(output)))
 	if len(match) != 2 {
-		return "", errors.New("файл не распознан как Remotai")
+		return "", errors.New(localize.Text("файл не распознан как Remotai"))
 	}
 	return match[1], nil
 }
@@ -146,7 +147,7 @@ func Start(exe string, args ...string) error {
 	procutil.Hidden(cmd)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("Не удалось запустить Remotai: %w", err)
+		return fmt.Errorf(localize.Text("Не удалось запустить Remotai: %w"), err)
 	}
 	return cmd.Process.Release()
 }

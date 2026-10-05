@@ -1,10 +1,21 @@
 import AppKit
 import WebKit
 
+private var nativeLanguage: String = {
+    let explicit = ProcessInfo.processInfo.environment["REMOTAI_LANGUAGE"]
+    if explicit == "ru" || explicit == "en" { return explicit! }
+    let saved = UserDefaults.standard.string(forKey: "RemotaiLanguage")
+    if saved == "ru" || saved == "en" { return saved! }
+    return Locale.preferredLanguages.first?.lowercased().hasPrefix("ru") == true ? "ru" : "en"
+}()
+private func localized(_ russian: String, _ english: String) -> String {
+    return nativeLanguage == "ru" ? russian : english
+}
+
 // A window for the shared /miniapp client. The agent owns its own lifetime:
 // closing this window or quitting the UI never terminates it or its PTYs.
 final class RemotaiApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
-    WKNavigationDelegate, WKUIDelegate, WKDownloadDelegate {
+    WKNavigationDelegate, WKUIDelegate, WKDownloadDelegate, WKScriptMessageHandler {
     private var window: NSWindow!
     private var web: WKWebView!
     private var localURL: URL?
@@ -35,6 +46,12 @@ final class RemotaiApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
         window.center()
         let config = WKWebViewConfiguration()
         config.websiteDataStore = .default()
+        config.userContentController.add(self, name: "remotaiLanguage")
+        let languageScript = """
+        (() => { const report = () => window.webkit.messageHandlers.remotaiLanguage.postMessage(document.documentElement.lang);
+          new MutationObserver(report).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] }); report(); })();
+        """
+        config.userContentController.addUserScript(WKUserScript(source: languageScript, injectionTime: .atDocumentEnd, forMainFrameOnly: true))
         web = WKWebView(frame: NSRect(origin: .zero, size: size), configuration: config)
         web.autoresizingMask = [.width, .height]
         web.navigationDelegate = self
@@ -44,33 +61,41 @@ final class RemotaiApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
         startAgent()
     }
 
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard message.name == "remotaiLanguage", let language = message.body as? String,
+              language == "ru" || language == "en", language != nativeLanguage else { return }
+        nativeLanguage = language
+        UserDefaults.standard.set(language, forKey: "RemotaiLanguage")
+        makeMenu()
+    }
+
     private func makeMenu() {
         let menu = NSMenu()
         let appItem = NSMenuItem()
         let appMenu = NSMenu()
-        appMenu.addItem(withTitle: "О Remotai", action: #selector(about), keyEquivalent: "")
+        appMenu.addItem(withTitle: localized("О Remotai", "About Remotai"), action: #selector(about), keyEquivalent: "")
         appMenu.addItem(.separator())
-        appMenu.addItem(withTitle: "Скрыть Remotai", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
-        appMenu.addItem(withTitle: "Закрыть Remotai", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appMenu.addItem(withTitle: localized("Скрыть Remotai", "Hide Remotai"), action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
+        appMenu.addItem(withTitle: localized("Закрыть Remotai", "Quit Remotai"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         appItem.submenu = appMenu
         menu.addItem(appItem)
         let editItem = NSMenuItem()
-        editItem.title = "Правка"
-        let edit = NSMenu(title: "Правка")
-        for (title, action, key) in [("Отменить", "undo:", "z"), ("Вырезать", "cut:", "x"),
-                                     ("Копировать", "copy:", "c"), ("Вставить", "paste:", "v"),
-                                     ("Выделить всё", "selectAll:", "a")] {
+        editItem.title = localized("Правка", "Edit")
+        let edit = NSMenu(title: localized("Правка", "Edit"))
+        for (title, action, key) in [(localized("Отменить", "Undo"), "undo:", "z"), (localized("Вырезать", "Cut"), "cut:", "x"),
+                                     (localized("Копировать", "Copy"), "copy:", "c"), (localized("Вставить", "Paste"), "paste:", "v"),
+                                     (localized("Выделить всё", "Select All"), "selectAll:", "a")] {
             edit.addItem(withTitle: title, action: Selector(action), keyEquivalent: key)
         }
         editItem.submenu = edit
         menu.addItem(editItem)
         let viewItem = NSMenuItem()
-        viewItem.title = "Окно"
-        let view = NSMenu(title: "Окно")
-        view.addItem(withTitle: "Показать Remotai", action: #selector(showWindow), keyEquivalent: "0")
-        view.addItem(withTitle: "Назад", action: #selector(goBack), keyEquivalent: "[")
-        view.addItem(withTitle: "Обновить страницу", action: #selector(reloadPage), keyEquivalent: "r")
-        view.addItem(withTitle: "Закрыть окно", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
+        viewItem.title = localized("Окно", "Window")
+        let view = NSMenu(title: localized("Окно", "Window"))
+        view.addItem(withTitle: localized("Показать Remotai", "Show Remotai"), action: #selector(showWindow), keyEquivalent: "0")
+        view.addItem(withTitle: localized("Назад", "Back"), action: #selector(goBack), keyEquivalent: "[")
+        view.addItem(withTitle: localized("Обновить страницу", "Reload Page"), action: #selector(reloadPage), keyEquivalent: "r")
+        view.addItem(withTitle: localized("Закрыть окно", "Close Window"), action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
         viewItem.submenu = view
         menu.addItem(viewItem)
         NSApp.mainMenu = menu
@@ -79,7 +104,7 @@ final class RemotaiApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
     @objc private func about() {
         let alert = NSAlert()
         alert.messageText = "Remotai"
-        alert.informativeText = "Терминалы продолжают работать при закрытии окна. Чтобы остановить Remotai на этом Mac, откройте «Панель ПК» и выберите «Завершить Remotai на этом компьютере…»."
+        alert.informativeText = localized("Терминалы продолжают работать при закрытии окна. Чтобы остановить Remotai на этом Mac, откройте «Панель ПК» и выберите «Завершить Remotai на этом компьютере…».", "Terminals keep running when you close the window. To stop Remotai on this Mac, open the computer panel and choose “Quit Remotai on this computer…”.")
         alert.beginSheetModal(for: window)
     }
 
@@ -138,7 +163,7 @@ final class RemotaiApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
         stack.orientation = .vertical
         stack.spacing = 20
         if retry {
-            let button = NSButton(title: "Повторить", target: self, action: #selector(startAgent))
+            let button = NSButton(title: localized("Повторить", "Retry"), target: self, action: #selector(startAgent))
             button.bezelStyle = .rounded
             stack.addArrangedSubview(button)
         } else {
@@ -164,10 +189,13 @@ final class RemotaiApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
         starting = true
         loaded = false
         bootstrapCount += 1
-        showStatus("Открываем Remotai…", retry: false)
+        showStatus(localized("Открываем Remotai…", "Opening Remotai…"), retry: false)
         let task = Process()
         task.executableURL = Bundle.main.bundleURL.appendingPathComponent("Contents/MacOS/Remotai")
         task.arguments = ["--desktop-window"]
+        var taskEnvironment = ProcessInfo.processInfo.environment
+        taskEnvironment["REMOTAI_LANGUAGE"] = nativeLanguage
+        task.environment = taskEnvironment
         let output = Pipe()
         task.standardOutput = output
         task.standardError = FileHandle.nullDevice
@@ -183,7 +211,7 @@ final class RemotaiApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
                       let url = URL(string: raw), url.scheme == "http",
                       ["localhost", "127.0.0.1"].contains(url.host ?? ""),
                       url.port != nil, url.user == nil, url.password == nil else {
-                    self.showStatus(result?["error"] ?? "Не удалось запустить Remotai. Повторите открытие приложения.", retry: true)
+                    self.showStatus(result?["error"] ?? localized("Не удалось запустить Remotai. Повторите открытие приложения.", "Could not start Remotai. Open the application again."), retry: true)
                     return
                 }
                 self.localURL = url
@@ -194,7 +222,7 @@ final class RemotaiApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
         do { try task.run() } catch {
             starting = false
             bootstrap = nil
-            showStatus("В приложении не найден Remotai. Заново перенесите его из установочного диска в «Программы».", retry: true)
+            showStatus(localized("В приложении не найден Remotai. Заново перенесите его из установочного диска в «Программы».", "Remotai is missing from the application. Copy it from the installation disk to Applications again."), retry: true)
         }
     }
 
@@ -237,7 +265,7 @@ final class RemotaiApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
         if let message = notice {
             notice = nil
             let alert = NSAlert()
-            alert.messageText = "Обновление Remotai"
+            alert.messageText = localized("Обновление Remotai", "Remotai Update")
             alert.informativeText = message
             alert.beginSheetModal(for: window)
         }
@@ -251,7 +279,7 @@ final class RemotaiApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         if (error as NSError).code == NSURLErrorCancelled { return }
         loaded = false
-        showStatus("Не удалось открыть Remotai. Если приложение обновляется, подождите немного и нажмите «Повторить».", retry: true)
+        showStatus(localized("Не удалось открыть Remotai. Если приложение обновляется, подождите немного и нажмите «Повторить».", "Could not open Remotai. If an update is in progress, wait a moment and click Retry."), retry: true)
     }
 
     func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String,
@@ -265,8 +293,8 @@ final class RemotaiApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
                  initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
         let alert = NSAlert()
         alert.messageText = message
-        alert.addButton(withTitle: "Продолжить")
-        alert.addButton(withTitle: "Отмена")
+        alert.addButton(withTitle: localized("Продолжить", "Continue"))
+        alert.addButton(withTitle: localized("Отмена", "Cancel"))
         alert.beginSheetModal(for: window) { response in completionHandler(response == .alertFirstButtonReturn) }
     }
 
@@ -278,8 +306,8 @@ final class RemotaiApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
         let input = NSTextField(string: defaultText ?? "")
         input.frame = NSRect(x: 0, y: 0, width: 320, height: 24)
         alert.accessoryView = input
-        alert.addButton(withTitle: "Сохранить")
-        alert.addButton(withTitle: "Отмена")
+        alert.addButton(withTitle: localized("Сохранить", "Save"))
+        alert.addButton(withTitle: localized("Отмена", "Cancel"))
         alert.beginSheetModal(for: window) { response in completionHandler(response == .alertFirstButtonReturn ? input.stringValue : nil) }
     }
 
@@ -328,6 +356,8 @@ final class RemotaiApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
             "dom_ready": smokeDOM, "shared_client": web.url?.path.hasPrefix("/miniapp") == true,
             "reopen_count": reopenCount, "bootstrap_count": bootstrapCount,
             "dock_app": NSApp.activationPolicy() == .regular]
+        report["ui_language"] = nativeLanguage
+        report["menu_localized"] = NSApp.mainMenu?.items.dropFirst().first?.title == localized("Правка", "Edit")
         extra.forEach { report[$0] = $1 }
         if let data = try? JSONSerialization.data(withJSONObject: report, options: .prettyPrinted) {
             try? data.write(to: path, options: .atomic)
