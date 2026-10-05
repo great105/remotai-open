@@ -1,3 +1,20 @@
 # Environment variable name followed by the runtime token variable.
 # The source line contains no credential value.
 internal/hermes/process.go:generic-api-key:59
+
+# Reviewed initial-import fixtures, notification storage key and dynamic
+# environment variable names. Commit-bound entries cannot hide new secrets.
+f8704af3ee91b7ef70b09c6134350917a0635c58:apk/src/notifications.ts:generic-api-key:120
+f8704af3ee91b7ef70b09c6134350917a0635c58:e2e/tests/pairing.spec.ts:generic-api-key:47
+f8704af3ee91b7ef70b09c6134350917a0635c58:internal/agentsummary/agentsummary_test.go:generic-api-key:117
+f8704af3ee91b7ef70b09c6134350917a0635c58:internal/agentsummary/agentsummary_test.go:generic-api-key:73
+f8704af3ee91b7ef70b09c6134350917a0635c58:internal/agentsummary/agentsummary_test.go:generic-api-key:78
+f8704af3ee91b7ef70b09c6134350917a0635c58:internal/agentsummary/agentsummary_test.go:jwt:80
+f8704af3ee91b7ef70b09c6134350917a0635c58:internal/agentsummary/agentsummary_test.go:telegram-bot-api-token:79
+f8704af3ee91b7ef70b09c6134350917a0635c58:internal/hermes/process.go:generic-api-key:57
+f8704af3ee91b7ef70b09c6134350917a0635c58:internal/license/stripe_test.go:generic-api-key:13
+f8704af3ee91b7ef70b09c6134350917a0635c58:internal/web/api_openrouter_test.go:generic-api-key:124
+f8704af3ee91b7ef70b09c6134350917a0635c58:internal/web/api_openrouter_test.go:generic-api-key:141
+f8704af3ee91b7ef70b09c6134350917a0635c58:internal/web/api_openrouter_test.go:generic-api-key:180
+f8704af3ee91b7ef70b09c6134350917a0635c58:internal/web/api_openrouter_test.go:generic-api-key:204
+f8704af3ee91b7ef70b09c6134350917a0635c58:internal/web/api_openrouter_test.go:generic-api-key:80
