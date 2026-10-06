@@ -12,7 +12,8 @@
     "build:all": "npm run build:apk",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:release": "node --test scripts/website-files.node.mjs"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
