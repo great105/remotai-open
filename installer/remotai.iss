@@ -78,6 +78,8 @@ russian.StartupGroup=Работа после перезагрузки:
 english.StartupGroup=After a reboot:
 russian.TerminalShortcutComment=Открыть терминал этого компьютера — он будет доступен с других устройств
 english.TerminalShortcutComment=Open a terminal on this computer — also accessible from other devices
+russian.TerminalShortcutName=Терминал
+english.TerminalShortcutName=Terminal
 russian.TerminalShortcutTask=Добавить отдельный ярлык «Remotai Терминал» в меню «Пуск» (для работы с командами)
 english.TerminalShortcutTask=Add a separate Remotai Terminal shortcut to Start (for command-line work)
 russian.AutostartFailed=Remotai установлен, но включить автозапуск не удалось.%n%nОткройте Remotai → «Панель ПК» → «Автозапуск» и попробуйте ещё раз. До этого запускайте приложение вручную после входа в Windows.
@@ -110,7 +112,7 @@ Name: "{autoprograms}\{#InstallerAppName}"; Filename: "{app}\remotai.exe"; IconF
 ; Терминал, сразу подключённый к Remotai-сессии (виден с телефона).
 ; Подпись обязательна: в «Пуске» это вторая строка с тем же именем, и что она
 ; делает, человеку не объяснял никто (аудит онбординга 30.08.2026).
-Name: "{autoprograms}\{#InstallerAppName} Терминал"; Filename: "{app}\remotai.exe"; Parameters: "attach --new"; WorkingDir: "{%USERPROFILE}"; IconFilename: "{app}\remotai.ico"; Comment: "{cm:TerminalShortcutComment}"; Tasks: terminalicon
+Name: "{autoprograms}\{#InstallerAppName} {cm:TerminalShortcutName}"; Filename: "{app}\remotai.exe"; Parameters: "attach --new"; WorkingDir: "{%USERPROFILE}"; IconFilename: "{app}\remotai.ico"; Comment: "{cm:TerminalShortcutComment}"; Tasks: terminalicon
 Name: "{autodesktop}\{#InstallerAppName}"; Filename: "{app}\remotai.exe"; IconFilename: "{app}\remotai.ico"; Tasks: desktopicon
 
 [Run]
