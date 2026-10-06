@@ -18584,3 +18584,42 @@ button.device-chip {
 .tokens-row small { font-size: 12px; color: var(--tg-hint); }
 .tokens-note { margin: 0; font-size: 12px; line-height: 1.4; color: var(--tg-hint); }
 .tokens-error { color: var(--tg-destructive); }
+.pty-computer-scope {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.pty-computer-scope { margin-left: 16px; margin-right: 16px; }
+.pty-computer-scope .btn { flex: 1; min-height: 44px; }
+.pty-computers-page .page-content { padding: 8px 16px; }
+.pty-computers-page .pty-computer-scope { margin-left: 0; margin-right: 0; }
+.pty-computer-folder .cards-grid { padding: 0; }
+.pty-computers-hint { margin: 0 0 16px; color: var(--tg-hint); font-size: 14px; line-height: 1.5; }
+.pty-computers-search {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 20px; color: var(--tg-hint);
+}
+.pty-computers-search { padding: 0 12px; border: 1px solid var(--tg-border); border-radius: var(--radius-sm); background: var(--elev-1); }
+.pty-computers-search:focus-within { border-color: var(--tg-link); }
+.pty-computers-search input { width: 100%; min-width: 0; min-height: 44px; }
+.pty-computers-search input::placeholder { color: var(--tg-hint); }
+.pty-computer-folder { margin-bottom: 24px; }
+.pty-computer-heading {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 56px;
+  padding: 8px 0; margin-bottom: 8px; color: var(--tg-text); background: transparent;
+  border: 0; border-bottom: 1px solid var(--tg-border); text-align: left;
+}
+.pty-computer-heading > svg { flex-shrink: 0; }
+.pty-computer-name { min-width: 0; flex: 1; overflow-wrap: anywhere; font-size: 16px; font-weight: 600; }
+.pty-computer-workspace { display: block; margin-top: 3px; font-size: 12px; font-weight: 400; color: var(--tg-hint); }
+.pty-computer-summary { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; flex-shrink: 0; font-size: 12px; color: var(--tg-hint); }
+.pty-computer-summary .online { color: var(--tg-link); }
+.pty-computer-heading:focus-visible, .pty-computer-card:focus-visible { outline: 2px solid var(--tg-link); outline-offset: 3px; }
+.pty-computer-card { width: 100%; margin: 8px 0; text-align: left; color: var(--tg-text); font-family: inherit; font-size: inherit; }
+.pty-computer-card .pty-card-identity { padding-right: 0; }
+.pty-computer-card:disabled { cursor: default; opacity: .65; }
+.pty-computer-card .pty-card-path { overflow-wrap: anywhere; }
+.pty-computer-group { margin-top: 4px; color: var(--tg-hint); font-size: 12px; overflow-wrap: anywhere; }
+.pty-computers-message { margin: 8px 0 12px; color: var(--tg-hint); font-size: 14px; line-height: 1.5; }
+.pty-computers-message .btn { display: block; margin-top: 8px; min-height: 44px; }
+.pty-computer-open { margin-top: 10px; min-height: 44px; }

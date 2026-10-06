@@ -6,13 +6,16 @@ The format is based on Keep a Changelog.
 
 ## [2.75.15] - 2026-10-06
 
-### Language selection and terminal activity / Язык и активность терминала
+### All computers, language selection and terminal activity / Все компьютеры, язык и активность терминалов
 
+- Terminals has an optional All computers view: each computer is a collapsible folder with its terminal cards. The selected view and collapsed folders are saved. Opening a card selects its computer and access role; Back returns to the combined list.
+- The combined list supports search and shows offline computers, loading failures and empty lists separately. One slow computer does not delay the others.
 - The website language switch stays visible in the phone header. In the application, Language is at the top of More and Settings.
 - Codex automatic goal continuations and new turns started from the computer update terminal activity without requiring Enter through Remotai. A previous completion no longer leaves an active turn marked as ready.
 - The open terminal and its card use the same runtime status. Idle redraws do not mean a new task started; a silent running turn stays working.
 - Переключатель языка виден в шапке мобильного сайта, в начале «Ещё» и настроек приложения.
 - Статус Codex обновляется при автоматическом продолжении цели без ввода через Remotai. Карточка и открытый терминал показывают единое состояние работы.
+- В «Терминалах» можно включить «Все компьютеры»: машины показаны раскрывающимися папками со своими терминалами. Режим и свёрнутые папки сохраняются, есть поиск; карточка открывается на нужной машине.
 
 ## [2.75.14] - 2026-10-06
 

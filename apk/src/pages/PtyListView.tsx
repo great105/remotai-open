@@ -1,5 +1,5 @@
 import { getLocale } from "@tgcontrol/shared";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useLayoutEffect, useState, useCallback, useRef } from "react";
 import type { PointerEvent as ReactPointerEvent, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
@@ -15,6 +15,10 @@ import {
   formatAgoValue, isAgentKind, agentDisplayName, setAgentRegistry, useEscape,
 } from "@tgcontrol/shared";
 import { getMode } from "../config";
+import { AllComputerTerminals } from "./AllComputerTerminals";
+import { ptyListStatus } from "../ptyTerm/listStatus";
+import { ptyStatusIcon } from "../components/PtyStatusIcon";
+import { readTerminalScope, saveTerminalScope } from "../ptyTerm/computerList";
 import { t } from "../i18n";
 import { BottomNav } from "../components/BottomNav";
 import { ProcessBadge, FolderNavSheet } from "@tgcontrol/shared";
@@ -27,7 +31,7 @@ import {
   IconRobot, IconStar, IconClock, IconFolder, IconGroup,
   IconArrow, IconCheck, IconChevron, IconClose, IconDots, IconDownload, IconGrip,
   IconHourglass, IconPencil, IconPlus, IconRefresh, IconSearch, IconSend, IconServer,
-  IconStopwatch, IconUngroup, IconUnlink, IconWarning,
+  IconUngroup, IconUnlink, IconWarning,
 } from "../components/icons";
 import { usePolling } from "../hooks/usePolling";
 import { useBotAvailable } from "../hooks/useBotAvailable";
@@ -159,7 +163,32 @@ function useSheetFocus(open: boolean) {
 }
 
 
+/** Optional aggregate view; loading its folders never switches the active PC. */
 export function PtyListView() {
+  const [allComputers, setAllComputers] = useState(() => getMode() === "cloud" && readTerminalScope());
+  const cloud = getMode() === "cloud";
+  // A launch deep link must keep targeting the currently selected computer.
+  const [params] = useSearchParams();
+  // The single-PC launch handler clears query parameters before opening its
+  // chooser. Keep that view mounted until the launch finishes or scope is chosen.
+  const hasLaunch = ["shell", "cwd", "agent", "new", "ssh", "install"].some(key => params.has(key));
+  const [launchRequested, setLaunchRequested] = useState(hasLaunch);
+  useLayoutEffect(() => { if (hasLaunch) setLaunchRequested(true); }, [hasLaunch]);
+  const aggregate = cloud && allComputers && !launchRequested && !hasLaunch;
+  const scopeControl = cloud ? (
+    <div className="pty-computer-scope" role="group" aria-label={t("pty.computers.scope")}>
+      {([false, true] as const).map(all => (
+        <button key={String(all)} type="button" className={`btn ${aggregate === all ? "btn-primary" : "btn-secondary"}`}
+          aria-pressed={aggregate === all} onClick={() => { setLaunchRequested(false); saveTerminalScope(all); setAllComputers(all); }}>
+          {t(all ? "pty.computers.all" : "pty.computers.current")}
+        </button>
+      ))}
+    </div>
+  ) : null;
+  return aggregate ? <AllComputerTerminals scopeControl={scopeControl} /> : <SingleComputerTerminals scopeControl={scopeControl} />;
+}
+
+function SingleComputerTerminals({ scopeControl }: { scopeControl: ReactNode }) {
   const navigate = useNavigate();
   // «Назад» из терминала возвращает СЮДА, в этот список. Своего дома у SSH-сессии
   // два: карточка сервера в SSH-центре и список терминалов, и раньше экран
@@ -1021,11 +1050,6 @@ export function PtyListView() {
     { preferAgent: true },
   );
 
-  // Величина берётся из общего хелпера (кириллические «с/м/ч/д»): раньше здесь
-  // были латинские «12m / 3h / 2d», и один и тот же терминал подписывался
-  // «вывод 12м назад» на главной и «вывод 12m» в списке.
-  const timeAgo = (ms: number) => t("pty.timeAgo", { value: formatAgoValue(ms, nowMs) });
-
   /** Время последнего успешного ответа — «Данные на 09:41». */
   const clockAt = (ms: number) => new Date(ms).toLocaleTimeString(getLocale(), {
     hour: "2-digit",
@@ -1038,87 +1062,9 @@ export function PtyListView() {
   // набор. Размер задаём пропом (size=11 под .pty-status-icon, styles.css):
   // у SVG величина от font-size не зависит, и без явного числа пилюля распухла
   // бы с 11 до 20 px и разорвала высоту строки карточки.
-  const statusInfo = (s: PtySession): { cls: string; icon: ReactNode; text: string; title?: string } => {
-    const at = s.status_at || s.last_active || s.created;
-    // Спящий агент (ptyTerm/agentSleep.ts): в терминале шелл, и без этой ветки
-    // карточка говорила бы «свободен», хотя беседа ждёт пробуждения.
-    if (s.alive && s.sleep) {
-      return { cls: "idle", icon: "💤", text: t("pty.statusSleeping", { value: timeAgo(s.sleep.at) }) };
-    }
-    const st = s.status || (s.alive ? "idle" : "dead");
-    switch (st) {
-      case "working": {
-        // «Работает» само по себе не отвечает на главный вопрос списка: агент
-        // думает или подвис? Возраст последнего вывода отличает одно от
-        // другого — данные уже приходят в ответе, их просто не показывали.
-        const since = s.last_active || s.status_at || s.created;
-        return since
-          ? { cls: "working", icon: "●", text: t("pty.statusWorkingSince", { value: timeAgo(since) }) }
-          : { cls: "working", icon: "●", text: t("pty.statusWorking") };
-      }
-      case "stalled":
-        // Подвис ≠ ждёт ответа. Янтарь остаётся (это ненормально), но иконка
-        // своя и без пульса: пульсирующий ⏳ означает «агент задал вопрос»,
-        // и подвисший терминал был от него неотличим. Возраст терминала из
-        // текста убран — важна только длительность тишины.
-        return {
-          cls: "stalled",
-          icon: <IconStopwatch size={11} />,
-          // Величина «сырая», без «назад»: подставляя timeAgo, фраза выходила
-          // «работает, но вывода нет 12м назад» — человек спотыкался ровно на
-          // том статусе, ради которого и открыл список.
-          text: t("pty.statusStalledFor", {
-            value: formatAgoValue(s.last_active || s.status_at || s.created, nowMs),
-          }),
-        };
-      case "waiting":
-        return { cls: "waiting", icon: <IconHourglass size={11} />, text: t("pty.statusWaiting"), title: s.hint };
-      case "ready": {
-        // Агент жив, но вопроса нет — «освободился»: без янтарной тревоги и
-        // пульса, иначе каждый закончивший агент выглядит как требующий ответа.
-        //
-        // СО ВРЕМЕНЕМ. «Свободен» был единственным статусом без него: агент,
-        // закончивший пять минут назад сорокаминутную работу, выглядел ровно
-        // так же, как простаивающий месяц, — а это и есть первый вопрос, с
-        // которым сюда возвращаются (аудит путей 29.08.2026).
-        const done = s.status_at || s.last_active || 0;
-        return {
-          cls: "ready",
-          icon: <IconCheck size={11} />,
-          text: done ? t("pty.statusReadySince", { value: timeAgo(done) }) : t("pty.statusReady"),
-        };
-      }
-      case "error":
-        // title — та же строка ошибки, что и на карточке: на десктопе она
-        // читается целиком по наведению, если не влезла в одну строку.
-        return { cls: "error", icon: <IconWarning size={11} />, text: t("pty.statusError", { value: timeAgo(at) }), title: s.hint };
-      case "dead":
-        // Процесс терминала ЖИВ, оборвалась только связь с ним: «завершён» —
-        // неправда, и работа внутри продолжается прямо сейчас.
-        if (s.host_alive) {
-          return { cls: "dead", icon: <IconUnlink size={11} />, text: t("pty.linkLost"), title: t("pty.linkLostHint") };
-        }
-        if (s.died_at) {
-          const left = Math.max(0, Math.ceil((s.died_at + 5 * 60_000 - nowMs) / 60_000));
-          return {
-            cls: "dead",
-            icon: null,
-            text: left > 0 ? t("pty.deadRetained", { n: left }) : t("pty.deadExpiring"),
-            title: s.hint,
-          };
-        }
-        return { cls: "dead", icon: null, text: t("pty.dead"), title: s.hint };
-      default: {
-        // idle. «Готово» у шелла, в котором ничего не запускали, читается как
-        // «задача выполнена» — человек идёт искать результат, которого нет.
-        // Итог работы бывает только там, где работал агент; голый шелл просто
-        // свободен (то же слово, что и у освободившегося агента).
-        const hadAgent = !!lastAgentOf(s) || !!(s.agent_kind && s.agent_kind !== "shell");
-        return hadAgent
-          ? { cls: "idle", icon: <IconCheck size={11} />, text: t("pty.statusDone", { value: timeAgo(at) }) }
-          : { cls: "idle", icon: null, text: t("pty.statusFree", { value: timeAgo(at) }) };
-      }
-    }
+  const statusInfo = (s: PtySession) => {
+    const info = ptyListStatus(s, nowMs, !!lastAgentOf(s));
+    return { ...info, icon: ptyStatusIcon(info.icon) };
   };
 
   // Значок плитки больше не хранится строкой: он выводится из `pinned` и
@@ -1694,6 +1640,7 @@ export function PtyListView() {
       </div>
 
       <div className="page-content">
+        {scopeControl}
         {/* Работа, прерванная перезагрузкой компьютера, — ПЕРВОЙ на экране.
             Человек, включивший компьютер, возвращается именно к ней, а не к
             закладкам и фильтрам: ниже блок оказывался на 419 px, то есть за
