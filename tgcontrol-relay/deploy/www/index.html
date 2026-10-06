@@ -246,10 +246,13 @@
   .nav-links .nav-login { padding:9px 14px; border:1px solid var(--line2); border-radius:10px; color:var(--fg); font-weight:500; white-space:nowrap; }
   .nav-login:hover { border-color:var(--accent); }
   .nav-toggle { display:none; min-height:44px; padding:9px 12px; border:1px solid var(--line2); border-radius:10px; background:var(--panel); color:var(--fg); font:inherit; cursor:pointer; }
+  .nav-links .nav-language { display:none; }
   [hidden] { display:none !important; }
   :focus-visible { outline:2px solid var(--fg); outline-offset:4px; }
   section[id] { scroll-margin-top:100px; }
   @media (max-width:920px) {
+    header .language-link { display:none; }
+    .nav-sections .nav-language { display:block; }
     .nav-links { gap:8px; }
     .nav-toggle { display:inline-flex; align-items:center; }
     .nav-sections { display:none; position:absolute; top:100%; left:0; right:0; padding:12px 24px; background:var(--panel); border-bottom:1px solid var(--line2); box-shadow:0 16px 24px #0006; }
@@ -674,6 +677,7 @@ if (window.__analyticsLive) {
 <span class="ver">v2.75</span>
     <nav class="nav-links" aria-label="Основная навигация">
       <div class="nav-sections" id="nav-sections">
+        <a class="nav-language" href="/en/" hreflang="en" lang="en">English</a>
         <a href="#features">Возможности</a>
         <a href="#cases">Сценарии</a>
         <a href="#pricing">Цены</a>
@@ -1177,7 +1181,7 @@ if (window.__analyticsLive) {
       link.addEventListener('click', function () {
         var wasOpen = menu.getAttribute('aria-expanded') === 'true';
         closeMenu();
-        var target = document.querySelector(link.hash);
+        var target = link.hash ? document.querySelector(link.hash) : null;
         if (wasOpen && target) { target.setAttribute('tabindex', '-1'); target.focus({ preventScroll:true }); }
       });
     });
