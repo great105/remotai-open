@@ -7,20 +7,24 @@ import (
 	"time"
 )
 
-// Codex repaints while idle. A Stop is authoritative until another submitted
-// input; sessions without hooks fall back to changes in visible cells, never
-// cursor/style redraw bytes. Keep this clock separate from transport activity.
+// Codex repaints while idle. Prefer lifecycle metadata from the verified root
+// thread, then notify/submitted input. Sessions without either source fall back
+// to visible-cell changes, never cursor/style redraw bytes.
 type codexActivity struct {
-	mu          sync.Mutex
-	fingerprint uint64
-	sampled     bool
-	changedAt   time.Time
-	submittedAt time.Time
-	stoppedAt   time.Time
-	hooked      bool // a verified foreground Stop has been observed
-	inputCSI    string
-	inputEscape bool
-	inputPaste  bool
+	mu           sync.Mutex
+	fingerprint  uint64
+	sampled      bool
+	changedAt    time.Time
+	submittedAt  time.Time
+	stoppedAt    time.Time
+	stoppedTurn  string
+	runtimeAt    time.Time
+	runtimeState string
+	runtimeTurn  string
+	hooked       bool // a verified foreground Stop has been observed
+	inputCSI     string
+	inputEscape  bool
+	inputPaste   bool
 }
 
 func (a *codexActivity) observe(fp uint64, valid bool, now time.Time) {
@@ -37,18 +41,37 @@ func (a *codexActivity) observe(fp uint64, valid bool, now time.Time) {
 }
 
 func (a *codexActivity) stop(at time.Time) {
+	a.stopTurn(at, "")
+}
+
+func (a *codexActivity) stopTurn(at time.Time, turnID string) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	a.hooked = true
 	// The detector may drain the previous turn's Stop after the next Enter.
 	if !at.Before(a.submittedAt) && at.After(a.stoppedAt) {
 		a.stoppedAt = at
+		a.stoppedTurn = turnID
 	}
+}
+
+func (a *codexActivity) runtime(status string, at time.Time, turnID string) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.runtimeState, a.runtimeAt, a.runtimeTurn = status, at, turnID
 }
 
 func (a *codexActivity) status(now time.Time) (string, time.Time) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
+	// A goal continuation or input from the physical keyboard does not cross
+	// our writer. A newer lifecycle event invalidates the old completion; turn
+	// IDs also prevent a delayed notify from finishing the following turn.
+	if a.runtimeState != "" && !a.runtimeAt.Before(a.submittedAt) &&
+		(a.stoppedAt.IsZero() || a.runtimeAt.After(a.stoppedAt) ||
+			(a.runtimeTurn != "" && a.stoppedTurn != "" && a.runtimeTurn != a.stoppedTurn)) {
+		return a.runtimeState, a.runtimeAt
+	}
 	if !a.stoppedAt.IsZero() {
 		return "ready", a.stoppedAt
 	}

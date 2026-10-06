@@ -9,7 +9,7 @@ export function LanguageSelector({ className }: { className?: string }) {
       aria-label={t("settings.language")}
       value={language}
       onChange={(event) => setLanguage(event.target.value as Language)}
-      style={{ font: "inherit", color: "inherit", background: "var(--tg-bg)", border: "1px solid var(--tg-separator)", borderRadius: 8, padding: "6px 10px", minHeight: 36 }}
+      style={{ font: "inherit", color: "inherit", background: "var(--tg-bg)", border: "1px solid var(--tg-separator)", borderRadius: 8, padding: "6px 10px", minHeight: 44 }}
     >
       <option value="ru">Русский</option>
       <option value="en">English</option>

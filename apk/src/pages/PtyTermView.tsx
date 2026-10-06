@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState, useCallback } from "react
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Terminal } from "@xterm/xterm";
 import { cellAt, measureTerminalCoordinates, visibleRows as clippedRows } from "../ptyTerm/geometry/TerminalCoordinates";
+import { agentActivityBusy } from "../ptyTerm/agentActivity";
 import { compatMouseAfterTap, decayVelocity, releaseVelocity, WheelAccumulator } from "../ptyTerm/gestures/GestureController";
 import { bufferText } from "../ptyTerm/reading/bufferText";
 import { registerReadAnchor } from "../ptyTerm/reading/readAnchor";
@@ -5557,11 +5558,12 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
     else if (boundary.diverged && parserCarryRef.current.hasAnyErase) noteRetentionShadow("generation", "keep", "drop", false);
   }, [state.agent_kind, state.fg_pid, state.fg_started, state.history_retention, state.remote]);
 
-  // Бейдж активности: агент «работает», пока шлёт вывод; «готов» после паузы.
+  // Use the same runtime status as the card; output freshness only supports
+  // old agents that do not expose a status. Idle TUI redraws are not work.
   // Опрос таймером (не в onmessage), чтобы не плодить ререндеры на каждый байт.
   useEffect(() => {
     const stop = foregroundTask(() => {
-      const busy = Date.now() - lastOutputRef.current < 1500;
+      const busy = agentActivityBusy(state.status, Date.now() - lastOutputRef.current < 1500);
       setAgentBusy((prev) => (prev === busy ? prev : busy));
       // Четвёртое состояние: ввод ушёл, а в ответ НИ ОДНОГО байта.
       //
@@ -5581,7 +5583,7 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
       setAgentStuck((prev) => (prev === stuck ? prev : stuck));
     }, 250);
     return stop;
-  }, []);
+  }, [state.status]);
 
   /**
    * Тап по выводу терминала = «хочу писать ПРЯМО СЮДА».

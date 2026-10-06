@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { LanguageSelector, useLanguage } from "@tgcontrol/shared";
 import { t } from "../i18n";
 import { haptic } from "../telegram";
 import { SETTINGS_SECTIONS, settingsPath, type SettingsSection } from "./navigation";
@@ -19,9 +20,14 @@ function SectionIcon({ section }: { section: SettingsSection }) {
 export function SettingsIndex({ cloud, machineName, loading, available, unread }: {
   cloud: boolean; machineName: string; loading: boolean; available: boolean; unread: number;
 }) {
+  useLanguage();
   const navigate = useNavigate();
   return (
     <div className="settings-index">
+      <label className="settings-index-language">
+        <span>{t("settings.language")}</span>
+        <LanguageSelector />
+      </label>
       <nav className="settings-index-list" aria-label={t("settings.nav.sections")}>
         {SETTINGS_SECTIONS.filter(section => cloud || section !== "account").map(section => (
           <button key={section} type="button" className="settings-index-row" data-settings-section={section}

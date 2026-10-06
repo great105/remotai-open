@@ -1,6 +1,6 @@
 import { useState, useEffect, type CSSProperties, type ComponentType } from "react";
 import { useNavigate } from "react-router-dom";
-import { SheetShell, useEscape } from "@tgcontrol/shared";
+import { SheetShell, useEscape, LanguageSelector, useLanguage } from "@tgcontrol/shared";
 import { onConnectionChange } from "../api";
 import { haptic } from "../telegram";
 import { t } from "../i18n";
@@ -174,6 +174,7 @@ const UNREAD_DOT_STYLE: CSSProperties = {
 };
 
 export function BottomNav({ active }: Props) {
+  useLanguage();
   const navigate = useNavigate();
   const [connected, setConnected] = useState(true);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -396,6 +397,10 @@ export function BottomNav({ active }: Props) {
           {"✕"}
         </button>
       </div>
+      <label className="more-sheet-language">
+        <span>{t("settings.language")}</span>
+        <LanguageSelector />
+      </label>
       <label className="more-sheet-search-label" htmlFor="more-feature-search">{t("more.search")}</label>
       <div className="more-sheet-search-row">
         <input

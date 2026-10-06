@@ -36,7 +36,8 @@ const (
 // hookState — что детектор знает о сессии из сигналов агента. Пишет и читает
 // только горутина детектора (как и остальные поля detectorState).
 type hookState struct {
-	tail *agenthooks.Tail
+	tail         *agenthooks.Tail
+	codexRuntime *agenthooks.CodexRuntimeReader
 
 	agent string // чьи хуки слышали: "claude" / "codex"
 	seen  bool   // хуки этой сессии работают — эвристике «закончил» молчать
@@ -229,10 +230,28 @@ func (m *Manager) pollAgentHooks(s *Session, d *detectorState, now time.Time, bc
 		}
 		s.rememberHistorySource(ev)
 		if ev.Agent == "codex" && ev.Kind == agenthooks.KindStop {
-			s.codexActivity.stop(ev.Time())
+			if h.codexRuntime == nil || h.codexRuntime.ConfigHome != ev.ConfigHome || h.codexRuntime.ThreadID != ev.SessionID {
+				h.codexRuntime = agenthooks.NewCodexRuntimeReader(ev.ConfigHome, ev.SessionID, ev.Time())
+				s.codexActivity.runtime("", time.Time{}, "")
+			}
+			s.codexActivity.stopTurn(ev.Time(), ev.TurnID)
 		}
 		if finished, dur := h.apply(ev, d.activityStart); finished {
 			m.hookFinished(s, d, ev.Agent, dur, now, bc)
+		}
+	}
+}
+
+func (m *Manager) pollCodexRuntime(s *Session, d *detectorState, now time.Time) {
+	if r := d.hooks.codexRuntime; r != nil {
+		before, _ := s.codexActivity.status(now)
+		status, at := r.Read(now)
+		s.codexActivity.runtime(status, at, r.TurnID())
+		after, _ := s.codexActivity.status(now)
+		if before != after {
+			if bc := m.broadcaster(); bc != nil {
+				bc.Broadcast(s.UID, map[string]any{"type": "pty_list_changed", "reason": "runtime_status", "pty_id": s.ID})
+			}
 		}
 	}
 }

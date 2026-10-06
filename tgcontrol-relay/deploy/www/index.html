@@ -76,7 +76,7 @@
       "applicationCategory": "UtilitiesApplication",
       "applicationSubCategory": "Remote control for CLI AI agents",
       "operatingSystem": "Windows 10/11, macOS 12+, Linux, Android 7+, iOS, Web",
-        "softwareVersion": "2.75.14",
+        "softwareVersion": "2.75.15",
       "inLanguage": "ru-RU",
       "downloadUrl": "https://remotai.ru/#download",
       "featureList": [
@@ -246,19 +246,26 @@
   .nav-links .nav-login { padding:9px 14px; border:1px solid var(--line2); border-radius:10px; color:var(--fg); font-weight:500; white-space:nowrap; }
   .nav-login:hover { border-color:var(--accent); }
   .nav-toggle { display:none; min-height:44px; padding:9px 12px; border:1px solid var(--line2); border-radius:10px; background:var(--panel); color:var(--fg); font:inherit; cursor:pointer; }
-  .nav-links .nav-language { display:none; }
+  .language-link { display:inline-flex; align-items:center; justify-content:center; min-height:44px; min-width:44px; padding:6px 8px; border:1px solid var(--line2); border-radius:10px; font-size:13px; white-space:nowrap; text-decoration:none; }
+  .language-short { display:none; }
   [hidden] { display:none !important; }
   :focus-visible { outline:2px solid var(--fg); outline-offset:4px; }
   section[id] { scroll-margin-top:100px; }
   @media (max-width:920px) {
-    header .language-link { display:none; }
-    .nav-sections .nav-language { display:block; }
+    header .language-link { display:inline-flex; }
     .nav-links { gap:8px; }
     .nav-toggle { display:inline-flex; align-items:center; }
     .nav-sections { display:none; position:absolute; top:100%; left:0; right:0; padding:12px 24px; background:var(--panel); border-bottom:1px solid var(--line2); box-shadow:0 16px 24px #0006; }
     .nav-sections.is-open { display:grid; grid-template-columns:1fr 1fr; gap:4px 16px; }
     .nav-sections a { min-height:44px; }
     .ver { display:none; }
+  }
+
+  @media (max-width:520px) {
+    header .logo { display:none; }
+    header .nav { gap:8px; }
+    .language-full { display:none; }
+    .language-short { display:inline; }
   }
 
   /* ── Hero ── */
@@ -673,11 +680,10 @@ if (window.__analyticsLive) {
 <header>
   <div class="wrap nav">
     <svg class="logo" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="6" fill="#0d1218"/><path d="M16 6L6 11.5 16 17 26 11.5Z" fill="none" stroke="#2ee6b0" stroke-width="2"/><path d="M6 16l10 5.5L26 16" fill="none" stroke="#2ee6b0" stroke-width="2"/><path d="M6 20.5l10 5.5 10-5.5" fill="none" stroke="#2ee6b0" stroke-width="2"/></svg>
-    <a class="brand" href="/">Remotai</a><a class="language-link" href="/en/" hreflang="en" lang="en" style="margin-left:auto;padding:8px;white-space:nowrap;font-size:13px">English</a>
+    <a class="brand" href="/">Remotai</a><a class="language-link" href="/en/" hreflang="en" lang="en" aria-label="Switch to English"><span class="language-full">English</span><span class="language-short" aria-hidden="true">EN</span></a>
 <span class="ver">v2.75</span>
     <nav class="nav-links" aria-label="Основная навигация">
       <div class="nav-sections" id="nav-sections">
-        <a class="nav-language" href="/en/" hreflang="en" lang="en">English</a>
         <a href="#features">Возможности</a>
         <a href="#cases">Сценарии</a>
         <a href="#pricing">Цены</a>

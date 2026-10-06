@@ -3,6 +3,7 @@ package pty
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -80,7 +81,84 @@ func TestCodexVerifiedNotifyKeepsSilentNextTurnWorking(t *testing.T) {
 	}
 }
 
+func TestCodexRuntimeContinuationOverridesOldAndDelayedNotify(t *testing.T) {
+	var a codexActivity
+	a.stopTurn(hookT0, "turn-1")
+	// Automatic continuation: no bytes pass through Session.Write.
+	started := hookT0.Add(time.Second)
+	a.runtime("working", started, "turn-2")
+	if status, at := a.status(hookT0.Add(21 * time.Minute)); status != "working" || !at.Equal(started) {
+		t.Fatalf("active goal shown ready: %s %v", status, at)
+	}
+	a.stopTurn(hookT0.Add(22*time.Minute), "turn-1") // delayed previous-turn hook
+	if status, _ := a.status(hookT0.Add(23 * time.Minute)); status != "working" {
+		t.Fatal("delayed notify finished current turn")
+	}
+	a.runtime("ready", hookT0.Add(24*time.Minute), "turn-2")
+	if status, _ := a.status(hookT0.Add(25 * time.Minute)); status != "ready" {
+		t.Fatal("runtime completion missing")
+	}
+	// The next submitted input must not inherit a previous runtime completion.
+	a.input([]byte("next\r"), hookT0.Add(26*time.Minute))
+	if status, _ := a.status(hookT0.Add(27 * time.Minute)); status != "working" {
+		t.Fatal("runtime completion survived the next input")
+	}
+}
+
 type codexStatusTestConn struct{ hookTestConn }
+
+func TestCodexRootRuntimeReachesCardWithoutPTYInput(t *testing.T) {
+	fgCache.mu.Lock()
+	if fgCache.entries == nil {
+		fgCache.entries = make(map[uint32]foregroundCacheEntry)
+	}
+	fgCache.entries[42424242] = foregroundCacheEntry{at: time.Now(), info: ProcessInfo{Name: "codex", PID: 42424243}}
+	fgCache.mu.Unlock()
+	t.Cleanup(func() { fgCache.mu.Lock(); delete(fgCache.entries, 42424242); fgCache.mu.Unlock() })
+	home := t.TempDir()
+	thread := "01a0dc89-4bc5-7c52-9eb5-01d4634274ee"
+	dir := filepath.Join(home, "sessions", hookT0.Format("2006"), hookT0.Format("01"), hookT0.Format("02"))
+	if err := os.MkdirAll(dir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(dir, "rollout-fixture-"+thread+".jsonl")
+	meta := `{"type":"session_meta","payload":{"id":"` + thread + `"}}` + "\n"
+	if err := os.WriteFile(path, []byte(meta), 0600); err != nil {
+		t.Fatal(err)
+	}
+	id := fmt.Sprintf("codex-runtime-fixture-%d", time.Now().UnixNano())
+	spool := agenthooks.SpoolPath(id)
+	t.Cleanup(func() { _ = os.Remove(spool) })
+	s := newSession(id, "", "shell", 1, codexStatusTestConn{}, hookT0)
+	bc := &hookRecordBC{}
+	m := &Manager{bc: bc}
+	d := s.evState()
+	m.pollAgentHooks(s, d, hookT0, nil)
+	stop := agenthooks.Event{Agent: "codex", Kind: agenthooks.KindStop, SessionScope: "root", SessionID: thread, ConfigHome: home, TurnID: "turn-1", At: hookT0.Add(time.Second).UnixMilli()}
+	if err := agenthooks.Append(spool, stop); err != nil {
+		t.Fatal(err)
+	}
+	m.pollAgentHooks(s, d, stop.Time(), nil)
+	if info := m.infoOf(s, stop.Time()); info.Status != "ready" {
+		t.Fatal(info.Status)
+	}
+	started := hookT0.Add(2 * time.Second)
+	line := fmt.Sprintf("{\"type\":\"event_msg\",\"timestamp\":%q,\"payload\":{\"type\":\"task_started\",\"turn_id\":\"turn-2\"}}\n", started.Format(time.RFC3339Nano))
+	if err := os.WriteFile(path, []byte(meta+line), 0600); err != nil {
+		t.Fatal(err)
+	}
+	m.pollCodexRuntime(s, d, hookT0.Add(21*time.Minute))
+	if info := m.infoOf(s, hookT0.Add(21*time.Minute)); info.Status != "working" || info.StatusAt != started.UnixMilli() {
+		t.Fatalf("goal card = %s %d", info.Status, info.StatusAt)
+	}
+	if len(bc.events) != 1 || bc.events[0]["type"] != "pty_list_changed" {
+		t.Fatal("card did not get immediate refresh")
+	}
+	m.pollCodexRuntime(s, d, hookT0.Add(22*time.Minute))
+	if len(bc.events) != 1 {
+		t.Fatal("unchanged status emitted repeated events")
+	}
+}
 
 func (codexStatusTestConn) shellPID() uint32 { return 42424242 }
 

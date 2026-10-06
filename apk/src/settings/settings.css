@@ -1,5 +1,6 @@
 .settings-content { max-width: 760px; width: 100%; margin-inline: auto; }
 .settings-index { padding: 12px 16px 24px; }
+.settings-index-language { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; color: var(--tg-text); font-size: 15px; font-weight: 600; }
 .settings-index-list { border: 1px solid var(--tg-border); border-radius: 12px; overflow: hidden; background: var(--tg-secondary-bg); }
 .settings-index-row { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 76px; padding: 16px; background: transparent; border: 0; border-bottom: 1px solid var(--tg-border); color: var(--tg-text); font: inherit; text-align: left; cursor: pointer; }
 .settings-index-row:last-child { border-bottom: 0; }

@@ -983,6 +983,9 @@ func (m *Manager) tickSession(s *Session, now time.Time, bc Broadcaster) {
 	// Сигналы самого агента — раньше экрана: где агент сам говорит «жду
 	// ответа» и «закончил», экран не угадываем (agent_hooks.go).
 	m.pollAgentHooks(s, state, now, bc)
+	if agentKind == "codex" {
+		m.pollCodexRuntime(s, state, now)
+	}
 	sig := m.agentSignals(s, state, agentKind, now)
 	if sig.waiting {
 		m.holdStructuredWait(s, state, tail, sig, now, bc)
