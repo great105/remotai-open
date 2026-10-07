@@ -7,9 +7,13 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Split large, stable vendor libraries into their own long-lived chunks so they
-// stay cached across app deploys. Pulls xterm out of the PtyTermView route chunk.
+// stay cached across app deploys. Keep the search addon separate: shared exports
+// import it eagerly, and grouping it with xterm loads the entire terminal on
+// login/home. WebGL must also retain its existing dynamic-import boundary.
 function manualChunks(id: string): string | undefined {
   if (!id.includes("node_modules")) return;
+  if (id.includes("@xterm/addon-search")) return "xterm-search";
+  if (id.includes("@xterm/addon-webgl")) return "xterm-webgl";
   if (id.includes("@xterm")) return "xterm";
   if (id.includes("@sentry")) return "sentry";
   if (id.includes("react-router")) return "router";

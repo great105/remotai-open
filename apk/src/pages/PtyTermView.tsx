@@ -4521,6 +4521,8 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
 
     const term = new Terminal({
       cursorBlink: true,
+      // SearchAddon uses registerDecoration to highlight and count matches.
+      allowProposedApi: true,
       fontSize,
       lineHeight: 1.2,
       fontFamily: "'Cascadia Code', 'Fira Code', 'Consolas', monospace",

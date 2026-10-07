@@ -1,6 +1,7 @@
 package hermes
 
 import (
+	"bytes"
 	"context"
 	_ "embed"
 	"encoding/json"
@@ -51,14 +52,12 @@ func (m *Manager) Install(ctx context.Context) (err error) {
 		return err
 	}
 	ext := "sh"
-	url := "https://hermes-agent.nousresearch.com/install.sh"
 	if m.opts.goos == "windows" {
 		ext = "ps1"
-		url = "https://hermes-agent.nousresearch.com/install.ps1"
 	}
 	script := filepath.Join(m.root, "bootstrap", "install."+ext)
 	m.progress("Скачиваем официальный установщик Hermes")
-	if err = m.download(ctx, url, script); err != nil {
+	if err = m.downloadInstaller(ctx, script); err != nil {
 		return fmt.Errorf("не удалось скачать официальный установщик Hermes: %w", err)
 	}
 	// A full official install publishes a user-wide launcher and edits PATH or
@@ -112,10 +111,44 @@ func (m *Manager) Install(ctx context.Context) (err error) {
 	return nil
 }
 
-func (m *Manager) download(ctx context.Context, address, dst string) error {
+func (m *Manager) downloadInstaller(ctx context.Context, dst string) error {
+	name := "install.sh"
+	if m.opts.goos == "windows" {
+		name = "install.ps1"
+	}
+	// The website and this exact upstream main path publish the same staged
+	// installer. An HTTP denial or network failure must not strand setup when
+	// the other official source is reachable. Never use third-party mirrors.
+	sources := []struct{ label, address string }{
+		{"официальный сайт Hermes", "https://hermes-agent.nousresearch.com/" + name},
+		{"официальный GitHub Hermes", "https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/" + name},
+	}
+	var failures []string
+	for i, source := range sources {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		if i > 0 {
+			m.progress("Скачиваем установщик из официального GitHub Hermes")
+		}
+		data, err := m.download(ctx, source.address)
+		if err == nil {
+			// Only replace the bootstrap after a complete successful download.
+			// A local write failure cannot be repaired by another HTTP request.
+			return os.WriteFile(dst, data, 0600)
+		}
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		failures = append(failures, source.label+": "+err.Error())
+	}
+	return errors.New(strings.Join(failures, "; "))
+}
+
+func (m *Manager) download(ctx context.Context, address string) ([]byte, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, address, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	req.Header.Set("User-Agent", "Remotai-Hermes")
 	client := *m.opts.HTTPClient
@@ -130,20 +163,27 @@ func (m *Manager) download(ctx context.Context, address, dst string) error {
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return errors.New("официальный сервер установки недоступен")
+		return nil, errors.New("официальный сервер установки недоступен")
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return fmt.Errorf("официальный сервер ответил HTTP %d", resp.StatusCode)
+		return nil, fmt.Errorf("официальный сервер ответил HTTP %d", resp.StatusCode)
 	}
 	data, err := io.ReadAll(io.LimitReader(resp.Body, 2*1024*1024+1))
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if len(data) == 0 || len(data) > 2*1024*1024 {
-		return errors.New("неверный размер установщика")
+		return nil, errors.New("неверный размер установщика")
 	}
-	return os.WriteFile(dst, data, 0600)
+	// Some proxies and access-denial pages return HTTP 200. Do not save such a
+	// page as executable code; try the other official source instead.
+	mediaType := strings.ToLower(strings.TrimSpace(strings.SplitN(resp.Header.Get("Content-Type"), ";", 2)[0]))
+	text := bytes.ToLower(bytes.TrimSpace(bytes.TrimPrefix(data, []byte{0xef, 0xbb, 0xbf})))
+	if mediaType == "text/html" || mediaType == "application/xhtml+xml" || bytes.HasPrefix(text, []byte("<!doctype html")) || bytes.HasPrefix(text, []byte("<html")) {
+		return nil, errors.New("официальный сервер вернул страницу вместо установщика")
+	}
+	return data, nil
 }
 
 func (m *Manager) installStage(ctx context.Context, script, stage string, commit ...string) error {

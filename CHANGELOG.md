@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog.
 
+## [2.75.16] - 2026-10-07
+
+### Hermes installation and terminal performance / Установка Hermes и скорость терминала
+
+- Hermes setup retries the installer download from the official NousResearch GitHub repository when the official website denies access, is unavailable or returns an invalid response. Failed downloads do not replace the bootstrap script; cancellation stops further requests.
+- Reduced the JavaScript required at startup by about 24% compressed by loading the terminal engine and WebGL when opening a terminal.
+- Fixed output search failing when highlighting and counting matches in the terminal.
+- Подготовка Hermes использует официальный GitHub, если основной сервер отвечает HTTP 403 или недоступен. Страницы отказа не сохраняются вместо установщика.
+- Стартовая загрузка JavaScript уменьшена примерно на 24% в сжатом виде. Исправлена ошибка поиска и подсветки совпадений в выводе терминала.
+
 ## [2.75.15] - 2026-10-06
 
 ### All computers, language selection and terminal activity / Все компьютеры, язык и активность терминалов
