@@ -102,6 +102,7 @@ import {
 } from "../ptyTerm/rules";
 // Код привязки сервера, замеченный в выводе (`remotai pair` на новом сервере).
 import { pairCodeInOutput } from "../ptyTerm/pairOffer";
+import { scrollLocalBottom } from "../ptyTerm/localBottom";
 // Защита истории прокрутки от «ESC[3J» (агент стирает её при перерисовке).
 import {
   EMPTY_BYTES, eraseActionFor, eraseChainEnds, eraseRoute, generationDropsPendingErase, keepPendingErase, keepPendingScrollbackErase,
@@ -7401,7 +7402,7 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
     }
     const action = edgePlan(destination.decision, up);
     if (action.kind === "local") {
-      if (up) term.scrollToTop(); else term.scrollToBottom();
+      if (up) term.scrollToTop(); else scrollLocalBottom(term);
       if (!up) setAltScrolledUp(false);
       else if (scrollOverrideRef.current === "auto") readingPinRef.current = { executor: "local", channel: "viewport" };
       return true;
