@@ -138,7 +138,10 @@ func (s *Service) Status(uid ...int64) Status {
 	defer s.mu.Unlock()
 	exe := s.executableLocked()
 	status := Status{Available: exe != "", Executable: exe, Platform: runtime.GOOS, MaxBytes: MaxAudioBytes}
-	if len(uid)>0 && s.active!=nil && s.active.uid==uid[0] { job:=*s.active; status.Active=&job }
+	if len(uid) > 0 && s.active != nil && s.active.uid == uid[0] {
+		job := *s.active
+		status.Active = &job
+	}
 	return status
 }
 
