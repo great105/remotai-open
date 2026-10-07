@@ -1,12 +1,26 @@
 import { describe, expect, it } from "vitest";
 import type { PtySessionInfo } from "@tgcontrol/shared";
 import type { CloudDevice } from "../cloud/api";
-import { computerTerminalKey, loadComputerTerminals, matchingComputerTerminals, orderComputerTerminals } from "./computerList";
+import { computerIds, computerListHome, computerTerminalKey, filterComputerTerminals, loadComputerTerminals, matchingComputerTerminals, orderComputerTerminals } from "./computerList";
 
 const device = (id: string, online = true) => ({ id, name: id, hostname: id, workspace_name: "Team", online }) as CloudDevice;
 const session = (id: string, fields: Partial<PtySessionInfo> = {}) => ({ id, name: id, created: 1, cwd: "/project", ...fields }) as PtySessionInfo;
 
 describe("combined computer terminals", () => {
+  it("accepts only unique computer IDs from stored preferences", () => {
+    expect(computerIds(["work", null, "", " ", 4, "work", "linux"])).toEqual(["work", "linux"]);
+    expect(computerIds({ work: true })).toEqual([]);
+  });
+  it("encodes the exact home computer for return navigation", () => {
+    const home = new URL(computerListHome("pc/a&b"), "https://fixture.invalid");
+    expect(home.pathname).toBe("/pty");
+    expect(home.searchParams.get("computer")).toBe("pc/a&b");
+  });
+  it("applies status filters to remote terminals and includes stalled work", () => {
+    const sessions = [session("stalled", { status: "stalled" }), session("working", { status: "working" }), session("waiting", { status: "waiting" })];
+    expect(filterComputerTerminals(sessions, "working").map(s => s.id)).toEqual(["stalled", "working"]);
+    expect(filterComputerTerminals(sessions, "waiting").map(s => s.id)).toEqual(["waiting"]);
+  });
   it("keeps colliding local ids separate, including delimiter-containing ids", () => {
     expect(computerTerminalKey("a:b", "c")).not.toBe(computerTerminalKey("a", "b:c"));
     expect(computerTerminalKey("work", "same")).not.toBe(computerTerminalKey("home", "same"));

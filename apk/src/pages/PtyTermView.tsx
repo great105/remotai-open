@@ -21,6 +21,7 @@ import { enterIntent, reviewedInput, sameInputTarget, transmitInput } from "../p
 import type { InputTarget } from "../ptyTerm/input/InputController";
 import { appendSessionDraft, draftOwner } from "../ptyTerm/input/SessionDraft";
 import { useSessionDraft } from "../ptyTerm/input/useSessionDraft";
+import { VoiceInputSheet, VoiceIcon } from "../transcription/VoiceInputSheet";
 import { foregroundTask, silenceRecheckDelay, silenceVerdict, thawedAt } from "../ptyTerm/runtime/ForegroundTask";
 import {
   keyboardPeek, lastInkRow, observeNativeKeyboard, OCCLUSION_BUSY_RECHECK_MS, OCCLUSION_IDLE, OCCLUSION_SYNC_RECHECK_MS,
@@ -744,6 +745,8 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
    * под одной кнопкой.
    */
   const [attachMenuOpen, setAttachMenuOpen] = useState(false);
+  const [voiceOpen, setVoiceOpen] = useState(false);
+  useEffect(() => setVoiceOpen(false), [terminalContext, id]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -8298,23 +8301,11 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
       setSavingHost(false);
     }
   };
-  /**
-   * Скрепка. Если снимать нечего (нет экрана у компьютера) или мы смотрим на
-   * SSH-сервер, где нашего пути нет, — выбирать не из чего, и лишний тап был бы
-   * платой ни за что: ведём себя как раньше, сразу.
-   */
+  // Voice input remains useful on a headless computer and in an SSH terminal.
   const canScreenshot = hasDisplay && !isSsh;
   const handleAttachClick = () => {
     haptic();
-    if (isSsh) {
-      void openSshFiles();
-      return;
-    }
-    if (canScreenshot) {
-      setAttachMenuOpen(true);
-      return;
-    }
-    fileInputRef.current?.click();
+    setAttachMenuOpen(true);
   };
 
   // Navigation owns existing header space, not output or keypad pixels.
@@ -9442,17 +9433,21 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="remote-quick-section">{t("pty.attachMenuTitle")}</div>
+            <button type="button" className="remote-quick-row" onClick={() => { setAttachMenuOpen(false); setVoiceOpen(true); }}>
+              <span className="remote-quick-row-icon"><VoiceIcon /></span>
+              <span className="remote-quick-row-label">{t("voice.title")}<small className="pty-attach-row-hint">{t("voice.menuHint")}</small></span>
+            </button>
             <button
               className="remote-quick-row"
-              onClick={() => { setAttachMenuOpen(false); fileInputRef.current?.click(); }}
+              onClick={() => { setAttachMenuOpen(false); if (isSsh) void openSshFiles(); else fileInputRef.current?.click(); }}
             >
               <span className="remote-quick-row-icon" aria-hidden>{"📎"}</span>
               <span className="remote-quick-row-label">
-                {t("pty.attachFile")}
+                {isSsh ? t("files.title") : t("pty.attachFile")}
                 <small className="pty-attach-row-hint">{t("pty.attachFileHint")}</small>
               </span>
             </button>
-            <button
+            {canScreenshot && <button
               className="remote-quick-row"
               onClick={() => { setAttachMenuOpen(false); void handleScreenshotToAgent(); }}
             >
@@ -9461,10 +9456,12 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
                 {t("pty.attachScreenshot")}
                 <small className="pty-attach-row-hint">{t("pty.screenshotHint")}</small>
               </span>
-            </button>
+            </button>}
           </div>
         </div>
       )}
+
+      {voiceOpen && <VoiceInputSheet key={draftOwner(terminalContext, id ?? "")} onClose={() => setVoiceOpen(false)} onInsert={text => appendSessionDraft(draftOwner(terminalContext, id ?? ""), text)} />}
 
       {composerOpen && (
         <div className="modal-overlay pty-composer-overlay" onClick={() => setComposerOpen(false)}>

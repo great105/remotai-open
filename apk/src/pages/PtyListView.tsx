@@ -1,7 +1,7 @@
 import { getLocale } from "@tgcontrol/shared";
 import { useEffect, useLayoutEffect, useState, useCallback, useRef } from "react";
-import type { PointerEvent as ReactPointerEvent, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import type { PointerEvent as ReactPointerEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import {
   listPtySessions, createPtySession, closePtySession, closeDeadPtySessions, reattachPtySession,
   getBookmarks, getRecentFolders, renamePty, setPtyPlacements, setPtyFolders,
@@ -14,11 +14,14 @@ import {
   promptDialog, useToast, useLoadState, OfflineState, mapApiError, ptyDisplayTitle,
   formatAgoValue, isAgentKind, agentDisplayName, setAgentRegistry, useEscape,
 } from "@tgcontrol/shared";
-import { getMode } from "../config";
-import { AllComputerTerminals } from "./AllComputerTerminals";
+import { getMode, getSelectedDeviceId } from "../config";
+import { ComputerTerminalFolders } from "./ComputerTerminalFolders";
+import { listDevices } from "../cloud/api";
+import type { CloudDevice } from "../cloud/api";
+import { onSelectedDeviceChange, selectDevice } from "../devices";
 import { ptyListStatus } from "../ptyTerm/listStatus";
 import { ptyStatusIcon } from "../components/PtyStatusIcon";
-import { readTerminalScope, saveTerminalScope } from "../ptyTerm/computerList";
+import { readPinnedComputers, savePinnedComputers } from "../ptyTerm/computerList";
 import { t } from "../i18n";
 import { BottomNav } from "../components/BottomNav";
 import { ProcessBadge, FolderNavSheet } from "@tgcontrol/shared";
@@ -163,32 +166,49 @@ function useSheetFocus(open: boolean) {
 }
 
 
-/** Optional aggregate view; loading its folders never switches the active PC. */
+/** A remote terminal returns to the same computer's list that opened it. */
 export function PtyListView() {
-  const [allComputers, setAllComputers] = useState(() => getMode() === "cloud" && readTerminalScope());
+  const [selectedId, setSelectedId] = useState(getSelectedDeviceId);
+  const [restoreError, setRestoreError] = useState("");
+  const [restoreAttempt, setRestoreAttempt] = useState(0);
   const cloud = getMode() === "cloud";
-  // A launch deep link must keep targeting the currently selected computer.
-  const [params] = useSearchParams();
-  // The single-PC launch handler clears query parameters before opening its
-  // chooser. Keep that view mounted until the launch finishes or scope is chosen.
-  const hasLaunch = ["shell", "cwd", "agent", "new", "ssh", "install"].some(key => params.has(key));
-  const [launchRequested, setLaunchRequested] = useState(hasLaunch);
-  useLayoutEffect(() => { if (hasLaunch) setLaunchRequested(true); }, [hasLaunch]);
-  const aggregate = cloud && allComputers && !launchRequested && !hasLaunch;
-  const scopeControl = cloud ? (
-    <div className="pty-computer-scope" role="group" aria-label={t("pty.computers.scope")}>
-      {([false, true] as const).map(all => (
-        <button key={String(all)} type="button" className={`btn ${aggregate === all ? "btn-primary" : "btn-secondary"}`}
-          aria-pressed={aggregate === all} onClick={() => { setLaunchRequested(false); saveTerminalScope(all); setAllComputers(all); }}>
-          {t(all ? "pty.computers.all" : "pty.computers.current")}
-        </button>
-      ))}
-    </div>
-  ) : null;
-  return aggregate ? <AllComputerTerminals scopeControl={scopeControl} /> : <SingleComputerTerminals scopeControl={scopeControl} />;
+  const location = useLocation();
+  const [params, setParams] = useSearchParams();
+  const homeId = cloud ? params.get("computer") : null;
+  useLayoutEffect(() => onSelectedDeviceChange(setSelectedId), []);
+  useLayoutEffect(() => {
+    if (!homeId || homeId === getSelectedDeviceId()) return;
+    setRestoreError("");
+    const saved = location.state?.terminalComputer as CloudDevice | undefined;
+    if (saved?.id === homeId) { selectDevice(homeId, saved); return; }
+    let cancelled = false;
+    void listDevices().then(list => {
+      if (cancelled) return;
+      const device = list.devices.find(item => item.id === homeId);
+      if (device) selectDevice(homeId, device);
+      else setRestoreError(t("pty.computers.missing"));
+    }).catch(error => { if (!cancelled) setRestoreError(mapApiError(error)); });
+    return () => { cancelled = true; };
+    // Restore only on entering this history entry. An explicit outgoing device
+    // selection must not be undone while its navigation is still being rendered.
+  }, [homeId, location.key, location.state, restoreAttempt]);
+  useEffect(() => {
+    if (!homeId || homeId !== getSelectedDeviceId()) return;
+    const next = new URLSearchParams(params);
+    next.delete("computer");
+    setParams(next, { replace: true });
+  }, [homeId, selectedId, setParams]);
+  if (homeId && homeId !== selectedId) return <div className="page">
+    <div className="page-header"><h1>{t("pty.title")}</h1></div>
+    <div className="page-content"><div className="empty" role="status">
+      <p>{restoreError || t("infra.loading")}</p>
+      {restoreError && <button className="btn btn-secondary" onClick={() => setRestoreAttempt(value => value + 1)}>{t("offline.retry")}</button>}
+    </div></div><BottomNav active="terminal" />
+  </div>;
+  return <SingleComputerTerminals key={selectedId || "local"} />;
 }
 
-function SingleComputerTerminals({ scopeControl }: { scopeControl: ReactNode }) {
+function SingleComputerTerminals() {
   const navigate = useNavigate();
   // «Назад» из терминала возвращает СЮДА, в этот список. Своего дома у SSH-сессии
   // два: карточка сервера в SSH-центре и список терминалов, и раньше экран
@@ -221,6 +241,12 @@ function SingleComputerTerminals({ scopeControl }: { scopeControl: ReactNode }) 
   };
   const [searchParams, setSearchParams] = useSearchParams();
   const { toastSuccess, toastError, toast } = useToast();
+  const cloud = getMode() === "cloud";
+  const [pinnedComputers, setPinnedComputers] = useState(readPinnedComputers);
+  const [computerPickerOpen, setComputerPickerOpen] = useState(false);
+  const otherComputerCount = cloud ? pinnedComputers.filter(id => id !== getSelectedDeviceId()).length : 0;
+  const changePinnedComputers = useCallback((ids: string[]) => { savePinnedComputers(ids); setPinnedComputers(ids); }, []);
+  const closeComputerPicker = useCallback(() => setComputerPickerOpen(false), []);
   // Единое состояние загрузки: различает «пусто» и «ПК не в сети».
   const load = useLoadState();
   const { succeed, fail } = load;
@@ -364,7 +390,7 @@ function SingleComputerTerminals({ scopeControl }: { scopeControl: ReactNode }) 
   // ⚠ `!renameId` в списке условий обязателен: пока человек печатает имя,
   // список перерисовывать нельзя — ответ опроса приносит СТАРОЕ имя и переставляет
   // карточки, а под правкой это означает потерянный ввод.
-  const pollEnabled = !folderOpen && !showHelp && !menuSession && !moveRequest && !tileMenu && !folderMenu && !renameId;
+  const pollEnabled = !folderOpen && !computerPickerOpen && !showHelp && !menuSession && !moveRequest && !tileMenu && !folderMenu && !renameId;
   // Опрос — страховка, а не основной канал. С 2.61.17 изменения приходят
   // событиями по уже открытому сокету: статусы агента (`pty_event`) и жизнь
   // списка (`pty_list_changed` — создан, закрыт, переименован). Раньше каждые
@@ -1628,7 +1654,7 @@ function SingleComputerTerminals({ scopeControl }: { scopeControl: ReactNode }) 
     : -1;
 
   return (
-    <div className="page">
+    <div className={`page${otherComputerCount ? " pty-page-has-computers" : ""}`}>
       <div className="page-header">
         <div className="page-header-context">
           <h1>{t("pty.title")}</h1>
@@ -1640,7 +1666,6 @@ function SingleComputerTerminals({ scopeControl }: { scopeControl: ReactNode }) 
       </div>
 
       <div className="page-content">
-        {scopeControl}
         {/* Работа, прерванная перезагрузкой компьютера, — ПЕРВОЙ на экране.
             Человек, включивший компьютер, возвращается именно к ней, а не к
             закладкам и фильтрам: ниже блок оказывался на 419 px, то есть за
@@ -1758,9 +1783,9 @@ function SingleComputerTerminals({ scopeControl }: { scopeControl: ReactNode }) 
             день) искать по имени нечего, а вот «у кого из них вопрос» — тот же
             вопрос, что и с двадцатью. Поиск по-прежнему появляется с девятого:
             строка ввода в шапке при пяти карточках только отнимает место. */}
-        {!toolsCollapsed && sessions.length > 2 && (
+        {!toolsCollapsed && (sessions.length > 2 || otherComputerCount > 0) && (
           <section className="pty-list-tools" aria-label={t("pty.listTools")}>
-            {sessions.length > 8 && (
+            {(sessions.length > 8 || otherComputerCount > 0) && (
               <label className="pty-list-search">
                 <span aria-hidden="true"><IconSearch size={16} /></span>
                 <input
@@ -1946,6 +1971,7 @@ function SingleComputerTerminals({ scopeControl }: { scopeControl: ReactNode }) 
                   {t("pty.newFolder")}
                 </button>
               )}
+              {cloud && <button className="btn btn-secondary" onClick={() => setComputerPickerOpen(true)}>{t("pty.computers.newFolder")}</button>}
             </div>
           </div>
         ) : filtersActive && visibleSessions.length === 0 ? (
@@ -1954,7 +1980,7 @@ function SingleComputerTerminals({ scopeControl }: { scopeControl: ReactNode }) 
                 эмодзи, — линейная лупа встаёт на его место без потери цвета
                 (в отличие от ⚠️ выше, см. комментарий там). */}
             <div className="empty-icon"><IconSearch size={44} /></div>
-            <div className="empty-title">{t("pty.noMatches")}</div>
+            <div className="empty-title">{t(otherComputerCount ? "pty.computers.noLocalMatches" : "pty.noMatches")}</div>
             <button
               className="btn btn-secondary"
               onClick={() => { setQuery(""); setStatusFilter("all"); }}
@@ -2194,6 +2220,9 @@ function SingleComputerTerminals({ scopeControl }: { scopeControl: ReactNode }) 
           </div>
         )}
 
+        {cloud && <ComputerTerminalFolders pinned={pinnedComputers} onPinnedChange={changePinnedComputers}
+          pickerOpen={computerPickerOpen} onPickerClose={closeComputerPicker} query={query} statusFilter={statusFilter} />}
+
         {/* Ряд переносится по строкам: инлайновый flex без wrap на 320–390px
             обрезал последнюю кнопку по краю экрана (body { overflow-x: hidden }),
             и убрать завершённые терминалы с телефона было нечем. «Закрыть
@@ -2224,8 +2253,10 @@ function SingleComputerTerminals({ scopeControl }: { scopeControl: ReactNode }) 
                 {t("pty.newFolder")}
               </button>
             )}
+            {cloud && <button className="btn btn-secondary" onClick={() => setComputerPickerOpen(true)}>{t("pty.computers.newFolder")}</button>}
           </div>
         )}
+        {cloud && sessions.length === 0 && (offline || load.phase === "error") && <div className="pty-list-actions"><button className="btn btn-secondary" onClick={() => setComputerPickerOpen(true)}>{t("pty.computers.newFolder")}</button></div>}
       </div>
 
       {/* Шторка объявлена диалогом (role + aria-modal + ловушка фокуса), как

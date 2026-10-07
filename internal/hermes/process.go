@@ -41,15 +41,24 @@ func (m *Manager) environment(install bool, token string) []string {
 	// provider keys, alternate profiles and install overrides would silently
 	// adopt another user's account or code, so do not forward them.
 	out := make([]string, 0, len(os.Environ())+10)
+	nativeBuild := m.needsNativeBuildTools()
 	for _, pair := range os.Environ() {
 		key, _, _ := strings.Cut(pair, "=")
 		upper := strings.ToUpper(key)
+		if nativeBuild && (upper == "CARGO_HOME" || upper == "RUSTUP_HOME" || upper == "RUSTUP_TOOLCHAIN" || upper == "OPENSSL_DIR" || upper == "OPENSSL_STATIC" || upper == "PATH") {
+			continue
+		}
 		if strings.HasPrefix(upper, "HERMES_") || strings.HasPrefix(upper, "GIT_CONFIG_") || upper == "GIT_ASKPASS" || upper == "GIT_SSH_COMMAND" || upper == "GIT_TERMINAL_PROMPT" || strings.HasSuffix(upper, "_API_KEY") || strings.HasSuffix(upper, "_TOKEN") || upper == "API_KEY" || upper == "GOOGLE_APPLICATION_CREDENTIALS" || upper == "PYTHONPATH" || upper == "PYTHONHOME" || upper == "PYTHONUNBUFFERED" || upper == "PYTHONUTF8" || upper == "VIRTUAL_ENV" {
 			continue
 		}
 		out = append(out, pair)
 	}
 	out = append(out, "HERMES_HOME="+m.home, "HERMES_RUNTIME_DIR="+filepath.Join(m.root, "toolchain", "store"), "PYTHONUNBUFFERED=1", "PYTHONUTF8=1")
+	if nativeBuild {
+		toolchain := filepath.Join(m.root, "toolchain")
+		cargo := filepath.Join(toolchain, "cargo")
+		out = append(out, "CARGO_HOME="+cargo, "RUSTUP_HOME="+filepath.Join(toolchain, "rustup"), "RUSTUP_TOOLCHAIN=1.99.0", "OPENSSL_DIR="+filepath.Join(toolchain, "openssl-3.5.9"), "OPENSSL_STATIC=1", "PATH="+filepath.Join(cargo, "bin")+string(os.PathListSeparator)+os.Getenv("PATH"))
+	}
 	// Windows' Git defaults still reject long upstream documentation filenames.
 	// This override belongs to the child process, never the user's Git config.
 	out = append(out, "GIT_CONFIG_COUNT=1", "GIT_CONFIG_KEY_0=core.longpaths", "GIT_CONFIG_VALUE_0=true", "GIT_TERMINAL_PROMPT=0", "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL="+filepath.Join(m.root, "toolchain", "gitconfig"))

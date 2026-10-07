@@ -1,4 +1,4 @@
-export const SETTINGS_SECTIONS = ["computer", "notifications", "connection", "account", "help", "advanced"] as const;
+export const SETTINGS_SECTIONS = ["computer", "local", "notifications", "connection", "account", "help", "advanced"] as const;
 export type SettingsSection = typeof SETTINGS_SECTIONS[number];
 
 /** Unknown bookmarks fall back to the index; old account links still open logins. */

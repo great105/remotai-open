@@ -64,7 +64,26 @@ elif mode == "complete":
     from pm.environments import activate_dependencies
     activate_dependencies(root)
     from hermes_cli.source_completion import complete_source_checkout
-    raise SystemExit(0 if complete_source_checkout(root, desktop=False, assume_yes=True) else 1)
+    followups = []
+    ok = complete_source_checkout(root, desktop=False, assume_yes=True, followups=followups)
+    if not ok:
+        # Only owned, fixed identifiers leave the private installer log. The
+        # upstream reasons can contain URLs, account paths and credentials.
+        steps = sorted({name for name, _ in followups if name in {"launchers", "build", "maintenance"}})
+        reasons = " ".join(str(reason) for _, reason in followups).lower()
+        kind = "unknown"
+        for candidate, markers in [
+            ("certificate", ("certificate_verify_failed", "unable_to_verify_leaf_signature", "self signed certificate")),
+            ("disk", ("no space left", "enospc", "disk full")),
+            ("memory", ("heap out of memory", "out of memory", "cannot allocate memory")),
+            ("permission", ("permission denied", "eacces", "access is denied")),
+            ("network", ("enotfound", "eai_again", "econnreset", "econnrefused", "etimedout", "connection timed out", "http 403", "http 429")),
+        ]:
+            if any(marker in reasons for marker in markers):
+                kind = candidate
+                break
+        print("REMOTAI_HERMES_COMPLETE " + json.dumps({"steps": steps, "kind": kind}))
+    raise SystemExit(0 if ok else 1)
 elif mode == "cli":
     sys.argv = [str(root / ".hermes/bin/hermes"), *args]
     # PM recovery can swap interpreters. Re-enter this adapter rather than the

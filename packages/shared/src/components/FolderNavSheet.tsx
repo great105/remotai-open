@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import {
   getQuickPaths, listFiles, getBookmarks, getRecentFolders,
   addBookmark, removeBookmark, getProjects, mkDir,
@@ -12,8 +12,21 @@ import { folderLabel } from "../folderLabel";
 import { isPcOffline, mapApiError } from "../api-core";
 import { OfflineState } from "./OfflineState";
 import { SheetShell } from "./DialogHost";
+import { useLanguage } from "../locale";
+import { selectFolders, type FolderSort, type FolderTab } from "../folderList";
 
-type Tab = "fav" | "recent" | "projects" | "browse";
+type Tab = FolderTab;
+
+function initialSorts(): Record<Tab, FolderSort> {
+  const sorts: Record<Tab, FolderSort> = { fav: "name-asc", recent: "date-desc", projects: "date-desc", browse: "name-asc" };
+  for (const tab of Object.keys(sorts) as Tab[]) {
+    try {
+      const saved = localStorage.getItem(`remotai.folderSort.${tab}`);
+      if (saved === "name-asc" || saved === "name-desc" || (tab !== "fav" && saved === "date-desc")) sorts[tab] = saved;
+    } catch { /* Private storage: keep the default. */ }
+  }
+  return sorts;
+}
 
 interface Props {
   open: boolean;
@@ -69,9 +82,17 @@ const quickIcons: Record<string, string> = {
 };
 
 export function FolderNavSheet(props: Props) {
+  const language = useLanguage();
+  const locale = language === "ru" ? "ru-RU" : "en-US";
   const { toast, toastSuccess, toastError } = useToast();
   const [tab, setTab] = useState<Tab>(props.initialTab || "fav");
   const [query, setQuery] = useState("");
+  const [sorts, setSorts] = useState(initialSorts);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [hideDotFolders, setHideDotFolders] = useState(true);
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [searchPath, setSearchPath] = useState(true);
+  const filtersId = useId();
   const [showNewFolder, setShowNewFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
 
@@ -90,6 +111,8 @@ export function FolderNavSheet(props: Props) {
   const [browseItems, setBrowseItems] = useState<FileItem[]>([]);
   const [browseParent, setBrowseParent] = useState<string | null>(null);
   const [browseLoading, setBrowseLoading] = useState(false);
+  const [browseTruncated, setBrowseTruncated] = useState(false);
+  const browseRequest = useRef(0);
   const [pathInput, setPathInput] = useState("");
   const [showPathInput, setShowPathInput] = useState(false);
 
@@ -135,8 +158,16 @@ export function FolderNavSheet(props: Props) {
   useEffect(() => {
     if (!props.open) return;
     setTab(props.initialTab || "fav");
+    setQuery("");
+    setFiltersOpen(false);
     void loadLists();
   }, [props.open, props.initialTab, loadLists]);
+
+  useEffect(() => {
+    for (const tab of Object.keys(sorts) as Tab[]) {
+      try { localStorage.setItem(`remotai.folderSort.${tab}`, sorts[tab]); } catch { /* Private storage. */ }
+    }
+  }, [sorts]);
 
   // Auto-load current cwd into browse when that tab is active and empty.
   // При недоступном ПК не ходим вовсе: об этом уже сказано в теле шторки, а
@@ -161,18 +192,28 @@ export function FolderNavSheet(props: Props) {
     getBookmarks().then((d) => setBookmarks(d.bookmarks || [])).catch(() => {});
   };
 
-  const browseDir = async (path: string) => {
+  const browseDir = async (path: string, sort = sorts.browse) => {
+    const request = ++browseRequest.current;
     setBrowseLoading(true);
     try {
-      const data = await listFiles(path);
+      // Let the agent sort before its result limit. Hidden folders are returned
+      // once so the local dot-folder filter can toggle without another request.
+      const data = await listFiles(path, { hidden: true, sort: sort === "date-desc" ? "date" : "name" });
+      if (request !== browseRequest.current) return;
       setBrowseItems((data.items || []).filter((i: FileItem) => i.is_dir));
       setBrowsePath(data.path);
       setBrowseParent(data.parent);
+      setBrowseTruncated(!!data.truncated);
       setTab("browse");
     } catch (e: any) {
-      toastError(mapApiError(e));
+      if (request === browseRequest.current) toastError(mapApiError(e));
     }
-    setBrowseLoading(false);
+    if (request === browseRequest.current) setBrowseLoading(false);
+  };
+
+  const changeSort = (sort: FolderSort) => {
+    setSorts(previous => ({ ...previous, [tab]: sort }));
+    if (tab === "browse" && browsePath) void browseDir(browsePath, sort);
   };
 
   const pick = async (path: string) => {
@@ -290,20 +331,17 @@ export function FolderNavSheet(props: Props) {
     setMenu({ path, name });
   };
 
-  // Fuzzy search — simple substring on path+name, case-insensitive.
-  const filter = <T extends { name: string; path: string }>(list: T[]): T[] => {
-    const q = query.trim().toLowerCase();
-    if (!q) return list;
-    return list.filter(
-      (it) => it.name.toLowerCase().includes(q) || it.path.toLowerCase().includes(q),
-    );
-  };
-
-  const filteredQuick = useMemo(() => filter(quick as any), [query, quick]);
-  const filteredBookmarks = useMemo(() => filter(bookmarks), [query, bookmarks]);
-  const filteredRecent = useMemo(() => filter(recent), [query, recent]);
-  const filteredProjects = useMemo(() => filter(projects), [query, projects]);
-  const filteredBrowse = useMemo(() => filter(browseItems), [query, browseItems]);
+  const selection = useMemo(() => ({
+    query, sort: sorts[tab], locale, searchPath,
+    hideDotFolders: tab === "browse" && hideDotFolders,
+    favorites: tab !== "fav" && favoritesOnly ? bookmarks : undefined,
+  }), [query, sorts, tab, locale, searchPath, hideDotFolders, favoritesOnly, bookmarks]);
+  const filteredQuick = useMemo(() => selectFolders(quick, { ...selection, label: item => folderLabel(item.name) }), [selection, quick]);
+  const filteredBookmarks = useMemo(() => selectFolders(bookmarks, selection), [selection, bookmarks]);
+  const filteredRecent = useMemo(() => selectFolders(recent, selection), [selection, recent]);
+  const filteredProjects = useMemo(() => selectFolders(projects, selection), [selection, projects]);
+  const filteredBrowse = useMemo(() => selectFolders(browseItems, selection), [selection, browseItems]);
+  const filterCount = Number(tab !== "fav" && favoritesOnly) + Number(tab === "browse" && !hideDotFolders) + Number(!searchPath);
 
   const pathSegments = browsePath.split(/[/\\]/).filter(Boolean);
 
@@ -420,7 +458,7 @@ export function FolderNavSheet(props: Props) {
         {/* ── Header ───────────────────────────────── */}
         <div className="folder-sheet-header">
           <div className="folder-sheet-title" id="folder-nav-title">{props.title || t("folder.title")}</div>
-          <button className="folder-sheet-close" onClick={props.onClose} disabled={picking}>{"\u2715"}</button>
+          <button className="folder-sheet-close" aria-label={t("modal.close")} onClick={props.onClose} disabled={picking}>{"\u2715"}</button>
         </div>
 
         {/* Current cwd strip */}
@@ -451,11 +489,12 @@ export function FolderNavSheet(props: Props) {
           <input
             type="text"
             placeholder={t("folder.searchPlaceholder")}
+            aria-label={t("folder.searchPlaceholder")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
           {query && (
-            <button className="folder-sheet-search-clear" onClick={() => setQuery("")}>
+            <button className="folder-sheet-search-clear" aria-label={t("dash.clearSearch")} onClick={() => setQuery("")}>
               {"\u2715"}
             </button>
           )}
@@ -486,8 +525,28 @@ export function FolderNavSheet(props: Props) {
             читает как историю. Ответ стоит там, где возникает вопрос. */}
         <div className="folder-tab-hint">{t(`folder.tabHint.${tab}`)}</div>
 
+        <div className="folder-list-controls">
+          <select className="folder-sort-select" aria-label={t("files.sort")} value={sorts[tab]} onChange={e => changeSort(e.target.value as FolderSort)}>
+            <option value="name-asc">{t("folder.sort.nameAsc")}</option>
+            <option value="name-desc">{t("folder.sort.nameDesc")}</option>
+            {tab !== "fav" && <option value="date-desc">{t(tab === "recent" ? "folder.sort.visited" : "folder.sort.modified")}</option>}
+          </select>
+          <button className="folder-filters-toggle" aria-expanded={filtersOpen} aria-controls={filtersId} onClick={() => setFiltersOpen(value => !value)}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 17h16" /><circle cx="9" cy="7" r="3" fill="var(--tg-secondary-bg)" /><circle cx="15" cy="17" r="3" fill="var(--tg-secondary-bg)" /></svg>
+            {t("folder.filters")}{filterCount > 0 && <span className="folder-filter-count">{filterCount}</span>}
+          </button>
+        </div>
+
         {/* ── Content ──────────────────────────────── */}
         <div className="folder-sheet-body">
+          {filtersOpen && (
+            <div className="folder-filter-panel" id={filtersId} role="group" aria-label={t("folder.filters")}>
+              {tab === "browse" && <label><input className="folder-filter-dot" type="checkbox" checked={hideDotFolders} onChange={e => setHideDotFolders(e.target.checked)} />{t("folder.hideDotFolders")}</label>}
+              {tab !== "fav" && <label><input className="folder-filter-favorites" type="checkbox" checked={favoritesOnly} onChange={e => setFavoritesOnly(e.target.checked)} />{t("folder.favoritesOnly")}</label>}
+              <label><input className="folder-filter-path" type="checkbox" checked={searchPath} onChange={e => setSearchPath(e.target.checked)} />{t("folder.searchPath")}</label>
+              <button className="folder-reset-filters" onClick={() => { setHideDotFolders(true); setFavoritesOnly(false); setSearchPath(true); }}>{t("folder.resetFilters")}</button>
+            </div>
+          )}
           {/* ПК не ответил ни на один запрос: одна честная причина вместо
               четырёх пустых вкладок. Кнопка перечитывает списки. */}
           {loadFailed && (loadFailed.offline ? (
@@ -553,8 +612,8 @@ export function FolderNavSheet(props: Props) {
                     ))}
                   </div>
                 </>
-              ) : query === "" && filteredQuick.length === 0 && (
-                <div className="folder-empty">{t("folder.noFavorites")}</div>
+              ) : filteredQuick.length === 0 && (
+                <div className="folder-empty">{query.trim() ? t("folder.noMatches") : t("folder.noFavorites")}</div>
               )}
             </>
           )}
@@ -684,6 +743,8 @@ export function FolderNavSheet(props: Props) {
                 )}
               </div>
 
+              {browseTruncated && <div className="folder-results-note">{t("folder.partialResults")}</div>}
+
               {browseLoading ? (
                 <div className="loading-center" style={{ padding: 32 }}>
                   <div className="spinner" />
@@ -736,27 +797,27 @@ export function FolderNavSheet(props: Props) {
                 </div>
               )}
 
-              {/* Акцент — на главном действии шторки (pickLabel: «Открыть и
-                  запустить агента» / «cd сюда»). Раньше главная кнопка была
-                  серой, а мятной — второстепенная «Открыть здесь». */}
+            </>
+          )}
+        </div>
+        {/* Keep the current-folder action reachable while its list scrolls. */}
+        {!loadFailed && tab === "browse" && (
               <div className="folder-browse-actions">
                 <button
                   className="btn btn-primary"
                   style={{ flex: 1 }}
                   onClick={() => { void pick(browsePath); }}
-                  disabled={picking}
+                  disabled={picking || browseLoading || !browsePath}
                 >
                   {props.pickLabel || t("folder.cdHere")}
                 </button>
                 {props.onOpenHere && (
-                  <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => openHere(browsePath)}>
+                  <button className="btn btn-secondary" style={{ flex: 1 }} disabled={picking || browseLoading || !browsePath} onClick={() => openHere(browsePath)}>
                     {t("pty.openHere")}
                   </button>
                 )}
               </div>
-            </>
-          )}
-        </div>
+        )}
     </SheetShell>
   );
 }

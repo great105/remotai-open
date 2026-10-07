@@ -12,9 +12,9 @@ import { agentSupportsResumeInPath, localStreamPath } from "./ptyTerm/streamPath
 import {
   getServerUrl, getServerUrlSecurityError, isNativeApp,
   getMode, getRelayBase, getCloudJWT, getSelectedDeviceId,
-  getSelectedDeviceAgentVersion,
+  getSelectedDeviceAgentVersion, getTerminalContextKey,
 } from "./config";
-import { getMe, CloudError } from "./cloud/api";
+import { getMe, CloudError, requestDevice } from "./cloud/api";
 import { tlog } from "./debuglog";
 
 /** Авторизация облачных вызовов к релею: в Telegram — подписанный `tma initData`,
@@ -38,7 +38,7 @@ function cloudStreamAuthQuery(): string {
   return `jwt=${encodeURIComponent(getCloudJWT())}`;
 }
 import {
-  createHttpClient, setApiTransport, downloadUrl, ptyExportUrl, ApiError,
+  createHttpClient, setApiTransport, downloadUrl, ptyExportUrl, ApiError, createTranscriptionAPI,
   createWSClient, sendToTelegram as sendToTelegramLocal,
   fetchOrNetworkError, setNetworkContext, setPcLiveProbe,
 } from "@tgcontrol/shared";
@@ -134,6 +134,24 @@ const httpClient = createHttpClient({
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
   if (syncRoute() === "cloud") return cloudApi<T>(path, init);
   return httpClient.request<T>(path, init);
+}
+
+/** Short calls/cancellation stay on the captured computer after navigation. */
+export function captureTranscriptionAPI() {
+  const scope = getTerminalContextKey();
+  const cloud = getMode() === "cloud";
+  const device = getSelectedDeviceId();
+  const base = cloud ? "" : getBase();
+  const capturedHeaders = cloud ? {} : headers();
+  const direct = createHttpClient({ baseUrl: () => base, getHeaders: () => capturedHeaders });
+  return createTranscriptionAPI(
+    <T,>(path: string, init?: RequestInit) => cloud ? requestDevice<T>(device, path, init) : direct.request<T>(path, init),
+    async (file, progress, signal) => {
+      if (scope !== getTerminalContextKey()) throw new DOMException("Computer changed", "AbortError");
+      const form = new FormData(); form.append("file", file, file.name);
+      return uploadForm<{ path: string }>("/api/pty/upload", form, progress, { signal, resumable: true });
+    },
+  );
 }
 
 /** Адаптер multipart-загрузок для shared-эндпоинтов: cloud — через релей-прокси

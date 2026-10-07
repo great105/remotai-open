@@ -6,6 +6,7 @@ export * from "./brand";
 export * from "./api-core";
 export * from "./api-transport";
 export * from "./api-endpoints";
+export * from "./transcription";
 export * from "./serverAccess";
 export * from "./i18n";
 export * from "./locale";

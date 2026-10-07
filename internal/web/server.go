@@ -29,6 +29,7 @@ import (
 	"tgcontrol/internal/relay"
 	"tgcontrol/internal/sessions"
 	"tgcontrol/internal/tokenusage"
+	"tgcontrol/internal/transcription"
 	"tgcontrol/internal/tunnel"
 	"tgcontrol/internal/vbrowser"
 	"tgcontrol/internal/wsutil"
@@ -57,6 +58,10 @@ const initDataMaxAge int64 = 43200
 
 // Server is the Mini App web server (REST API + WebSocket + static).
 type Server struct {
+	transcriptionMu      sync.Mutex
+	transcription        *transcription.Service
+	transcriptionClosing bool
+
 	hermesMu          sync.Mutex
 	hermesManagers    map[int64]hermesRuntime
 	hermesJobs        map[int64]bool
@@ -352,6 +357,7 @@ func NewServer(store *sessions.Store, history *sessions.History, botToken string
 
 func (s *Server) registerRoutes() {
 	s.registerHermesRoutes()
+	s.registerTranscriptionRoutes()
 	s.mux.HandleFunc("GET /api/server-access", s.authWrap(s.apiServerAccess))
 	// Health
 	s.mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
@@ -736,6 +742,7 @@ func (s *Server) Start(ctx context.Context, port int) error {
 // сервер забиндит тот же порт, иначе на Windows оба сокета сосуществуют и
 // localhost-трафик окна уходит в «мёртвый» setup-сервер (nil store/relayStatus).
 func (s *Server) Shutdown(ctx context.Context) error {
+	s.shutdownTranscription()
 	s.shutdownHermes(ctx)
 	s.httpSrvMu.Lock()
 	srv := s.httpSrv
@@ -761,6 +768,7 @@ func (s *Server) startOnAddr(ctx context.Context, addr string) error {
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		s.shutdownHermes(shutdownCtx)
+		s.shutdownTranscription()
 		srv.Shutdown(shutdownCtx)
 	}()
 

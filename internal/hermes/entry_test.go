@@ -113,7 +113,21 @@ func TestLiveHermesSmoke(t *testing.T) {
 	t.Setenv("USERPROFILE", osHome)
 	t.Setenv("APPDATA", filepath.Join(osHome, "AppData", "Roaming"))
 	t.Setenv("LOCALAPPDATA", filepath.Join(osHome, "AppData", "Local"))
-	m, err := New(Options{Root: root, StartupTimeout: 3 * time.Minute})
+	command := func(ctx context.Context, name string, args ...string) *exec.Cmd {
+		for i, arg := range args {
+			if (arg == "--stage" || arg == "-Stage") && i+1 < len(args) {
+				t.Logf("Official installer stage: %s", args[i+1])
+			}
+			if filepath.Base(arg) == "native_build_tools.sh" {
+				t.Log("Preparing owned Intel macOS build tools")
+			}
+			if filepath.Base(arg) == "private_entry.py" && i+2 < len(args) {
+				t.Logf("Private Hermes operation: %s", args[i+2])
+			}
+		}
+		return exec.CommandContext(ctx, name, args...)
+	}
+	m, err := New(Options{Root: root, StartupTimeout: 3 * time.Minute, command: command})
 	if err != nil {
 		t.Fatal(err)
 	}

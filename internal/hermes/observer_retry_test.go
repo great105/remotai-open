@@ -30,7 +30,9 @@ func TestObserverRetriesFailedSubscriptionWithoutClientRPC(t *testing.T) {
 		f.mu.Lock()
 		n := f.connections
 		f.mu.Unlock()
-		if n == 1 {
+		// The server has accepted a socket before its first event reaches the
+		// observer. Wait for the promised event, not only the handshake count.
+		if n == 1 && m.EventCursor().LatestSeq > 0 {
 			break
 		}
 		if time.Now().After(deadline) {

@@ -103,6 +103,11 @@ func (m *Manager) Update(ctx context.Context) (err error) {
 	if !managed {
 		return ErrExternal
 	}
+	// Prepare the owned compilers before retiring a live backend: older Intel
+	// Mac installs can acquire a wheel-less dependency on their next update.
+	if err = m.prepareNativeBuildTools(ctx); err != nil {
+		return err
+	}
 	if running {
 		if !ready {
 			return m.deferUpdate()
