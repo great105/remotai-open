@@ -42,6 +42,7 @@ type ModuleProgress struct {
 	Stage          string `json:"stage"`
 	CompletedBytes int64  `json:"completed_bytes"`
 	TotalBytes     int64  `json:"total_bytes"`
+	ElapsedSeconds int64  `json:"elapsed_seconds,omitempty"`
 }
 
 func (s *Service) modulePath() string {

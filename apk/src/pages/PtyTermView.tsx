@@ -22,6 +22,7 @@ import type { InputTarget } from "../ptyTerm/input/InputController";
 import { appendSessionDraft, draftOwner } from "../ptyTerm/input/SessionDraft";
 import { useSessionDraft } from "../ptyTerm/input/useSessionDraft";
 import { VoiceInputSheet, VoiceIcon } from "../transcription/VoiceInputSheet";
+import { useDirectVoice } from "../transcription/DirectVoiceControl";
 import { foregroundTask, silenceRecheckDelay, silenceVerdict, thawedAt } from "../ptyTerm/runtime/ForegroundTask";
 import {
   keyboardPeek, lastInkRow, observeNativeKeyboard, OCCLUSION_BUSY_RECHECK_MS, OCCLUSION_IDLE, OCCLUSION_SYNC_RECHECK_MS,
@@ -762,6 +763,7 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
   // тап по скрепке не должен завести второй такой же хост.
   const [savingHost, setSavingHost] = useState(false);
   const [state, setState] = useState<PtyState>({ cwd: "", alive: true });
+  const directVoice = useDirectVoice(draftOwner(terminalContext, id ?? ""), state.alive, text => appendSessionDraft(draftOwner(terminalContext, id ?? ""), text));
   const statePollGateRef = useRef<LatestOnlyGate | null>(null);
   if (!statePollGateRef.current) statePollGateRef.current = new LatestOnlyGate(id || "");
   const cwd = state.cwd;
@@ -8938,6 +8940,8 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
         </div>
       )}
       {state.alive && (
+      <>
+      {directVoice.status}
       <div className="pty-input-bar">
         <button
           className="pty-key-btn pty-key-accent pty-attach-btn"
@@ -8965,14 +8969,7 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
           autoComplete="off"
           autoCorrect="on"
         />
-        <button
-          className="pty-key-btn pty-compose-expand"
-          onClick={() => { haptic(); setComposerOpen(true); }}
-          title={t("pty.expandComposer")}
-          aria-label={t("pty.expandComposer")}
-        >
-          <span aria-hidden>{"⛶"}</span>
-        </button>
+        {directVoice.button}
         {/* \u041F\u0443\u0441\u0442\u043E\u0435 \u043F\u043E\u043B\u0435 + \u21B5 = \u0433\u043E\u043B\u044B\u0439 Enter: \u0438\u043C\u0435\u043D\u043D\u043E \u0442\u0430\u043A \u043F\u043E\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0430\u0435\u0442\u0441\u044F \u0432\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0439
             \u043F\u0443\u043D\u043A\u0442 \u043C\u0435\u043D\u044E \u0443 Claude Code. \u0420\u0430\u043D\u044C\u0448\u0435 \u043A\u043D\u043E\u043F\u043A\u0430 \u0433\u0430\u0441\u043B\u0430, \u0438 Enter \u043C\u043E\u0436\u043D\u043E \u0431\u044B\u043B\u043E
             \u043F\u043E\u0441\u043B\u0430\u0442\u044C \u0442\u043E\u043B\u044C\u043A\u043E \u0441 \u0441\u0438\u0441\u0442\u0435\u043C\u043D\u043E\u0439 \u043A\u043B\u0430\u0432\u0438\u0430\u0442\u0443\u0440\u044B. */}
@@ -9003,6 +9000,7 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
           onChange={(e) => handleFileUpload(e.target.files)}
         />
       </div>
+      </>
       )}
 
       {/* Привязка сервера — прямо здесь.
@@ -9461,6 +9459,10 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="remote-quick-section">{t("pty.attachMenuTitle")}</div>
+            <button type="button" className="remote-quick-row pty-compose-expand" onClick={() => { setAttachMenuOpen(false); haptic(); setComposerOpen(true); }}>
+              <span className="remote-quick-row-icon" aria-hidden>{"⛶"}</span>
+              <span className="remote-quick-row-label">{t("pty.expandComposer")}</span>
+            </button>
             <button type="button" className="remote-quick-row" onClick={() => { setAttachMenuOpen(false); setVoiceOpen(true); }}>
               <span className="remote-quick-row-icon"><VoiceIcon /></span>
               <span className="remote-quick-row-label">{t("voice.title")}<small className="pty-attach-row-hint">{t("voice.menuHint")}</small></span>

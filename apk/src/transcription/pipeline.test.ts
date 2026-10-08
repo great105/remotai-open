@@ -15,7 +15,7 @@ describe("local transcription pipeline", () => {
     const api = fixture(), config = options(new AbortController().signal);
     const result = await transcribeAudio(file(), api, config);
     expect(result.text).toBe("Проверь терминал");
-    expect(api.start).toHaveBeenCalledWith({ id, path: "C:\\uploads\\voice.webm", model: "small", language: "ru" }, config.signal);
+    expect(api.start).toHaveBeenCalledWith({ id, path: "C:\\uploads\\voice.webm", model: "small", language: "ru" }, expect.any(AbortSignal));
     expect(config.phase.mock.calls.map(call => call[0])).toEqual(["uploading", "recognizing"]);
     expect(api.cancel).not.toHaveBeenCalled();
   });
@@ -48,5 +48,20 @@ describe("local transcription pipeline", () => {
   it("rejects a result belonging to another recording", async () => {
     const api = fixture(); api.job = vi.fn(async (): Promise<TranscriptionJob> => ({ id: "other", state: "done", text: "wrong" }));
     await expect(transcribeAudio(file(), api, options(new AbortController().signal))).rejects.toThrow("invalid_recognition_result");
+  });
+  it.each(["upload", "start", "job"] as const)("bounds a hanging %s even when transport ignores abort", async method => {
+    const api = fixture();
+    api[method] = vi.fn(() => new Promise(() => {})) as never;
+    await expect(transcribeAudio(file(), api, { ...options(new AbortController().signal), requestMs: 15 })).rejects.toThrow("connection_timeout");
+    if (method !== "upload") expect(api.cancel).toHaveBeenCalledWith(id);
+  });
+  it("cancellation returns promptly when a request never settles", async () => {
+    const api = fixture(), abort = new AbortController();
+    api.start = vi.fn(() => new Promise<TranscriptionJob>(() => {}));
+    const promise = transcribeAudio(file(), api, options(abort.signal));
+    await vi.waitFor(() => expect(api.start).toHaveBeenCalled());
+    abort.abort();
+    await expect(promise).rejects.toMatchObject({ name: "AbortError" });
+    expect(api.cancel).toHaveBeenCalledWith(id);
   });
 });
