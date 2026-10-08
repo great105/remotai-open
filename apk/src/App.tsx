@@ -16,6 +16,7 @@ import {
 } from "./notifications";
 import { getFeatures } from "./features";
 import { BottomNav, type NavTab } from "./components/BottomNav";
+import { MoreMenuProvider } from "./components/MoreMenuState";
 import { useFeatures } from "./hooks/useFeatures";
 import { parsePairPayload, runPair } from "./cloud/pair";
 import { isAnalyticsEnabled, trackAppOpen, trackRegisterSource } from "./cloud/support";
@@ -629,6 +630,7 @@ export function App() {
       <DeviceGuard />
       <BackButtonBridge />
       <DocumentTitle />
+      <MoreMenuProvider>
       <RouteBoundary>
       <Suspense fallback={<RouteFallback />}>
         <Routes>
@@ -670,6 +672,7 @@ export function App() {
         </Routes>
       </Suspense>
       </RouteBoundary>
+      </MoreMenuProvider>
     </>
   );
 }

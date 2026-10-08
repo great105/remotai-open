@@ -15,6 +15,7 @@ The format is based on Keep a Changelog.
 - Fixed returning to the latest terminal output after viewport reflow, which could stop three rows short of the bottom.
 - Fixed the agent Continue button disappearing when terminal state arrived before the agent catalog.
 - Fixed a delayed terminal-state response replacing the size of an already displayed fresh frame, which could briefly truncate output when opening a terminal.
+- Fixed the More menu and its search query closing when a slow initial page finished loading. Normal navigation and Escape still dismiss the menu.
 - Добавлен раздел «Настройки → Локальные возможности»: модуль Windows, каталог моделей, установка, выбор, язык, словарь и проверочная запись. Установка продолжается после выхода из раздела.
 - Голосовая запись с телефона и аудиофайлы распознаются на выбранном ПК; проверенный текст добавляется в черновик без автоматической отправки.
 - Компьютеры открываются как папки терминалов; в выборе папки появились сортировка и фильтры, устранено смещение окна при поиске и открытии клавиатуры.
@@ -22,6 +23,7 @@ The format is based on Keep a Changelog.
 - Исправлен возврат к последней строке терминала после перерасчёта размеров: прокрутка могла остановиться на три строки выше низа.
 - Исправлено исчезновение кнопки продолжения агента, когда состояние терминала приходило раньше каталога агентов.
 - Исправлена гонка при открытии терминала: задержанный ответ о старом размере больше не меняет сетку уже показанного свежего кадра и не обрезает вывод.
+- Поиск в «Ещё» больше не закрывается, когда медленная страница заканчивает загрузку; обычные переходы и Escape закрывают меню.
 
 ## [2.75.16] - 2026-10-07
 

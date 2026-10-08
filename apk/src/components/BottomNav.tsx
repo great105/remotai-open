@@ -10,6 +10,7 @@ import { GUIDE_GROUPS, GUIDE_SECTIONS, matchesGuideQuery, searchGuideShortcuts, 
 import { listSshHostsCached } from "../sshCommon";
 import { useCapabilities } from "../hooks/useCapabilities";
 import { useSupportUnread } from "../hooks/useSupportUnread";
+import { useMoreMenuState } from "./MoreMenuState";
 import {
   IconHome, IconDevices, IconFolder, IconTerminal, IconActivity, IconScreen,
   IconGear, IconServer, IconMore, IconGauge, IconSliders, IconDoc, IconStar, IconChat, IconRobot } from "./icons";
@@ -177,8 +178,7 @@ export function BottomNav({ active }: Props) {
   useLanguage();
   const navigate = useNavigate();
   const [connected, setConnected] = useState(true);
-  const [moreOpen, setMoreOpen] = useState(false);
-  const [moreQuery, setMoreQuery] = useState("");
+  const { moreOpen, setMoreOpen, moreQuery, setMoreQuery } = useMoreMenuState();
   const { remoteDesktop } = useCapabilities();
   const onPCPanel = isOnPCPanel();
   // Подпись раздела зависит от режима: в локальном «все компьютеры аккаунта»
