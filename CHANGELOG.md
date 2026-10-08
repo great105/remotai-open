@@ -13,11 +13,13 @@ The format is based on Keep a Changelog.
 - Added computers as terminal folders with per-computer navigation, search and offline status. Folder selection supports sorting and filters and retains its layout with the keyboard open.
 - Improved Hermes installation diagnostics and isolated build dependencies on Intel macOS; retained owned compilers across Hermes updates. Native installation and subsequent updates were checked on five OS/CPU targets.
 - Fixed returning to the latest terminal output after viewport reflow, which could stop three rows short of the bottom.
+- Fixed the agent Continue button disappearing when terminal state arrived before the agent catalog.
 - Добавлен раздел «Настройки → Локальные возможности»: модуль Windows, каталог моделей, установка, выбор, язык, словарь и проверочная запись. Установка продолжается после выхода из раздела.
 - Голосовая запись с телефона и аудиофайлы распознаются на выбранном ПК; проверенный текст добавляется в черновик без автоматической отправки.
 - Компьютеры открываются как папки терминалов; в выборе папки появились сортировка и фильтры, устранено смещение окна при поиске и открытии клавиатуры.
 - Исправлена подготовка Hermes на Intel macOS и сохранение нужного компилятора при обновлении; улучшена диагностика ошибок завершения установки.
 - Исправлен возврат к последней строке терминала после перерасчёта размеров: прокрутка могла остановиться на три строки выше низа.
+- Исправлено исчезновение кнопки продолжения агента, когда состояние терминала приходило раньше каталога агентов.
 
 ## [2.75.16] - 2026-10-07
 

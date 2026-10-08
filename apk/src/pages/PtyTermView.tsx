@@ -999,14 +999,22 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
     loadedResumeKeyRef.current = key;
     setLoadedResumeAgent(null);
     let cancelled = false;
+    let pending = true;
     getAgents().then((d) => {
+      pending = false;
       if (cancelled || loadedResumeKeyRef.current !== key) return;
       const agent = (d.agents || []).find((a) => a.id === kind && a.supports_resume && a.resume_cli);
       setLoadedResumeAgent(agent ? { key, kind, agent } : null);
     }).catch(() => {
+      pending = false;
       if (!cancelled && loadedResumeKeyRef.current === key) setLoadedResumeAgent(null);
     });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      // Initial /state can change kind undefined → "" without changing the
+      // remembered agent. A cancelled request must not suppress its successor.
+      if (pending && loadedResumeKeyRef.current === key) loadedResumeKeyRef.current = "";
+    };
   }, [id, state.agent_kind, state.sleep?.agent, state.kind, state.remote]);
   const FONT_SIZES = [11, 12, 14, 16] as const;
   const [fontSize, setFontSize] = useState<number>(() => {
