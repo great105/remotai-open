@@ -167,7 +167,7 @@ import { diagReachesAgent, stateShowsNewAgent } from "../ptyTerm/diagCompat";
 import type { EvidenceDecision, NavChannel, Observation } from "../ptyTerm/navigationEvidence";
 import {
   OCCLUDER_SELECTORS, capacityWithOccluder, frameGeometryAction, frameIsStale, fullViewportHeight, inputGrowthPx, nativeKeyboardOpen,
-  layoutChange, logicalRowsForKeyboard, reconcileAdoptedGrid, shouldExplainNarrowOutput,
+  layoutChange, logicalRowsForKeyboard, reconcileAdoptedGrid, shouldExplainNarrowOutput, stateGridIsFresh,
 } from "../ptyTerm/geometry";
 import { TerminalWidthNotice } from "../ptyTerm/TerminalWidthNotice";
 import {
@@ -1753,6 +1753,10 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
   // последнего принятого /state. Часы — performance.now(). Правило сверки —
   // geometry.reconcileAdoptedGrid, исполнение — эффект после state.cols.
   const gridAdoptedAtRef = useRef<number | null>(null);
+  // Every accepted matching frame is newer than state requests already in
+  // flight. Keep this freshness bound separate from the one-shot recheck:
+  // repeated matching snapshots must not restart a state/frame retry loop.
+  const gridConfirmedAtRef = useRef<number | null>(null);
   const stateAskedAtRef = useRef(0);
   // Token of the ACTUAL local xterm cell grid. A screen request captures this
   // value, and the agent echoes it. If fit()/resize changes the grid while the
@@ -4135,6 +4139,19 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
               // выглядел бы терминалом без истории — то есть у него бы её и
               // отобрали. И мерим ЗДЕСЬ, после барьера: до него значение ещё
               // старое, потому что прежний вывод не разобран.
+              // A matching frame confirms its grid too: no resize/adopt branch
+              // is needed. An earlier /state response may still describe 80x24
+              // while this frame already confirms 47x23; keep that old response
+              // from resizing the freshly restored screen.
+              if (features.capacity && geo.kind === "apply" && snapCols === live.cols && snapRows === live.rows) {
+                const changed = logicalColsRef.current !== live.cols || authoritativeRowsRef.current !== live.rows;
+                logicalColsRef.current = live.cols;
+                logicalRowsRef.current = live.rows;
+                authoritativeRowsRef.current = live.rows;
+                const confirmedAt = performance.now();
+                gridConfirmedAtRef.current = confirmedAt;
+                if (changed) gridAdoptedAtRef.current = confirmedAt;
+              }
               const localScrollback = ((live.buffer as unknown as {
                 normal?: { baseY?: number };
               }).normal?.baseY) ?? live.buffer.active.baseY;
@@ -5428,13 +5445,14 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
   useEffect(() => {
     const rows = state.rows ?? 0;
     if (rows < 2) return;
+    if (features.capacity && !stateGridIsFresh(gridConfirmedAtRef.current, stateAskedAtRef.current)) return;
     logicalRowsRef.current = rows;
     authoritativeRowsRef.current = rows;
     const size = fitLocalRef.current();
     if (size) setTermSize(size);
     // Сервер подтвердил высоту PTY: кадр чужой высоты стоит спросить ещё раз.
     recoveryApiRef.current.serverGrid("state-rows");
-  }, [state.rows]);
+  }, [state.rows, features.capacity]);
 
   // ЛОГИЧЕСКАЯ ширина — тоже с компьютера (`state.cols`, размер, применённый к
   // PTY). PTY общий и идёт по самому узкому зрителю: без этого зажатия широкий
@@ -5445,12 +5463,13 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
   useEffect(() => {
     const cols = state.cols ?? 0;
     if (cols < 2) return;
+    if (features.capacity && !stateGridIsFresh(gridConfirmedAtRef.current, stateAskedAtRef.current)) return;
     if (logicalColsRef.current === cols) return;
     logicalColsRef.current = cols;
     const size = fitLocalRef.current();
     if (size) setTermSize(size);
     recoveryApiRef.current.serverGrid("state-cols");
-  }, [state.cols]);
+  }, [state.cols, features.capacity]);
 
   // ⚠ СЕТКА ИЗ КАДРА БЕЗ ЯКОРЯ /state (ST-08, ревью скептика). Кадр на запрос
   // после доставленной вместимости сам пишет авторитетную сетку (adopt в

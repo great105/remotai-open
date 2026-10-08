@@ -358,6 +358,11 @@ export type AdoptedGridCheck = {
   cols: boolean;
 };
 
+/** A state request made before a confirmed frame cannot replace its grid. */
+export function stateGridIsFresh(frameAt: number | null, stateAskedAt: number): boolean {
+  return frameAt === null || (Number.isFinite(stateAskedAt) && stateAskedAt > frameAt);
+}
+
 /**
  * СЕТКА, ПРИНЯТАЯ ИЗ КАДРА, ЖИВЁТ ТОЛЬКО ДО ПЕРВОГО /state, СПРОШЕННОГО ПОСЛЕ НЕЁ
  * (ST-08, ревью скептика).
