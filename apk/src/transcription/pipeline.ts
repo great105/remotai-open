@@ -1,4 +1,5 @@
 import type { TranscriptionAPI, TranscriptionJob } from "@tgcontrol/shared";
+import { withDeadline } from "./deadline";
 
 export type TranscriptionPhase = "uploading" | "recognizing";
 export const MAX_RECORDING_MS = 120_000;
@@ -20,17 +21,22 @@ export function recordingID(): string {
   return Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, "0")).join("");
 }
 
-/** No terminal input is sent here: the caller explicitly accepts a transcript. */
+/** Returns a transcript for the draft; never sends terminal input. */
 export async function transcribeAudio(file: File, api: TranscriptionAPI, options: {
   signal: AbortSignal; model: string; language: string;
   phase: (state: TranscriptionPhase, progress?: number) => void;
-  pollMs?: number; id?: string;
+  onJob?: (job: TranscriptionJob) => void;
+  pollMs?: number; id?: string; requestMs?: number; timeoutMs?: number;
 }): Promise<TranscriptionJob> {
+  return withDeadline(options.signal, options.timeoutMs ?? 315_000, "recognition_timeout", signal => run(file, api, { ...options, signal }));
+}
+
+async function run(file: File, api: TranscriptionAPI, options: Parameters<typeof transcribeAudio>[2]): Promise<TranscriptionJob> {
   const { signal } = options;
   check(signal);
   if (!file.size || file.size > MAX_AUDIO_BYTES) throw new Error("audio_size");
   options.phase("uploading", 0);
-  const uploaded = await api.upload(file, progress => options.phase("uploading", progress), signal);
+  const uploaded = await withDeadline(signal, options.requestMs ?? 60_000, "connection_timeout", request => api.upload(file, progress => { if (!signal.aborted) options.phase("uploading", progress); }, request));
   check(signal);
   if (!uploaded.path) throw new Error("upload_incomplete");
   const id = options.id ?? recordingID();
@@ -40,13 +46,17 @@ export async function transcribeAudio(file: File, api: TranscriptionAPI, options
   try {
     check(signal);
     options.phase("recognizing");
-    let job = await api.start({ path: uploaded.path, model: options.model, language: options.language, id }, signal);
-    const deadline = Date.now() + 5 * 60_000 + 15_000;
+    let job = await withDeadline(signal, options.requestMs ?? 30_000, "connection_timeout", request => api.start({ path: uploaded.path, model: options.model, language: options.language, id }, request));
+    check(signal);
+    if (job.id !== id) throw new Error("invalid_recognition_result");
+    options.onJob?.(job);
     while (job.state === "running") {
       check(signal);
-      if (Date.now() >= deadline) { abort(); throw new Error("recognition_timeout"); }
       await pause(options.pollMs ?? 800, signal);
-      job = await api.job(id, signal);
+      job = await withDeadline(signal, options.requestMs ?? 30_000, "connection_timeout", request => api.job(id, request));
+      check(signal);
+      if (job.id !== id) throw new Error("invalid_recognition_result");
+      options.onJob?.(job);
     }
     check(signal);
     if (job.state === "failed") throw new Error(job.error || "recognition_failed");

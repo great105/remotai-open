@@ -1,0 +1,13 @@
+.pty-voice-btn { color: var(--tg-btn); flex-shrink: 0; }
+.pty-input-bar > .pty-key-btn { min-width: 44px; }
+.pty-input-bar.pty-input-with-voice { gap: 4px; }
+.pty-input-bar .pty-voice-btn { display: flex; align-items: center; justify-content: center; flex: 0 0 44px; width: 44px; min-width: 44px; min-height: 44px; padding: 8px; color: var(--tg-btn); }
+.pty-voice-btn.pty-voice-recording { color: var(--tg-destructive); background: var(--tg-secondary-bg); }
+.pty-voice-stop { display: inline-block; width: 16px; height: 16px; border-radius: 3px; background: currentColor; }
+.pty-voice-status { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; padding: 4px 8px; background: var(--tg-secondary-bg); color: var(--tg-text); border-top: 1px solid var(--tg-border); font-size: 14px; }
+.pty-voice-status > span { flex: 1; min-width: 140px; overflow-wrap: anywhere; }
+.pty-voice-status time { font-variant-numeric: tabular-nums; color: var(--tg-hint); }
+.pty-voice-actions { display: flex; flex-wrap: wrap; gap: 4px; }
+.pty-voice-actions button { min-height: 44px; padding: 8px 10px; border: 0; border-radius: 6px; color: var(--tg-btn); background: transparent; font: inherit; cursor: pointer; }
+.pty-voice-error > span { color: var(--tg-destructive); }
+.pty-voice-actions button:focus-visible, .pty-voice-btn:focus-visible { outline: 2px solid var(--tg-btn); outline-offset: -2px; }

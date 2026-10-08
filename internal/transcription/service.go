@@ -52,6 +52,7 @@ type Job struct {
 	uid      int64
 	cancel   context.CancelFunc
 	finished time.Time
+	speech   *speechProgress
 }
 
 type upload struct {
@@ -69,6 +70,7 @@ type Service struct {
 	active                        *Job
 	worker                        Worker
 	workerUID                     int64
+	speech                        *speechProgress
 	idle                          *time.Timer
 	warmRevision                  uint64
 	closing                       bool
@@ -146,7 +148,7 @@ func (s *Service) Status(uid ...int64) Status {
 	status := Status{Available: exe != "", Executable: exe, Platform: runtime.GOOS, MaxBytes: MaxAudioBytes}
 	status.Module = &ModulePackage{Supported: s.moduleSupported, Version: s.moduleRelease.Version, DownloadBytes: s.moduleRelease.Bytes, RequiredBytes: s.moduleRelease.Bytes + s.moduleRelease.UnpackedBytes + (256 << 20), Managed: exe != "" && exe == filepath.Join(s.modulePath(), "AgentDeskBridge.exe")}
 	if len(uid) > 0 && s.active != nil && s.active.uid == uid[0] {
-		job := *s.active
+		job := s.snapshotJobLocked(s.active)
 		status.Active = &job
 	}
 	return status
@@ -282,6 +284,8 @@ func (s *Service) Start(uid int64, path, model, language, id string) (Job, error
 		cancel()
 		return Job{}, err
 	}
+	s.speech.reset()
+	job.speech = s.speech
 	s.jobs[id], s.active = job, job
 	delete(s.uploads, path) // An uploaded recording starts once, even on a retried POST.
 	s.wg.Add(1)
@@ -304,6 +308,7 @@ func (s *Service) run(ctx context.Context, worker Worker, job *Job, path, model,
 		}
 	}
 	job.finished = time.Now()
+	job.Progress = job.speech.snapshot()
 	s.active = nil
 	s.armIdleLocked()
 }
@@ -329,7 +334,7 @@ func (s *Service) Get(uid int64, id string) (Job, error) {
 	if job == nil || job.uid != uid {
 		return Job{}, ErrNotFound
 	}
-	return *job, nil
+	return s.snapshotJobLocked(job), nil
 }
 
 func (s *Service) Cancel(uid int64, id string) error {

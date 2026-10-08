@@ -17,7 +17,7 @@ export interface TranscriptionJob {
   device?: string;
   kind?: string;
   result?: LocalDetails;
-  progress?: { stage: "downloading" | "verifying" | "extracting" | "checking" | "connecting"; completed_bytes: number; total_bytes: number };
+  progress?: { stage: "downloading" | "verifying" | "extracting" | "checking" | "connecting" | "preparing" | "loading" | "recognizing" | "finishing"; completed_bytes: number; total_bytes: number; elapsed_seconds?: number };
 }
 export interface LocalModel { id: string; label: string; description?: string; engine?: string; disk_gb: number; vram_gb: number; ram_gb: number; cached: boolean; ready: boolean; supported: boolean; russian_only: boolean; gpu_only: boolean }
 export interface LocalPreferences { model: string; language: string; dictionary: Array<{ heard: string; written: string }> }

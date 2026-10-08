@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog.
 
+## [2.75.20] - 2026-10-08
+
+### Direct microphone / Микрофон в терминале
+
+- Tap the microphone beside the draft to record immediately; tap again to transcribe. Text appends to the draft without an intermediate dialog. Sending remains a separate action.
+- Show real processing stages, elapsed time and inline cancellation. Retry failed audio without recording again; bound hanging network requests, including those that ignore cancellation.
+- Микрофон прямо рядом с сообщением: нажал — говоришь, повторное нажатие завершает запись. Текст сразу попадает в черновик; настройки остаются в «Локальных возможностях».
+- Реальные этапы, время ожидания, отмена и повтор готовой записи после сбоя. Исправлено бесконечное ожидание зависшего запроса. Большое поле ввода доступно под скрепкой.
+
 ## [2.75.19] - 2026-10-08
 
 ### Quick voice recording / Быстрая голосовая запись

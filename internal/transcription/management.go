@@ -67,11 +67,13 @@ func (s *Service) workerLocked(uid int64, exe string) (Worker, error) {
 		s.releaseWorkerLocked()
 	}
 	if s.worker == nil {
-		worker, err := s.newWorker(agentdesk.Config{Executable: exe, DataDir: filepath.Join(s.root, "users", strconv.FormatInt(uid, 10)), AllowedRoots: []string{s.uploadsRoot}, RequestTimeout: 30 * time.Minute})
+		progress := &speechProgress{}
+		worker, err := s.newWorker(agentdesk.Config{Executable: exe, DataDir: filepath.Join(s.root, "users", strconv.FormatInt(uid, 10)), AllowedRoots: []string{s.uploadsRoot}, RequestTimeout: 30 * time.Minute, Stderr: progress})
 		if err != nil {
 			return nil, err
 		}
 		s.worker, s.workerUID = worker, uid
+		s.speech = progress
 	}
 	return s.worker, nil
 }
