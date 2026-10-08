@@ -5,7 +5,7 @@ import { transcribeAudio } from "./pipeline";
 const id = "0123456789abcdef0123456789abcdef";
 const file = () => new File(["synthetic audio"], "voice.webm", { type: "audio/webm" });
 function fixture(): TranscriptionAPI {
-  return { status: vi.fn(), connect: vi.fn(), action: vi.fn(), upload: vi.fn(async () => ({ path: "C:\\uploads\\voice.webm" })),
+  return { status: vi.fn(), connect: vi.fn(), action: vi.fn(), updateAgent: vi.fn(), upload: vi.fn(async () => ({ path: "C:\\uploads\\voice.webm" })),
     start: vi.fn(async (): Promise<TranscriptionJob> => ({ id, state: "running" })), job: vi.fn(async (): Promise<TranscriptionJob> => ({ id, state: "done", text: "Проверь терминал" })), cancel: vi.fn(async () => ({})) };
 }
 const options = (signal: AbortSignal) => ({ signal, id, model: "small", language: "ru", phase: vi.fn(), pollMs: 1 });

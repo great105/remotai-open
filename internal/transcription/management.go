@@ -78,6 +78,9 @@ func (s *Service) workerLocked(uid int64, exe string) (Worker, error) {
 
 // Management shares the same single-job gate, ownership and cancel protocol as ASR.
 func (s *Service) StartAction(uid int64, action Action) (Job, error) {
+	if action.Operation == "module.install" {
+		return s.startModuleInstall(uid, action.ID)
+	}
 	method := map[string]string{"inspect": "local.inspect", "install": "local.model.install", "save": "local.settings.save"}[action.Operation]
 	if method == "" {
 		return Job{}, errors.New("неизвестное действие локального модуля")
