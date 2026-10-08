@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog.
 
+## [2.75.18] - 2026-10-08
+
+### Install local capabilities from your phone / Установка локальных возможностей с телефона
+
+- Install the speech module directly on the selected Windows x64 computer from Settings → Local capabilities. The computer downloads, verifies and connects it; no archive or manual path is needed on the phone.
+- Show installation stages and download progress, resume the same task after returning to Settings, cancel or retry after an error. Previously downloaded models remain available.
+- Update an older Remotai agent on the selected computer from the same section before installing the module. Viewer access remains read only.
+- Модуль распознавания устанавливается на выбранный Windows x64 ПК прямо с телефона: компьютер сам скачивает, проверяет и подключает сборку. Ручной выбор папки остаётся дополнительным вариантом.
+- Добавлены прогресс, продолжение после выхода, отмена и повтор установки; старый агент можно обновить из этого же раздела. Модели устанавливаются и выбираются на выбранном компьютере.
+
 ## [2.75.17] - 2026-10-08
 
 ### Local capabilities and terminal navigation / Локальные возможности и терминалы

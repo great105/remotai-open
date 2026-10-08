@@ -1,0 +1,27 @@
+{
+  "name": "remotai",
+  "version": "2.75.18",
+  "description": "Remotai — remote access to AI agents on your computers and servers: terminals, projects and files. English and Russian.",
+  "bin": {
+    "remotai": "bin/run.js"
+  },
+  "scripts": {
+    "postinstall": "node install.js"
+  },
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin/run.js",
+    "install.js"
+  ],
+  "keywords": [
+    "remote-control",
+    "telegram",
+    "terminal",
+    "rdp",
+    "server-management"
+  ],
+  "homepage": "https://remotai.ru"
+}

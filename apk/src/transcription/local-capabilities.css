@@ -16,6 +16,12 @@
 .local-capabilities .btn { min-height: 44px; white-space: normal; }
 .local-download { display: inline-flex; align-items: center; text-decoration: none; margin-bottom: 12px; }
 .local-task { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-block: 16px; padding: 12px; background: var(--tg-secondary-bg); border-radius: 12px; }
+.local-task-copy { flex: 1; min-width: 0; }
+.local-task-copy progress { display: block; width: 100%; height: 12px; margin-block: 10px 6px; accent-color: var(--tg-btn); }
+.local-task-copy small { font-variant-numeric: tabular-nums; }
+.local-task-copy p { margin-bottom: 0; }
+.local-module-install { margin-block: 14px 18px; }
+.local-module-install > button { width: 100%; }
 .local-model-list { margin: 0; padding: 0; list-style: none; }
 .local-model-list > li { display: flex; gap: 18px; align-items: center; padding-block: 18px; border-bottom: 1px solid var(--tg-border); }
 .local-model-copy { flex: 1; min-width: 0; }

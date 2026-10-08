@@ -21,7 +21,7 @@ import (
 
 const MaxAudioBytes int64 = 25 << 20
 
-var ErrBusy = errors.New("распознавание уже выполняется на этом компьютере")
+var ErrBusy = errors.New("на этом компьютере уже выполняется локальная задача")
 var ErrNotFound = errors.New("запись или задача не найдена")
 var modelIDPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9.-]{0,63}$`)
 
@@ -31,11 +31,12 @@ type Worker interface {
 }
 
 type Status struct {
-	Available  bool   `json:"available"`
-	Executable string `json:"executable,omitempty"`
-	Platform   string `json:"platform"`
-	MaxBytes   int64  `json:"max_bytes"`
-	Active     *Job   `json:"active,omitempty"`
+	Available  bool           `json:"available"`
+	Executable string         `json:"executable,omitempty"`
+	Platform   string         `json:"platform"`
+	MaxBytes   int64          `json:"max_bytes"`
+	Active     *Job           `json:"active,omitempty"`
+	Module     *ModulePackage `json:"module,omitempty"`
 }
 
 type Job struct {
@@ -47,6 +48,7 @@ type Job struct {
 	Device   string          `json:"device,omitempty"`
 	Kind     string          `json:"kind,omitempty"`
 	Result   json.RawMessage `json:"result,omitempty"`
+	Progress *ModuleProgress `json:"progress,omitempty"`
 	uid      int64
 	cancel   context.CancelFunc
 	finished time.Time
@@ -72,6 +74,9 @@ type Service struct {
 	closing                       bool
 	wg                            sync.WaitGroup
 	newWorker                     func(agentdesk.Config) (Worker, error)
+	moduleRelease                 moduleRelease
+	moduleSupported               bool
+	moduleSpace                   func(string, uint64) error
 }
 
 func LocalRoot() (string, error) {
@@ -91,6 +96,7 @@ func LocalRoot() (string, error) {
 
 func New(root, uploadsRoot string) *Service {
 	s := &Service{root: root, uploadsRoot: uploadsRoot, jobs: make(map[string]*Job), uploads: make(map[string]upload),
+		moduleRelease: officialModule(), moduleSupported: runtime.GOOS == "windows" && runtime.GOARCH == "amd64", moduleSpace: checkModuleSpace,
 		newWorker: func(c agentdesk.Config) (Worker, error) { return agentdesk.New(c) }}
 	// This file contains only the user-selected bridge path, never API credentials.
 	var saved struct {
@@ -138,6 +144,7 @@ func (s *Service) Status(uid ...int64) Status {
 	defer s.mu.Unlock()
 	exe := s.executableLocked()
 	status := Status{Available: exe != "", Executable: exe, Platform: runtime.GOOS, MaxBytes: MaxAudioBytes}
+	status.Module = &ModulePackage{Supported: s.moduleSupported, Version: s.moduleRelease.Version, DownloadBytes: s.moduleRelease.Bytes, RequiredBytes: s.moduleRelease.Bytes + s.moduleRelease.UnpackedBytes + (256 << 20), Managed: exe != "" && exe == filepath.Join(s.modulePath(), "AgentDeskBridge.exe")}
 	if len(uid) > 0 && s.active != nil && s.active.uid == uid[0] {
 		job := *s.active
 		status.Active = &job
@@ -163,6 +170,10 @@ func (s *Service) Configure(path string) error {
 	if s.active != nil {
 		return ErrBusy
 	}
+	return s.configureLocked(path)
+}
+
+func (s *Service) configureLocked(path string) error {
 	if err := os.MkdirAll(s.root, 0o700); err != nil {
 		return err
 	}
