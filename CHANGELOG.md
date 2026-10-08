@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog.
 
+## [2.75.19] - 2026-10-08
+
+### Quick voice recording / Быстрая голосовая запись
+
+- Simplified voice input to recording, audio files, cancellation and transcript review. The selected computer's saved model and language are applied automatically.
+- All model, language and module settings remain in Settings → Local capabilities. An unprepared module or model offers a direct link there.
+- В окне голосового ввода оставлены запись, аудиофайл, отмена и проверка текста. Модель и язык берутся из сохранённых настроек выбранного компьютера.
+- Настройки модели, языка и модуля находятся в «Локальных возможностях»; окно записи предлагает перейти туда только если распознавание ещё не подготовлено.
+
 ## [2.75.18] - 2026-10-08
 
 ### Install local capabilities from your phone / Установка локальных возможностей с телефона
