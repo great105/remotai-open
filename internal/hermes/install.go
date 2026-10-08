@@ -64,6 +64,11 @@ func (m *Manager) Install(ctx context.Context) (err error) {
 	// shell profiles. Execute its supported stages, keeping all dependencies,
 	// and run its completion through the narrowly scoped private wrapper.
 	for _, stage := range []string{"prerequisites", "repository", "venv", "python-deps"} {
+		if stage == "python-deps" {
+			if err = m.prepareNativeBuildTools(ctx); err != nil {
+				return err
+			}
+		}
 		if err = m.installStage(ctx, script, stage); err != nil {
 			return err
 		}
@@ -279,6 +284,11 @@ func (m *Manager) privateRun(ctx context.Context, mode string, args ...string) (
 	}
 	out, err := m.capture(cmd, "operation-"+mode)
 	if err != nil {
+		if mode == "complete" {
+			if detail := completionFailureDetail(out); detail != "" {
+				return nil, fmt.Errorf("%s (%w)", detail, err)
+			}
+		}
 		return nil, fmt.Errorf("официальная операция Hermes %s завершилась ошибкой: %w", mode, err)
 	}
 	return out, nil

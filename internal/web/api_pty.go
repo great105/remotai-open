@@ -1412,6 +1412,7 @@ func (s *Server) apiPtyUpload(w http.ResponseWriter, r *http.Request, uid int64)
 			return
 		}
 		log.Printf("[PTY-API] uploaded chunked file (%d chunks): %s", cp.total, dst)
+		s.recordTranscriptionUpload(uid, dst)
 		jsonResp(w, map[string]any{"path": dst, "chunk_ack": true})
 		return
 	}
@@ -1433,6 +1434,7 @@ func (s *Server) apiPtyUpload(w http.ResponseWriter, r *http.Request, uid int64)
 		return
 	}
 	log.Printf("[PTY-API] uploaded file: %s", dst)
+	s.recordTranscriptionUpload(uid, dst)
 	jsonResp(w, map[string]string{"path": dst})
 }
 

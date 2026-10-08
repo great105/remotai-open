@@ -8,6 +8,7 @@ import "./settings.css";
 function SectionIcon({ section }: { section: SettingsSection }) {
   const paths: Record<SettingsSection, ReactNode> = {
     computer: <><rect x="3" y="4" width="18" height="13" rx="2" /><path d="M8 21h8M12 17v4" /></>,
+    local: <><rect x="5" y="5" width="14" height="14" rx="2" /><path d="M9 9h6v6H9zM9 2v3m6-3v3M9 19v3m6-3v3M2 9h3m-3 6h3m14-6h3m-3 6h3" /></>,
     notifications: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></>,
     connection: <><path d="M8 3 4 7l4 4M4 7h11a5 5 0 0 1 5 5M16 21l4-4-4-4M20 17H9a5 5 0 0 1-5-5" /></>,
     account: <><circle cx="12" cy="8" r="4" /><path d="M4 21v-2a8 8 0 0 1 16 0v2" /></>,

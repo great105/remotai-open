@@ -38,6 +38,7 @@ type Options struct {
 	command  func(context.Context, string, ...string) *exec.Cmd
 	lookPath func(string) (string, error)
 	goos     string
+	goarch   string
 }
 
 type Status struct {
@@ -113,6 +114,9 @@ type Manager struct {
 func New(opts Options) (*Manager, error) {
 	if opts.goos == "" {
 		opts.goos = runtime.GOOS
+	}
+	if opts.goarch == "" {
+		opts.goarch = runtime.GOARCH
 	}
 	if opts.command == nil {
 		opts.command = exec.CommandContext

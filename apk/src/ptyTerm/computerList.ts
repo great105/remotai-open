@@ -1,14 +1,17 @@
 import type { PtySessionInfo } from "@tgcontrol/shared";
 import type { CloudDevice } from "../cloud/api";
 
-const SCOPE_KEY = "remotai.pty.allComputers";
+const PINNED_KEY = "remotai.pty.computers.pinned";
 const FOLDERS_KEY = "remotai.pty.computers.collapsed";
 
-export function readTerminalScope(): boolean {
-  try { return localStorage.getItem(SCOPE_KEY) === "1"; } catch { return false; }
+export function computerIds(value: unknown): string[] {
+  return Array.isArray(value) ? [...new Set(value.filter((id): id is string => typeof id === "string" && id.trim() !== ""))] : [];
 }
-export function saveTerminalScope(all: boolean): void {
-  try { localStorage.setItem(SCOPE_KEY, all ? "1" : "0"); } catch { /* private storage */ }
+export function readPinnedComputers(): string[] {
+  try { return computerIds(JSON.parse(localStorage.getItem(PINNED_KEY) || "[]")); } catch { return []; }
+}
+export function savePinnedComputers(ids: string[]): void {
+  try { localStorage.setItem(PINNED_KEY, JSON.stringify(computerIds(ids))); } catch { /* private storage */ }
 }
 export function readComputerFolders(): Record<string, boolean> {
   try {
@@ -38,6 +41,19 @@ export function matchingComputerTerminals(device: CloudDevice, sessions: PtySess
   if (!q || [device.name, device.hostname, device.workspace_name].some(s => s?.toLocaleLowerCase().includes(q))) return sessions;
   return sessions.filter(s => [s.name, s.cwd, s.shell, s.agent_kind, s.group, s.hint]
     .some(value => value?.toLocaleLowerCase().includes(q)));
+}
+
+export type ComputerTerminalFilter = "all" | "waiting" | "working" | "error" | "dead";
+export function filterComputerTerminals(sessions: PtySessionInfo[], filter: ComputerTerminalFilter): PtySessionInfo[] {
+  return filter === "all" ? sessions : sessions.filter(session => {
+    const status = session.status || (session.alive ? "working" : "dead");
+    return (status === "stalled" ? "working" : status) === filter;
+  });
+}
+
+/** Keep the home computer in browser history when opening a remote terminal. */
+export function computerListHome(deviceId: string): string {
+  return `/pty?${new URLSearchParams({ computer: deviceId })}`;
 }
 
 /** Bound fan-out and deliver each PC immediately; one timeout never holds the others. */

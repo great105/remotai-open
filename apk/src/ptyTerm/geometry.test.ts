@@ -2,11 +2,18 @@ import { describe, expect, it } from "vitest";
 import {
   nativeKeyboardOpen,
   OCCLUDER_SELECTORS, capacityWithOccluder, frameGeometryAction, frameIsStale, fullViewportHeight, inputGrowthPx,
-  layoutChange, logicalRowsForKeyboard, reconcileAdoptedGrid, shouldExplainNarrowOutput,
+  layoutChange, logicalRowsForKeyboard, reconcileAdoptedGrid, shouldExplainNarrowOutput, stateGridIsFresh,
 } from "./geometry";
 
 describe("U-ADOPTED-GRID: сетка из кадра сверяется с первым /state, спрошенным после приёма (ST-08, ревью)", () => {
   const grid = { gridCols: 47, gridRows: 15 };
+  it("late state cannot replace a confirmed frame, while a later request and legacy state can", () => {
+    expect(stateGridIsFresh(100, 99)).toBe(false);
+    expect(stateGridIsFresh(100, 100)).toBe(false);
+    expect(stateGridIsFresh(100, 101)).toBe(true);
+    expect(stateGridIsFresh(100, NaN)).toBe(false);
+    expect(stateGridIsFresh(null, 0)).toBe(true);
+  });
   it("PTY вырос, пока вкладка была скрыта: /state возражает по ширине — проверить сетку кадром", () => {
     // Замер скептика: компьютер 47x15 при PTY 123x15, state.cols не менялся.
     expect(reconcileAdoptedGrid({ adoptedAt: 100, stateAskedAt: 250, stateCols: 123, stateRows: 15, ...grid }))

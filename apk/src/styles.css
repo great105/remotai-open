@@ -9090,7 +9090,8 @@ html.connection-banner-visible .pty-page .pty-header {
 .folder-sheet {
   width: 100%;
   max-width: 560px;
-  max-height: 85vh;
+  height: min(760px, calc(100dvh - 16px - var(--tg-top-inset, 0px)));
+  max-height: calc(100dvh - 16px - var(--tg-top-inset, 0px));
   background: var(--tg-bg);
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
@@ -9100,6 +9101,9 @@ html.connection-banner-visible .pty-page .pty-header {
   animation: folder-sheet-slide 0.22s ease-out;
   box-shadow: var(--shadow-overlay);
 }
+.folder-sheet > :not(.folder-sheet-body) {
+  flex-shrink: 0;
+}
 @keyframes folder-sheet-slide {
   from { transform: translateY(100%); }
   to   { transform: translateY(0); }
@@ -9107,7 +9111,7 @@ html.connection-banner-visible .pty-page .pty-header {
 .folder-sheet-header {
   display: flex;
   align-items: center;
-  padding: 12px 14px 8px;
+  padding: 2px 12px;
   border-bottom: 1px solid var(--tg-section-separator, rgba(128,128,128,0.12));
 }
 .folder-sheet-title {
@@ -9117,6 +9121,9 @@ html.connection-banner-visible .pty-page .pty-header {
   color: var(--tg-text);
 }
 .folder-sheet-close {
+  min-width: 44px;
+  min-height: 44px;
+  flex-shrink: 0;
   background: transparent;
   border: none;
   color: var(--tg-hint);
@@ -9159,10 +9166,11 @@ html.connection-banner-visible .pty-page .pty-header {
 
 .folder-sheet-search {
   position: relative;
-  padding: 10px 12px 6px;
+  padding: 6px 12px 4px;
 }
 .folder-sheet-search input {
   width: 100%;
+  min-height: 44px;
   box-sizing: border-box;
   padding: 8px 34px 8px 34px;
   background: var(--tg-secondary-bg);
@@ -9184,8 +9192,10 @@ html.connection-banner-visible .pty-page .pty-header {
   pointer-events: none;
 }
 .folder-sheet-search-clear {
+  min-width: 44px;
+  min-height: 44px;
   position: absolute;
-  right: 22px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   background: transparent;
@@ -9197,15 +9207,18 @@ html.connection-banner-visible .pty-page .pty-header {
 }
 
 .folder-sheet-tabs {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-1);
-  padding: 4px 12px 8px;
+  padding: 2px 12px 4px;
   border-bottom: 1px solid var(--tg-section-separator, rgba(128,128,128,0.12));
-  overflow-x: auto;
+  overflow: visible;
   scrollbar-width: none;
 }
 .folder-sheet-tabs::-webkit-scrollbar { display: none; }
 .folder-tab {
+  min-width: 0;
+  min-height: 44px;
   flex-shrink: 0;
   background: transparent;
   border: none;
@@ -9223,9 +9236,87 @@ html.connection-banner-visible .pty-page .pty-header {
 }
 
 .folder-sheet-body {
-  flex: 1;
+  flex: 1 1 0;
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
   padding: 8px 0 12px;
+}
+.folder-list-controls {
+  display: flex;
+  gap: 8px;
+  padding: 4px 12px 6px;
+}
+.folder-sort-select,
+.folder-filters-toggle {
+  min-height: 44px;
+  border: 1px solid var(--tg-border);
+  border-radius: var(--radius-sm);
+  background: var(--tg-secondary-bg);
+  color: var(--tg-text);
+  font: inherit;
+  font-size: 14px;
+}
+.folder-sort-select {
+  flex: 1;
+  min-width: 0;
+  padding: 0 8px;
+  color-scheme: dark;
+}
+.folder-filters-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.folder-filters-toggle[aria-expanded="true"] {
+  color: var(--tg-link);
+  border-color: var(--tg-link);
+}
+.folder-filter-count {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.folder-filter-panel {
+  padding: 0 12px 8px;
+  border-bottom: 1px solid var(--tg-border);
+}
+.folder-filter-panel label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  color: var(--tg-text);
+  font-size: 14px;
+  cursor: pointer;
+}
+.folder-filter-panel input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--tg-link);
+  flex-shrink: 0;
+}
+.folder-reset-filters {
+  border: none;
+  background: transparent;
+  color: var(--tg-link);
+  min-height: 44px;
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.folder-results-note {
+  padding: 8px 14px;
+  font-size: 12px;
+  color: var(--tg-hint);
+}
+@media (max-width: 439px) {
+  .folder-sheet-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* Вид — из общего блока `.section-label`; padding 16px по бокам задаёт поля
@@ -9396,9 +9487,14 @@ html.connection-banner-visible .pty-page .pty-header {
 .folder-browse-actions {
   display: flex;
   gap: var(--space-2);
-  padding: 10px 12px 4px;
+  padding: 6px 12px max(6px, env(safe-area-inset-bottom, 0px));
   border-top: 1px solid var(--tg-section-separator, rgba(128,128,128,0.12));
-  margin-top: var(--space-2);
+  margin-top: 0;
+}
+.folder-browse-actions .btn {
+  min-height: 44px;
+  min-width: 0;
+  white-space: normal;
 }
 
 .folder-menu-overlay {
@@ -11493,6 +11589,7 @@ div.ready-card-head { cursor: default; }
 .home-steps-head { display: flex; align-items: center; gap: var(--space-2); }
 .home-steps-count { margin-left: auto; font-size: 11px; color: var(--tg-hint); white-space: nowrap; }
 .home-steps-dismiss {
+  min-width: 44px;
   background: transparent;
   border: 0;
   padding: 4px 2px 4px 8px;
@@ -12009,6 +12106,10 @@ div.ready-card-head { cursor: default; }
   .folder-sheet,
   .snippets-sheet {
     border-radius: var(--radius-lg);
+  }
+  .folder-sheet {
+    height: min(720px, calc(100dvh - 48px));
+    max-height: calc(100dvh - 48px);
   }
 
   /* Шапка центрируется по колонке контента (была прижата к левому краю,
@@ -18159,6 +18260,13 @@ button.device-chip {
   line-height: 1.35;
   color: var(--tg-hint);
 }
+@media (max-height: 500px) {
+  .folder-sheet {
+    height: calc(100dvh - 16px);
+    max-height: calc(100dvh - 16px);
+  }
+  .folder-tab-hint { padding-top: 4px; padding-bottom: 4px; }
+}
 
 /* ═══════════════════════════════════════════════════════════════════════
    Бейдж «Агент не отвечает» и кнопка «Перерисовать» (PtyTermView).
@@ -18584,37 +18692,30 @@ button.device-chip {
 .tokens-row small { font-size: 12px; color: var(--tg-hint); }
 .tokens-note { margin: 0; font-size: 12px; line-height: 1.4; color: var(--tg-hint); }
 .tokens-error { color: var(--tg-destructive); }
-.pty-computer-scope {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.pty-computer-scope { margin-left: 16px; margin-right: 16px; }
-.pty-computer-scope .btn { flex: 1; min-height: 44px; }
-.pty-computers-page .page-content { padding: 8px 16px; }
-.pty-computers-page .pty-computer-scope { margin-left: 0; margin-right: 0; }
+.pty-computer-folders { margin: 8px 16px 16px; }
+.pty-computer-folders:empty { display: none; }
+.pty-page-has-computers .empty { min-height: 0; padding: 20px 16px; }
 .pty-computer-folder .cards-grid { padding: 0; }
-.pty-computers-hint { margin: 0 0 16px; color: var(--tg-hint); font-size: 14px; line-height: 1.5; }
-.pty-computers-search {
-  display: flex; align-items: center; gap: 8px;
-  margin-bottom: 20px; color: var(--tg-hint);
-}
-.pty-computers-search { padding: 0 12px; border: 1px solid var(--tg-border); border-radius: var(--radius-sm); background: var(--elev-1); }
-.pty-computers-search:focus-within { border-color: var(--tg-link); }
-.pty-computers-search input { width: 100%; min-width: 0; min-height: 44px; }
-.pty-computers-search input::placeholder { color: var(--tg-hint); }
 .pty-computer-folder { margin-bottom: 24px; }
+.pty-computer-head-row { display: flex; align-items: center; gap: 4px; }
 .pty-computer-heading {
   display: flex; align-items: center; gap: 10px; width: 100%; min-height: 56px;
   padding: 8px 0; margin-bottom: 8px; color: var(--tg-text); background: transparent;
   border: 0; border-bottom: 1px solid var(--tg-border); text-align: left;
+  flex: 1; min-width: 0; font-family: inherit; cursor: pointer;
 }
+.pty-computer-remove {
+  width: 44px; min-height: 44px; flex-shrink: 0;
+  border: 0; background: transparent; color: var(--tg-hint); cursor: pointer;
+}
+.pty-computer-remove:hover { color: var(--tg-text); }
 .pty-computer-heading > svg { flex-shrink: 0; }
 .pty-computer-name { min-width: 0; flex: 1; overflow-wrap: anywhere; font-size: 16px; font-weight: 600; }
 .pty-computer-workspace { display: block; margin-top: 3px; font-size: 12px; font-weight: 400; color: var(--tg-hint); }
 .pty-computer-summary { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; flex-shrink: 0; font-size: 12px; color: var(--tg-hint); }
 .pty-computer-summary .online { color: var(--tg-link); }
-.pty-computer-heading:focus-visible, .pty-computer-card:focus-visible { outline: 2px solid var(--tg-link); outline-offset: 3px; }
+.pty-computer-heading:focus-visible, .pty-computer-card:focus-visible,
+.pty-computer-remove:focus-visible, .pty-computer-choice:focus-visible { outline: 2px solid var(--tg-link); outline-offset: 3px; }
 .pty-computer-card { width: 100%; margin: 8px 0; text-align: left; color: var(--tg-text); font-family: inherit; font-size: inherit; }
 .pty-computer-card .pty-card-identity { padding-right: 0; }
 .pty-computer-card:disabled { cursor: default; opacity: .65; }
@@ -18622,4 +18723,19 @@ button.device-chip {
 .pty-computer-group { margin-top: 4px; color: var(--tg-hint); font-size: 12px; overflow-wrap: anywhere; }
 .pty-computers-message { margin: 8px 0 12px; color: var(--tg-hint); font-size: 14px; line-height: 1.5; }
 .pty-computers-message .btn { display: block; margin-top: 8px; min-height: 44px; }
-.pty-computer-open { margin-top: 10px; min-height: 44px; }
+.pty-computer-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.pty-computer-actions .btn { flex: 1 1 auto; min-height: 44px; }
+.pty-computer-missing { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; color: var(--tg-hint); }
+.pty-computer-missing .btn { min-height: 44px; }
+.pty-computer-picker .pty-computers-message { margin: 12px; }
+.pty-computer-picker .folder-browse-actions .btn { width: 100%; }
+.pty-computer-choice {
+  display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px;
+  padding: 12px; background: transparent; color: var(--tg-text); border: 0;
+  border-bottom: 1px solid var(--tg-border); font: inherit; text-align: left; cursor: pointer;
+}
+.pty-computer-choice:hover { background: var(--tg-secondary-bg); }
+.pty-computer-choice:disabled { opacity: .65; cursor: default; }
+.pty-computer-choice > svg { flex-shrink: 0; }
+.pty-computer-choice > span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.pty-computer-choice small { display: block; color: var(--tg-hint); font-size: 12px; margin-top: 3px; }

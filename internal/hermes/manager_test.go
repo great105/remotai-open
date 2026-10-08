@@ -43,6 +43,12 @@ func TestHermesHelperProcess(t *testing.T) {
 		os.Exit(81)
 	}
 	root := filepath.Dir(home)
+	for _, arg := range args {
+		if filepath.Base(arg) == "native_build_tools.sh" {
+			fmt.Println("owned compiler fixture ready")
+			os.Exit(0)
+		}
+	}
 	for i, a := range args {
 		if a == "-Stage" || a == "--stage" {
 			stage := args[i+1]

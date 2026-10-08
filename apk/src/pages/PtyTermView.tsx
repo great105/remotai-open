@@ -21,6 +21,7 @@ import { enterIntent, reviewedInput, sameInputTarget, transmitInput } from "../p
 import type { InputTarget } from "../ptyTerm/input/InputController";
 import { appendSessionDraft, draftOwner } from "../ptyTerm/input/SessionDraft";
 import { useSessionDraft } from "../ptyTerm/input/useSessionDraft";
+import { VoiceInputSheet, VoiceIcon } from "../transcription/VoiceInputSheet";
 import { foregroundTask, silenceRecheckDelay, silenceVerdict, thawedAt } from "../ptyTerm/runtime/ForegroundTask";
 import {
   keyboardPeek, lastInkRow, observeNativeKeyboard, OCCLUSION_BUSY_RECHECK_MS, OCCLUSION_IDLE, OCCLUSION_SYNC_RECHECK_MS,
@@ -101,6 +102,7 @@ import {
 } from "../ptyTerm/rules";
 // Код привязки сервера, замеченный в выводе (`remotai pair` на новом сервере).
 import { pairCodeInOutput } from "../ptyTerm/pairOffer";
+import { scrollLocalBottom } from "../ptyTerm/localBottom";
 // Защита истории прокрутки от «ESC[3J» (агент стирает её при перерисовке).
 import {
   EMPTY_BYTES, eraseActionFor, eraseChainEnds, eraseRoute, generationDropsPendingErase, keepPendingErase, keepPendingScrollbackErase,
@@ -165,7 +167,7 @@ import { diagReachesAgent, stateShowsNewAgent } from "../ptyTerm/diagCompat";
 import type { EvidenceDecision, NavChannel, Observation } from "../ptyTerm/navigationEvidence";
 import {
   OCCLUDER_SELECTORS, capacityWithOccluder, frameGeometryAction, frameIsStale, fullViewportHeight, inputGrowthPx, nativeKeyboardOpen,
-  layoutChange, logicalRowsForKeyboard, reconcileAdoptedGrid, shouldExplainNarrowOutput,
+  layoutChange, logicalRowsForKeyboard, reconcileAdoptedGrid, shouldExplainNarrowOutput, stateGridIsFresh,
 } from "../ptyTerm/geometry";
 import { TerminalWidthNotice } from "../ptyTerm/TerminalWidthNotice";
 import {
@@ -744,6 +746,8 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
    * под одной кнопкой.
    */
   const [attachMenuOpen, setAttachMenuOpen] = useState(false);
+  const [voiceOpen, setVoiceOpen] = useState(false);
+  useEffect(() => setVoiceOpen(false), [terminalContext, id]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -995,14 +999,22 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
     loadedResumeKeyRef.current = key;
     setLoadedResumeAgent(null);
     let cancelled = false;
+    let pending = true;
     getAgents().then((d) => {
+      pending = false;
       if (cancelled || loadedResumeKeyRef.current !== key) return;
       const agent = (d.agents || []).find((a) => a.id === kind && a.supports_resume && a.resume_cli);
       setLoadedResumeAgent(agent ? { key, kind, agent } : null);
     }).catch(() => {
+      pending = false;
       if (!cancelled && loadedResumeKeyRef.current === key) setLoadedResumeAgent(null);
     });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      // Initial /state can change kind undefined → "" without changing the
+      // remembered agent. A cancelled request must not suppress its successor.
+      if (pending && loadedResumeKeyRef.current === key) loadedResumeKeyRef.current = "";
+    };
   }, [id, state.agent_kind, state.sleep?.agent, state.kind, state.remote]);
   const FONT_SIZES = [11, 12, 14, 16] as const;
   const [fontSize, setFontSize] = useState<number>(() => {
@@ -1741,6 +1753,10 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
   // последнего принятого /state. Часы — performance.now(). Правило сверки —
   // geometry.reconcileAdoptedGrid, исполнение — эффект после state.cols.
   const gridAdoptedAtRef = useRef<number | null>(null);
+  // Every accepted matching frame is newer than state requests already in
+  // flight. Keep this freshness bound separate from the one-shot recheck:
+  // repeated matching snapshots must not restart a state/frame retry loop.
+  const gridConfirmedAtRef = useRef<number | null>(null);
   const stateAskedAtRef = useRef(0);
   // Token of the ACTUAL local xterm cell grid. A screen request captures this
   // value, and the agent echoes it. If fit()/resize changes the grid while the
@@ -4123,6 +4139,19 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
               // выглядел бы терминалом без истории — то есть у него бы её и
               // отобрали. И мерим ЗДЕСЬ, после барьера: до него значение ещё
               // старое, потому что прежний вывод не разобран.
+              // A matching frame confirms its grid too: no resize/adopt branch
+              // is needed. An earlier /state response may still describe 80x24
+              // while this frame already confirms 47x23; keep that old response
+              // from resizing the freshly restored screen.
+              if (features.capacity && geo.kind === "apply" && snapCols === live.cols && snapRows === live.rows) {
+                const changed = logicalColsRef.current !== live.cols || authoritativeRowsRef.current !== live.rows;
+                logicalColsRef.current = live.cols;
+                logicalRowsRef.current = live.rows;
+                authoritativeRowsRef.current = live.rows;
+                const confirmedAt = performance.now();
+                gridConfirmedAtRef.current = confirmedAt;
+                if (changed) gridAdoptedAtRef.current = confirmedAt;
+              }
               const localScrollback = ((live.buffer as unknown as {
                 normal?: { baseY?: number };
               }).normal?.baseY) ?? live.buffer.active.baseY;
@@ -5416,13 +5445,14 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
   useEffect(() => {
     const rows = state.rows ?? 0;
     if (rows < 2) return;
+    if (features.capacity && !stateGridIsFresh(gridConfirmedAtRef.current, stateAskedAtRef.current)) return;
     logicalRowsRef.current = rows;
     authoritativeRowsRef.current = rows;
     const size = fitLocalRef.current();
     if (size) setTermSize(size);
     // Сервер подтвердил высоту PTY: кадр чужой высоты стоит спросить ещё раз.
     recoveryApiRef.current.serverGrid("state-rows");
-  }, [state.rows]);
+  }, [state.rows, features.capacity]);
 
   // ЛОГИЧЕСКАЯ ширина — тоже с компьютера (`state.cols`, размер, применённый к
   // PTY). PTY общий и идёт по самому узкому зрителю: без этого зажатия широкий
@@ -5433,12 +5463,13 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
   useEffect(() => {
     const cols = state.cols ?? 0;
     if (cols < 2) return;
+    if (features.capacity && !stateGridIsFresh(gridConfirmedAtRef.current, stateAskedAtRef.current)) return;
     if (logicalColsRef.current === cols) return;
     logicalColsRef.current = cols;
     const size = fitLocalRef.current();
     if (size) setTermSize(size);
     recoveryApiRef.current.serverGrid("state-cols");
-  }, [state.cols]);
+  }, [state.cols, features.capacity]);
 
   // ⚠ СЕТКА ИЗ КАДРА БЕЗ ЯКОРЯ /state (ST-08, ревью скептика). Кадр на запрос
   // после доставленной вместимости сам пишет авторитетную сетку (adopt в
@@ -7398,7 +7429,7 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
     }
     const action = edgePlan(destination.decision, up);
     if (action.kind === "local") {
-      if (up) term.scrollToTop(); else term.scrollToBottom();
+      if (up) term.scrollToTop(); else scrollLocalBottom(term);
       if (!up) setAltScrolledUp(false);
       else if (scrollOverrideRef.current === "auto") readingPinRef.current = { executor: "local", channel: "viewport" };
       return true;
@@ -8298,23 +8329,11 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
       setSavingHost(false);
     }
   };
-  /**
-   * Скрепка. Если снимать нечего (нет экрана у компьютера) или мы смотрим на
-   * SSH-сервер, где нашего пути нет, — выбирать не из чего, и лишний тап был бы
-   * платой ни за что: ведём себя как раньше, сразу.
-   */
+  // Voice input remains useful on a headless computer and in an SSH terminal.
   const canScreenshot = hasDisplay && !isSsh;
   const handleAttachClick = () => {
     haptic();
-    if (isSsh) {
-      void openSshFiles();
-      return;
-    }
-    if (canScreenshot) {
-      setAttachMenuOpen(true);
-      return;
-    }
-    fileInputRef.current?.click();
+    setAttachMenuOpen(true);
   };
 
   // Navigation owns existing header space, not output or keypad pixels.
@@ -9442,17 +9461,21 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="remote-quick-section">{t("pty.attachMenuTitle")}</div>
+            <button type="button" className="remote-quick-row" onClick={() => { setAttachMenuOpen(false); setVoiceOpen(true); }}>
+              <span className="remote-quick-row-icon"><VoiceIcon /></span>
+              <span className="remote-quick-row-label">{t("voice.title")}<small className="pty-attach-row-hint">{t("voice.menuHint")}</small></span>
+            </button>
             <button
               className="remote-quick-row"
-              onClick={() => { setAttachMenuOpen(false); fileInputRef.current?.click(); }}
+              onClick={() => { setAttachMenuOpen(false); if (isSsh) void openSshFiles(); else fileInputRef.current?.click(); }}
             >
               <span className="remote-quick-row-icon" aria-hidden>{"📎"}</span>
               <span className="remote-quick-row-label">
-                {t("pty.attachFile")}
+                {isSsh ? t("files.title") : t("pty.attachFile")}
                 <small className="pty-attach-row-hint">{t("pty.attachFileHint")}</small>
               </span>
             </button>
-            <button
+            {canScreenshot && <button
               className="remote-quick-row"
               onClick={() => { setAttachMenuOpen(false); void handleScreenshotToAgent(); }}
             >
@@ -9461,10 +9484,12 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
                 {t("pty.attachScreenshot")}
                 <small className="pty-attach-row-hint">{t("pty.screenshotHint")}</small>
               </span>
-            </button>
+            </button>}
           </div>
         </div>
       )}
+
+      {voiceOpen && <VoiceInputSheet key={draftOwner(terminalContext, id ?? "")} onClose={() => setVoiceOpen(false)} onInsert={text => appendSessionDraft(draftOwner(terminalContext, id ?? ""), text)} />}
 
       {composerOpen && (
         <div className="modal-overlay pty-composer-overlay" onClick={() => setComposerOpen(false)}>

@@ -32,6 +32,7 @@ import { BottomNav } from "../components/BottomNav";
 import { ComputerSettings } from "../components/ComputerSettings";
 import { SettingsIndex, SettingsUnavailable } from "../settings/SettingsIndex";
 import { settingsPath, settingsSection } from "../settings/navigation";
+import { LocalCapabilitiesSection } from "../transcription/LocalCapabilitiesSection";
 import { isFirstStepsDismissed, restoreFirstSteps } from "../homeProgress";
 import { sectionDesc } from "../sections";
 import { startTelegramLogin } from "../cloud/tgLogin";
@@ -1255,6 +1256,7 @@ export function SettingsView() {
             {section === "notifications" && <NotificationsSection questionsDetected={detectQuestions} />}
             {section === "connection" && connectionSection}
             {section === "help" && <HelpSection unread={supportUnread} />}
+            {section === "local" && <LocalCapabilitiesSection machineName={serverConfig?.selectedDeviceName || config?.hostname || t("settings.thisComputer")} />}
             {section === "computer" && (config ? <>
         {/* Снимок экрана по PrtScr. Настройка живёт НА КОМПЬЮТЕРЕ (клавишу
             занимает его агент), поэтому тумблер сразу уходит в его конфиг.

@@ -793,8 +793,8 @@ describe("клиентский proxy contract: fail closed", () => {
       scoped,
       "Write-Output ('AFTER=' + [string]$env:CLAUDE_CONFIG_DIR + '|' + [string]$env:HTTPS_PROXY + '|' + [string](Test-Path Env:ALL_PROXY))",
     ].join("; ");
-    const output = execFileSync("powershell.exe", ["-NoProfile", "-Command", script], { encoding: "utf8", timeout: 15_000 });
+    const output = execFileSync("powershell.exe", ["-NoProfile", "-Command", script], { encoding: "utf8", windowsHide: true, timeout: 60_000 });
     expect(output).toContain("INSIDE=selected-profile|http://selected.proxy:8080|True");
     expect(output).toContain("AFTER=original-profile|http://original.proxy:8080|False");
-  }, 20_000); // Cold PowerShell startup on Windows CI can exceed Vitest's 5s default.
+  }, 65_000); // Cold Windows CI startup exceeded 15s; this checks env restoration, not launch speed.
 });

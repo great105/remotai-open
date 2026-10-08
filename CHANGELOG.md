@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog.
 
+## [2.75.17] - 2026-10-08
+
+### Local capabilities and terminal navigation / Локальные возможности и терминалы
+
+- Added Settings → Local capabilities for the selected computer: connect or replace the Windows recognition module, install and select models from its catalog, save language and terminology, and test a recording without terminal input. Model installation continues when leaving settings and can be resumed or cancelled.
+- Added local voice input to terminal drafts, including phone recording and audio files, explicit transcript review, upload ownership checks and cancellation of the entire recognition process tree.
+- Added computers as terminal folders with per-computer navigation, search and offline status. Folder selection supports sorting and filters and retains its layout with the keyboard open.
+- Improved Hermes installation diagnostics and isolated build dependencies on Intel macOS; retained owned compilers across Hermes updates. Native installation and subsequent updates were checked on five OS/CPU targets.
+- Fixed returning to the latest terminal output after viewport reflow, which could stop three rows short of the bottom.
+- Fixed the agent Continue button disappearing when terminal state arrived before the agent catalog.
+- Fixed a delayed terminal-state response replacing the size of an already displayed fresh frame, which could briefly truncate output when opening a terminal.
+- Fixed the More menu and its search query closing when a slow initial page finished loading. Normal navigation and Escape still dismiss the menu.
+- Добавлен раздел «Настройки → Локальные возможности»: модуль Windows, каталог моделей, установка, выбор, язык, словарь и проверочная запись. Установка продолжается после выхода из раздела.
+- Голосовая запись с телефона и аудиофайлы распознаются на выбранном ПК; проверенный текст добавляется в черновик без автоматической отправки.
+- Компьютеры открываются как папки терминалов; в выборе папки появились сортировка и фильтры, устранено смещение окна при поиске и открытии клавиатуры.
+- Исправлена подготовка Hermes на Intel macOS и сохранение нужного компилятора при обновлении; улучшена диагностика ошибок завершения установки.
+- Исправлен возврат к последней строке терминала после перерасчёта размеров: прокрутка могла остановиться на три строки выше низа.
+- Исправлено исчезновение кнопки продолжения агента, когда состояние терминала приходило раньше каталога агентов.
+- Исправлена гонка при открытии терминала: задержанный ответ о старом размере больше не меняет сетку уже показанного свежего кадра и не обрезает вывод.
+- Поиск в «Ещё» больше не закрывается, когда медленная страница заканчивает загрузку; обычные переходы и Escape закрывают меню.
+
 ## [2.75.16] - 2026-10-07
 
 ### Hermes installation and terminal performance / Установка Hermes и скорость терминала
