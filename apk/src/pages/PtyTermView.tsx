@@ -8942,7 +8942,7 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
       {state.alive && (
       <>
       {directVoice.status}
-      <div className="pty-input-bar">
+      <div className="pty-input-bar pty-input-with-voice">
         <button
           className="pty-key-btn pty-key-accent pty-attach-btn"
           onClick={handleAttachClick}

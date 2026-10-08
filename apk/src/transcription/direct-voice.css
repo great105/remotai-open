@@ -1,5 +1,6 @@
 .pty-voice-btn { color: var(--tg-btn); flex-shrink: 0; }
 .pty-input-bar > .pty-key-btn { min-width: 44px; }
+.pty-input-bar.pty-input-with-voice { gap: 4px; }
 .pty-input-bar .pty-voice-btn { display: flex; align-items: center; justify-content: center; flex: 0 0 44px; width: 44px; min-width: 44px; min-height: 44px; padding: 8px; color: var(--tg-btn); }
 .pty-voice-btn.pty-voice-recording { color: var(--tg-destructive); background: var(--tg-secondary-bg); }
 .pty-voice-stop { display: inline-block; width: 16px; height: 16px; border-radius: 3px; background: currentColor; }
