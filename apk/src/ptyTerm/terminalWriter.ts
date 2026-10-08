@@ -12,6 +12,10 @@ export interface TerminalWriteContext {
 export type TerminalWriteGuard = Readonly<TerminalWriteContext>;
 export type TerminalWriteResult = "written" | "discarded" | "error";
 
+// xterm yields between writes, never inside one large synchronous parse.
+// This also bounds snapshot history and barrier drains, which bypass RAF batching.
+export const TERMINAL_PARSE_CHUNK = 32 * 1024;
+
 export interface TerminalWriteOptions {
   /** Defaults to the writer context at enqueue time. */
   guard?: TerminalWriteGuard;
@@ -19,6 +23,8 @@ export interface TerminalWriteOptions {
   after?: () => void;
   /** Runs exactly once, including stale/disposed/error paths. */
   settled?: (result: TerminalWriteResult) => void;
+  /** Called just before each parser chunk, with the units still not handed over. */
+  onWrite?: (remaining: number) => void;
 }
 
 type Entry = {
@@ -31,6 +37,8 @@ type Entry = {
   after?: () => void;
   settled?: (result: TerminalWriteResult) => void;
   settledOnce: boolean;
+  remaining?: TerminalWriteData;
+  onWrite?: (remaining: number) => void;
 };
 
 const EMPTY_WRITE = new Uint8Array(0);
@@ -193,6 +201,7 @@ export class TerminalWriter {
       after: options.after,
       settled: options.settled,
       settledOnce: false,
+      onWrite: options.onWrite,
     };
   }
 
@@ -216,7 +225,7 @@ export class TerminalWriter {
       }
       let data: TerminalWriteData | null;
       try {
-        data = entry.resolve();
+        data = entry.remaining ?? entry.resolve();
       } catch {
         this.settle(entry, "error");
         continue;
@@ -227,10 +236,25 @@ export class TerminalWriter {
         continue;
       }
       this.active = entry;
+      const chunk = typeof data === "string"
+        ? data.slice(0, TERMINAL_PARSE_CHUNK)
+        : data.subarray(0, TERMINAL_PARSE_CHUNK);
+      const remaining = data.length - chunk.length;
+      entry.remaining = remaining > 0
+        ? (typeof data === "string" ? data.slice(chunk.length) : data.subarray(chunk.length))
+        : undefined;
       try {
-        this.target.write(data, () => {
+        entry.onWrite?.(remaining);
+        this.target.write(chunk, () => {
           if (this.active !== entry) return; // disposed/replaced; already settled
           this.active = null;
+          // A logical write stays ahead of concurrent bytes and barriers. Its
+          // callbacks settle once, after its last chunk; stale tails never parse.
+          if (entry.remaining && this.isEntryCurrent(entry)) {
+            this.queue.unshift(entry);
+            this.drain();
+            return;
+          }
           this.complete(entry, this.isEntryCurrent(entry) ? "written" : "discarded");
           this.drain();
         });

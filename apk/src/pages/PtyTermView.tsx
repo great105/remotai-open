@@ -2234,10 +2234,12 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
     const writer = terminalWriterRef.current!;
     if (!features.flowBacklog || handed === undefined) { writer.write(data, options); return; }
     const guard = options.guard ?? writer.currentGuard();
-    writer.lazy(() => {
-      handedMarkRef.current = handed === null ? null : noteHanded(handedMarkRef.current, guard, handed);
-      return data;
-    }, options);
+    writer.write(data, {
+      ...options,
+      onWrite: (remaining) => {
+        handedMarkRef.current = handed === null ? null : noteHanded(handedMarkRef.current, guard, handed - remaining);
+      },
+    });
   };
   const writeTracked = (
     data: Uint8Array | string,
@@ -5217,7 +5219,7 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
     let lastWidth = typeof window !== "undefined"
       ? Math.round(window.visualViewport?.width ?? window.innerWidth)
       : 0;
-    const refit = (opts?: { force?: boolean }) => {
+    const refit = (opts?: { force?: boolean; foreground?: boolean }) => {
       if (raf != null) cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
         const term = terminalRef.current;
@@ -5267,7 +5269,10 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
         setTermSize((prev) => (
           prev.cols === term.cols && prev.rows === term.rows ? prev : { cols: term.cols, rows: term.rows }
         ));
-        sendResize();
+        // Reassert a visible viewer's capacity even when it has not changed.
+        // ResizeFor cancels the host's pending growth delay after a smaller
+        // viewer leaves; the regular debounce would suppress this report.
+        sendResize(opts?.foreground === true && !rendererPendingRef.current);
       });
     };
     const onWindowResize = () => refit();
@@ -5293,7 +5298,7 @@ export function PtyTermView({ onReopen }: { onReopen: () => void }) {
       keyboardOpenRef.current = false;
       baseViewportRef.current = 0;
       applyKeyboardPeekRef.current();
-      refit({ force: true });
+      refit({ force: true, foreground: true });
     };
     document.addEventListener("visibilitychange", onVisible);
     const vv = window.visualViewport;

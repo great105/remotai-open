@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { Terminal as HeadlessTerminal } from "@xterm/headless";
-import { TerminalWriter } from "./terminalWriter";
+import { TerminalWriter, TERMINAL_PARSE_CHUNK } from "./terminalWriter";
 
 class ManualTerminal {
   readonly writes: string[] = [];
@@ -26,6 +26,75 @@ class ManualTerminal {
 }
 
 describe("TerminalWriter", () => {
+  it("bounds a large logical write and keeps its continuation before concurrent bytes and a barrier", () => {
+    const terminal = new ManualTerminal();
+    const writer = new TerminalWriter(terminal);
+    const data = "A".repeat(TERMINAL_PARSE_CHUNK * 2 + 7);
+    const settled: string[] = [], remaining: number[] = [];
+    writer.write(data, {
+      onWrite: n => remaining.push(n),
+      after: () => writer.write("TAIL"), settled: result => settled.push(result),
+    });
+    writer.write("LIVE");
+    writer.barrier(() => settled.push("barrier"));
+    while (terminal.inFlight) terminal.completeOne();
+    expect(terminal.writes.join("")).toBe(data + "TAILLIVE");
+    expect(Math.max(...terminal.writes.map(v => v.length))).toBe(TERMINAL_PARSE_CHUNK);
+    expect(remaining).toEqual([TERMINAL_PARSE_CHUNK + 7, 7, 0]);
+    expect(settled).toEqual(["written", "barrier"]);
+    expect(terminal.maxInFlight).toBe(1);
+  });
+
+  it("leaves the resume mark at the last handed chunk when the socket is replaced", () => {
+    const terminal = new ManualTerminal();
+    const guard = { generation: 1, epoch: "old" };
+    const writer = new TerminalWriter(terminal, guard);
+    const data = new Uint8Array(TERMINAL_PARSE_CHUNK * 3 + 1).fill(65);
+    let handed = 0, after = false;
+    const settled: string[] = [];
+    writer.write(data, { onWrite: n => { handed = data.length - n; },
+      after: () => { after = true; }, settled: r => settled.push(r) });
+    terminal.completeOne();
+    expect(handed).toBe(TERMINAL_PARSE_CHUNK * 2);
+    writer.setContext({ generation: 2, epoch: "new" });
+    writer.write("NEW");
+    while (terminal.inFlight) terminal.completeOne();
+    expect(terminal.writes.join("")).toBe("A".repeat(handed) + "NEW");
+    expect(settled).toEqual(["discarded"]);
+    expect(after).toBe(false);
+  });
+
+  it("drains all chunks before an ordered epoch transition", () => {
+    const terminal = new ManualTerminal();
+    const writer = new TerminalWriter(terminal, { generation: 1, epoch: "old" });
+    const data = "A".repeat(TERMINAL_PARSE_CHUNK + 1);
+    const next = { generation: 1, epoch: "new" };
+    writer.write(data);
+    writer.transition(next, () => writer.write("RESET"));
+    writer.write("NEW", { guard: next });
+    while (terminal.inFlight) terminal.completeOne();
+    expect(terminal.writes.join("")).toBe(data + "RESETNEW");
+  });
+
+  it("preserves split UTF-8, UTF-16 and CSI parsing with the real terminal", async () => {
+    for (const bytes of [false, true]) {
+      for (const tail of ["😀Привет 中e\u0301", "\x1b[31mПривет 中e\u0301"]) {
+        const terminal = new HeadlessTerminal({ allowProposedApi: true, cols: 80, rows: 4 });
+        const reference = new HeadlessTerminal({ allowProposedApi: true, cols: 80, rows: 4 });
+        const writer = new TerminalWriter(terminal);
+        const text = "a".repeat(TERMINAL_PARSE_CHUNK - 1) + tail;
+        const data = bytes ? new TextEncoder().encode(text) : text;
+        await new Promise<void>(resolve => writer.write(data, { after: resolve }));
+        await new Promise<void>(resolve => reference.write(data, resolve));
+        const lines = (t: HeadlessTerminal) => Array.from({ length: t.buffer.active.length }, (_, i) =>
+          t.buffer.active.getLine(i)?.translateToString(true));
+        expect(lines(terminal)).toEqual(lines(reference));
+        expect(terminal.buffer.active.cursorX).toBe(reference.buffer.active.cursorX);
+        terminal.dispose(); reference.dispose();
+      }
+    }
+  });
+
   it("serializes callback-enqueued B ahead of already waiting C (ABC, never ACB)", () => {
     const terminal = new ManualTerminal();
     const writer = new TerminalWriter(terminal, { generation: 1, epoch: "e1" });
