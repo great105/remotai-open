@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog.
 
+## [2.75.21] - 2026-10-08
+
+### Terminal responsiveness / Отзывчивость терминала
+
+- Bound every xterm parser write, including snapshot history and barrier drains, to 32 KiB. Keep byte order, epoch transitions and partial-write resume positions exact.
+- Reassert capacity when a terminal returns to the foreground, applying the desktop size immediately after a smaller viewer leaves.
+- Большая история и вывод при перерисовке разбираются порциями, чтобы терминал быстрее отвечал на жесты и ввод. При обрыве сохраняется позиция реально переданных парсеру байтов.
+- После возврата с планшета к компьютеру размер восстанавливается сразу, без четырёхсекундного ожидания. Добавлены проверки больших снимков, видимого первого кадра и переходов между экранами.
+
 ## [2.75.20] - 2026-10-08
 
 ### Direct microphone / Микрофон в терминале
